@@ -27,6 +27,7 @@ import com.example.jack.myapplication.Fragment.Fragment1;
 import com.example.jack.myapplication.Fragment.Fragment2;
 import com.example.jack.myapplication.Fragment.Fragment_account;
 import com.example.jack.myapplication.Fragment.Fragment_buy;
+import com.example.jack.myapplication.Fragment.Fragment_item;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.github.mrengineer13.snackbar.SnackBar;
@@ -52,6 +53,7 @@ import com.mikepenz.materialize.util.UIUtils;
 import com.example.jack.myapplication.R;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import me.next.slidebottompanel.SlideBottomPanel;
 
@@ -64,23 +66,26 @@ public class MainActivity extends AppCompatActivity {
     //save our header or result
     private AccountHeader headerResult = null;
     private Drawer result = null;
+
     //底部窗口
     private SlideBottomPanel sbv;
     private ListView lv_cart;
     private ArrayList<String> cart;
 
     //Fragments
+    private Stack<Fragment> fragments = null;   //作为一个fragments的栈
     private Fragment mContent = null; //当前显示的Fragment
     private Fragment1 f1 = null;
     private Fragment2 f2 = null;
-    private Fragment_account fragment_account= null;
-    private Fragment_buy fragment_buy= null;
+    private Fragment_account fragment_account = null;
+    private Fragment_buy fragment_buy = null;
+    private Fragment_item fragment_item = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //打印内存
         ActivityManager activityManager = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
-        Log.i("内存",activityManager.getMemoryClass() + "");
+        Log.i("内存最大值",activityManager.getMemoryClass() + "");
         setContentView(R.layout.activity_main1);
 
         CreateDrawer(savedInstanceState);
@@ -91,8 +96,10 @@ public class MainActivity extends AppCompatActivity {
 
         //设置默认fragment
         if (savedInstanceState == null) {
+            fragments = new Stack<>();
             f2 = Fragment2.GetInstance();
             mContent = f2;
+
             getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, f2,f2.toString()).commit(); //默认fragment
             result.setSelection(2, false);   //默认的选中DrawerItem
         }
@@ -225,6 +232,8 @@ public class MainActivity extends AppCompatActivity {
                         if (drawerItem != null ) {
                             switch ((int)drawerItem.getIdentifier()){
                                 case 1:
+                                    if(!(getSupportActionBar().isShowing()) )
+                                        getSupportActionBar().show();
                                     f1 = Fragment1.GetInstance();
                                     switchContent(mContent,f1);
                                     new SnackBar.Builder(MainActivity.this)
@@ -234,6 +243,8 @@ public class MainActivity extends AppCompatActivity {
                                             .show();
                                     break;
                                 case 2:
+                                    if(!(getSupportActionBar().isShowing()) )
+                                        getSupportActionBar().show();
                                     f2 = Fragment2.GetInstance();
                                     switchContent(mContent,f2);
                                     new SnackBar.Builder(MainActivity.this)
@@ -243,6 +254,8 @@ public class MainActivity extends AppCompatActivity {
                                             .show();
                                     break;
                                 case 3:
+                                    if(!(getSupportActionBar().isShowing()) )
+                                        getSupportActionBar().show();
                                     fragment_buy = Fragment_buy.GetInstance();
                                     switchContent(mContent,fragment_buy);
                                     new SnackBar.Builder(MainActivity.this)
@@ -275,9 +288,15 @@ public class MainActivity extends AppCompatActivity {
     //    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(false);
     }
-
+    /**
+     * 当fragment进行切换时，采用隐藏与显示的方法加载fragment以防止数据的重复加载
+     * @param from
+     * @param to
+     */
     public void switchContent(Fragment from, Fragment to) {
         if (mContent != to) {
+            //将跳转的页面加入栈中
+            fragments.push(from);
             mContent = to;
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().setCustomAnimations(
                     android.R.anim.fade_in, android.R.anim.fade_out);
@@ -316,9 +335,14 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.scan:
                 Toast.makeText(MainActivity.this , "scan!" , Toast.LENGTH_SHORT).show();
-
-                Intent intent = new Intent(MainActivity.this,TestActivity.class);
-                startActivity(intent);
+                //需要先隐藏之前的
+                if(!(getSupportActionBar().isShowing()) )
+                    getSupportActionBar().show();
+                fragment_item = Fragment_item.GetInstance();
+                switchContent(mContent,fragment_item);
+//
+//                Intent intent = new Intent(MainActivity.this,TestActivity.class);
+//                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -338,16 +362,39 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        //handle the back press :D close the drawer first and if the drawer is closed close the activity
+
         if (sbv.isPanelShowing()) {
             sbv.hide();
             return;
         }
+        //handle the back press :D close the drawer first and if the drawer is closed close the activity
         if (result != null && result.isDrawerOpen()) {
             result.closeDrawer();
-        } else {
-            super.onBackPressed();
         }
+        if(!fragments.empty()){
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().setCustomAnimations(
+                    android.R.anim.fade_in, android.R.anim.fade_out);
+            transaction.hide(mContent);
+            //获得要被回退的fragment
+            mContent = fragments.pop();
+            transaction.show(mContent).commit(); // 隐藏当前的fragment
+            //与此同时，还需要将drawer的选中Item改变
+            if(mContent instanceof  Fragment_item){
+                //如果当前页面是fragment_item的话,不用改变
+            }
+            if(mContent instanceof  Fragment2)
+                result.setSelection(2, false);
+            if(mContent instanceof  Fragment1)
+                result.setSelection(1, false);
+            if(mContent instanceof  Fragment_buy)
+                result.setSelection(3, false);
+            return;
+        }
+
+
+
+            super.onBackPressed();
+
     }
 
 

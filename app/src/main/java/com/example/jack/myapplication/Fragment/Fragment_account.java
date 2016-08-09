@@ -41,4 +41,5 @@ public class Fragment_account extends android.support.v4.app.Fragment {
         Log.i(TAG,"onCreateView");
         return inflater.inflate(R.layout.fragment_account, container, false);
     }
+
 }

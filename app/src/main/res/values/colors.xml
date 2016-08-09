@@ -25,4 +25,7 @@
     <color name="icon_disabled">#FF63727B</color>
     <color name="transparent">#00000000</color>
     <color name="divider">#03A9F4</color>
+
+    <!-- 浅灰色 -->
+    <color name="bg_Gray_light">#EEEEEE</color>
 </resources>

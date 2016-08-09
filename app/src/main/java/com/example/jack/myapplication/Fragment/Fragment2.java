@@ -1,6 +1,5 @@
 package com.example.jack.myapplication.Fragment;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.jack.myapplication.R;
-import com.example.jack.myapplication.Util.MessageEvent;
+import com.example.jack.myapplication.Util.Event.MessageEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
