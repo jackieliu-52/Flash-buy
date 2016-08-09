@@ -55,7 +55,9 @@ import java.util.List;
 
 import me.next.slidebottompanel.SlideBottomPanel;
 
-
+/**
+ * test
+ */
 public class MainActivity extends AppCompatActivity {
     private static final int PROFILE_SETTING = 1;
 
