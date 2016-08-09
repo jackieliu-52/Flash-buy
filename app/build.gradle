@@ -1,0 +1,63 @@
+apply plugin: 'com.android.application'
+
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+    defaultConfig {
+        applicationId "com.example.jack.myapplication"
+        minSdkVersion 19
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha1'
+    compile 'com.android.support:design:23.4.0'
+    //material drawer
+    compile('com.mikepenz:materialdrawer:5.3.6@aar') {
+        transitive = true
+    }
+    //下拉隐藏toolbar
+    compile 'com.github.ksoichiro:android-observablescrollview:1.5.0'
+    //底部划动菜单
+    compile 'com.github.kingideayou:SlideBottomPanel:1.0.6'
+    // Fresco图片加载库
+    compile 'com.facebook.fresco:fresco:0.12.0'
+    //Guanggao轮播
+    compile 'com.bigkoo:convenientbanner:2.0.5'
+    //floating button
+    compile 'com.getbase:floatingactionbutton:1.10.1'
+    //viewpager
+    compile 'com.ogaclejapan.smarttablayout:library:1.6.1@aar'
+      //Optional: see how to use the utility.
+    compile 'com.ogaclejapan.smarttablayout:utils-v4:1.6.1@aar'
+      //Optional: see how to use the utility.
+    compile 'com.ogaclejapan.smarttablayout:utils-v13:1.6.1@aar'
+    //toast
+    compile 'com.github.mrengineer13:snackbar:1.2.0'
+    //event bus
+    compile 'org.greenrobot:eventbus:3.0.0'
+    // icon fonts used inside the sample
+    // https://github.com/mikepenz/Android-Iconics
+    compile 'com.mikepenz:google-material-typeface:2.2.0.1@aar'
+    compile 'com.mikepenz:fontawesome-typeface:4.4.0.1@aar'
+    compile 'com.mikepenz:octicons-typeface:3.0.0.1@aar'
+
+
+
+
+
+
+}
