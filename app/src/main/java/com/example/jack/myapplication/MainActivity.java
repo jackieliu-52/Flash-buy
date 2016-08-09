@@ -18,8 +18,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -27,6 +30,7 @@ import com.example.jack.myapplication.Fragment.Fragment1;
 import com.example.jack.myapplication.Fragment.Fragment2;
 import com.example.jack.myapplication.Fragment.Fragment_account;
 import com.example.jack.myapplication.Fragment.Fragment_buy;
+import com.example.jack.myapplication.Fragment.Fragment_cuxiao;
 import com.example.jack.myapplication.Fragment.Fragment_item;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
@@ -60,12 +64,14 @@ import me.next.slidebottompanel.SlideBottomPanel;
 /**
  * test
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
     private static final int PROFILE_SETTING = 1;
 
     //save our header or result
     private AccountHeader headerResult = null;
     private Drawer result = null;
+    public Toolbar toolbar = null;
+
 
     //底部窗口
     private SlideBottomPanel sbv;
@@ -176,8 +182,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void CreateDrawer(Bundle savedInstanceState){
         // Handle Toolbar
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.drawer_item_compact_header);   //设置标题
 
@@ -370,18 +375,18 @@ public class MainActivity extends AppCompatActivity {
         //handle the back press :D close the drawer first and if the drawer is closed close the activity
         if (result != null && result.isDrawerOpen()) {
             result.closeDrawer();
+            return;
         }
         if(!fragments.empty()){
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().setCustomAnimations(
                     android.R.anim.fade_in, android.R.anim.fade_out);
             transaction.hide(mContent);
+
             //获得要被回退的fragment
             mContent = fragments.pop();
             transaction.show(mContent).commit(); // 隐藏当前的fragment
             //与此同时，还需要将drawer的选中Item改变
-            if(mContent instanceof  Fragment_item){
-                //如果当前页面是fragment_item的话,不用改变
-            }
+
             if(mContent instanceof  Fragment2)
                 result.setSelection(2, false);
             if(mContent instanceof  Fragment1)
@@ -391,41 +396,9 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-
-
             super.onBackPressed();
 
     }
 
 
-
-    class ActionBarCallBack implements ActionMode.Callback {
-
-        @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            return false;
-        }
-
-        @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { //如果超过sdk-21版本
-                getWindow().setStatusBarColor(UIUtils.getThemeColorFromAttrOrRes(MainActivity.this, R.attr.colorPrimaryDark, R.color.material_drawer_primary_dark));
-            }
-
-            mode.getMenuInflater().inflate(R.menu.cab, menu);
-            return true;
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode mode) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                getWindow().setStatusBarColor(Color.TRANSPARENT);
-            }
-        }
-
-        @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            return false;
-        }
-    }
 }

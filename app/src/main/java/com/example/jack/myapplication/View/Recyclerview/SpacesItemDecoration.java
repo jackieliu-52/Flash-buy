@@ -1,4 +1,4 @@
-package com.example.jack.myapplication.Util;
+package com.example.jack.myapplication.View.Recyclerview;
 
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;

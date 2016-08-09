@@ -29,8 +29,7 @@ dependencies {
     compile('com.mikepenz:materialdrawer:5.3.6@aar') {
         transitive = true
     }
-    //下拉隐藏toolbar
-    compile 'com.github.ksoichiro:android-observablescrollview:1.5.0'
+
     //底部划动菜单
     compile 'com.github.kingideayou:SlideBottomPanel:1.0.6'
     // Fresco图片加载库

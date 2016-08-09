@@ -21,7 +21,7 @@ import com.github.mrengineer13.snackbar.SnackBar;
 public class Fragment_item extends Fragment {
 
     private final String TAG = "Fragment_item";
-    private Toolbar toolbar = null;
+
     /**
      * 单例对象实例
      */
@@ -66,12 +66,8 @@ public class Fragment_item extends Fragment {
     {
         View view = inflater.inflate(R.layout.fragment_item, container, false);
         Log.i(TAG,"onCreateView");
-        toolbar = (Toolbar) view.findViewById(R.id.item_toolbar);
 
-        Log.i(TAG,"onCreateView1");
-        //设置新的toolbar
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         setHasOptionsMenu(true);
 
         return view;
@@ -83,5 +79,6 @@ public class Fragment_item extends Fragment {
         Log.e(TAG, "onCreateOptionsMenu()");
         menu.clear();
         inflater.inflate(R.menu.menu_item, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 }

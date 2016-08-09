@@ -1,29 +1,20 @@
 package com.example.jack.myapplication.Fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jack.myapplication.Adapter.StaggeredHomeAdapter;
+import com.example.jack.myapplication.MainActivity;
 import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.R;
-import com.example.jack.myapplication.Util.SpacesItemDecoration;
-import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
-import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
-import com.github.ksoichiro.android.observablescrollview.ScrollState;
+import com.example.jack.myapplication.View.Recyclerview.SpacesItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,22 +22,22 @@ import java.util.List;
 /**
  * Created by Jack on 2016/8/5.
  */
-public class Fragment_cuxiao extends android.support.v4.app.Fragment  implements ObservableScrollViewCallbacks {
+public class Fragment_cuxiao extends android.support.v4.app.Fragment   {
     final private String TAG = "Fragment_cuxiao";
     private Context mContext;
 
-    private ObservableRecyclerView mRecyclerView;
+
+    private RecyclerView mRecyclerView;
     private List<String> mDatas;
     private List<Item> mItems;  //保存促销的数据
     private StaggeredHomeAdapter mStaggeredHomeAdapter;
-
-
 
     @Override
     public void onAttach(Context context){
         Log.i("TAG","onAttach + Context");
         super.onAttach(context);
         this.mContext = context;
+
     }
 
     @Override
@@ -54,16 +45,21 @@ public class Fragment_cuxiao extends android.support.v4.app.Fragment  implements
                              Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.fragment_cuxiao, container, false);
+        //加载促销信息
         initData();
 
-        mRecyclerView = (ObservableRecyclerView) view.findViewById(R.id.id_recyclerview);
-        mRecyclerView.setScrollViewCallbacks(this);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.id_recyclerview);
+
         mStaggeredHomeAdapter = new StaggeredHomeAdapter(mContext,mItems);
 
+        //瀑布流设置
         mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2,
                 StaggeredGridLayoutManager.VERTICAL));
         mRecyclerView.setAdapter(mStaggeredHomeAdapter);
+        //加入分割线
         mRecyclerView.addItemDecoration(new SpacesItemDecoration(16));
+
+
         Log.i(TAG,"onCreateView");
         initEvent();
 
@@ -117,30 +113,6 @@ public class Fragment_cuxiao extends android.support.v4.app.Fragment  implements
                         position + " long click", Toast.LENGTH_SHORT).show();
             }
         });
-    }
-    @Override
-    public void onScrollChanged(int scrollY, boolean firstScroll,
-                                boolean dragging) {
-
-    }
-
-    @Override
-    public void onDownMotionEvent() {
-
-    }
-
-    @Override
-    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-        ActionBar ab = ((AppCompatActivity)this.getActivity()).getSupportActionBar();
-        if (scrollState == ScrollState.UP) {
-            if (ab.isShowing()) {
-                ab.hide();
-            }
-        } else if (scrollState == ScrollState.DOWN) {
-            if (!ab.isShowing()) {
-                ab.show();
-            }
-        }
     }
 
 
