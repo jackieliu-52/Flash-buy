@@ -3,11 +3,8 @@ package com.example.jack.myapplication;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-
-import com.example.jack.myapplication.Util.ActivityCollector;
 
 /**
  * Created by Jack on 2016/8/10.
@@ -18,8 +15,8 @@ public class LogInActivity extends Activity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        MainActivity.instance = this;
 
-        ActivityCollector.addActivity(this);
         //do something
         setContentView(R.layout.activity_login);
         ib_login =(ImageButton) findViewById(R.id.ib_login);
@@ -35,6 +32,6 @@ public class LogInActivity extends Activity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ActivityCollector.removeActivity(this);
+
     }
 }

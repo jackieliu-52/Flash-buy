@@ -15,6 +15,7 @@ import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
 import com.bigkoo.convenientbanner.listener.OnItemClickListener;
 import com.example.jack.myapplication.R;
+import com.example.jack.myapplication.Util.Event.ListEvent;
 import com.example.jack.myapplication.Util.Event.MessageEvent;
 import com.example.jack.myapplication.Util.Util;
 
@@ -209,4 +210,5 @@ public class Fragment1 extends android.support.v4.app.Fragment implements OnItem
     public void handleSomethingElse(MessageEvent event) {
      //   doSomethingWith(event);
     }
+
 }

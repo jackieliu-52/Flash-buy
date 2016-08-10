@@ -1,7 +1,9 @@
 package com.example.jack.myapplication.Model;
 
+import android.os.Looper;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 /**
  * Created by Jack on 2016/8/7.
@@ -12,13 +14,18 @@ public class Item implements Parcelable {
     private String Iid;  //商品ID
     private String image;  //图片路径
     private String company; //公司
-    private String price;
+    private double price;
     private String size; //规格
     private String bar_code; //条形码
     private String EPC;  //标签的EPC
     private int staus; //商品状态，0-未售出，1-已售出
     private int discount;  //折扣，10表示没有折扣，5表示五折
     private boolean isStar;  //是否被收藏，True表示被收藏了
+
+    public double realPrice(){
+
+        return price * (discount/10.0) ;
+    }
 
     public boolean isStar() {
         return isStar;
@@ -100,11 +107,11 @@ public class Item implements Parcelable {
         this.company = company;
     }
 
-    public String getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
@@ -120,14 +127,14 @@ public class Item implements Parcelable {
 
 
     public Item() {
-        this("名称", "0", "00", "", "", "", "", "233", 0, 10);
+        this("名称", "0", "00", "", "", 0, "", "233", 0, 10);
     }
 
-    public Item(String name, String pid, String iid, String image, String company, String price, String size) {
+    public Item(String name, String pid, String iid, String image, String company, double price, String size) {
         this(name, pid, iid, image, company, price, size, "233", 0, 10);
     }
 
-    public Item(String name, String pid, String iid, String image, String company, String price, String size, String EPC, int staus, int discount) {
+    public Item(String name, String pid, String iid, String image, String company, double price, String size, String EPC, int staus, int discount) {
         this.name = name;
         Pid = pid;
         Iid = iid;
@@ -164,7 +171,7 @@ public class Item implements Parcelable {
         dest.writeString(this.Iid);
         dest.writeString(this.image);
         dest.writeString(this.company);
-        dest.writeString(this.price);
+        dest.writeDouble(this.price);
         dest.writeString(this.size);
         dest.writeString(this.bar_code);
         dest.writeString(this.EPC);
@@ -179,7 +186,7 @@ public class Item implements Parcelable {
         this.Iid = in.readString();
         this.image = in.readString();
         this.company = in.readString();
-        this.price = in.readString();
+        this.price = in.readDouble();
         this.size = in.readString();
         this.bar_code = in.readString();
         this.EPC = in.readString();

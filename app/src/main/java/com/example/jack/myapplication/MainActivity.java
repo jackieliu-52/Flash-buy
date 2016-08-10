@@ -3,26 +3,18 @@ package com.example.jack.myapplication;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -30,9 +22,12 @@ import com.example.jack.myapplication.Fragment.Fragment1;
 import com.example.jack.myapplication.Fragment.Fragment2;
 import com.example.jack.myapplication.Fragment.Fragment_account;
 import com.example.jack.myapplication.Fragment.Fragment_buy;
-import com.example.jack.myapplication.Fragment.Fragment_cuxiao;
 import com.example.jack.myapplication.Fragment.Fragment_item;
-import com.example.jack.myapplication.Util.ActivityCollector;
+import com.example.jack.myapplication.Model.Item;
+import com.example.jack.myapplication.Model.LineItem;
+import com.example.jack.myapplication.Model.Order;
+import com.example.jack.myapplication.Model.User;
+import com.example.jack.myapplication.Util.Event.ListEvent;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.github.mrengineer13.snackbar.SnackBar;
@@ -44,7 +39,6 @@ import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.holder.StringHolder;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem;
@@ -53,11 +47,12 @@ import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.mikepenz.materialdrawer.model.interfaces.Nameable;
-import com.mikepenz.materialize.util.UIUtils;
 
-import com.example.jack.myapplication.R;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 
 import me.next.slidebottompanel.SlideBottomPanel;
@@ -67,6 +62,7 @@ import me.next.slidebottompanel.SlideBottomPanel;
  */
 public class MainActivity extends AppCompatActivity  {
     private static final int PROFILE_SETTING = 1;
+    public static Activity instance;
 
     //save our header or result
     private AccountHeader headerResult = null;
@@ -87,10 +83,21 @@ public class MainActivity extends AppCompatActivity  {
     private Fragment_account fragment_account = null;
     private Fragment_buy fragment_buy = null;
     private Fragment_item fragment_item = null;
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+        EventBus.getDefault().register(this);
+        EventBus.getDefault().post(new ListEvent("init"));
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityCollector.addActivity(this);
+
+        //关闭上一个Activity
+        instance.finish();
+
+
         //打印内存
         ActivityManager activityManager = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
         Log.i("内存最大值",activityManager.getMemoryClass() + "");
@@ -399,15 +406,57 @@ public class MainActivity extends AppCompatActivity  {
         }
         Log.i("finish","1");
 
-        ActivityCollector.finishAll();
+
             super.onBackPressed();
 
     }
-
     @Override
-    protected void onDestroy(){
-        super.onDestroy();
-        ActivityCollector.removeActivity(this);
+    protected void onStop(){
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+
     }
 
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void getList(ListEvent listEvent){
+        switch (listEvent.message){
+            case "init":
+                Item item1 = new Item();
+                item1.setPrice(10);
+                Item item2 = new Item();
+                item2.setPrice(12);
+                Item item3 = new Item();
+                item2.setPrice(33);
+
+                ArrayList<LineItem> lineItems = new ArrayList<>();
+                LineItem lineItem1 = new LineItem();
+                lineItem1.setItem(item1);
+                lineItem1.setNum(1);
+
+                LineItem lineItem2 = new LineItem();
+                lineItem2.setItem(item2);
+                lineItem2.setNum(2);
+
+                LineItem lineItem3 = new LineItem();
+                lineItem3.setItem(item3);
+                lineItem3.setNum(1);
+
+                lineItems.add(lineItem1);
+                lineItems.add(lineItem2);
+                Order order1 = new Order(lineItems,"1","2","8/10","aliPay","家乐福",0,0);
+
+                User.orders.add(order1);
+
+                lineItems.add(lineItem3);
+                Order order2 = new Order(lineItems,"2","2","8/12","weixin","沃尔玛",0,1);
+
+                User.orders.add(order2);
+                break;
+            case "update":
+                break;
+            default:
+                break;
+        }
+
+    }
 }

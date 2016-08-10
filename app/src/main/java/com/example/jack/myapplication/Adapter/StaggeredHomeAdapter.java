@@ -96,7 +96,7 @@ public class StaggeredHomeAdapter extends
             holder.ib_star.setImageResource(R.drawable.ic_not_interested);
 
         holder.tv_title.setText(item.getName());
-        holder.tv_price.setText(item.getPrice());
+        holder.tv_price.setText(item.getPrice() + "");
         if(item.getDiscount() <= 5)
             holder.tv_discount.setTextColor(mContext.getResources().getColor(R.color.md_red_700));
         holder.tv_discount.setText(item.getDiscount() + "折");

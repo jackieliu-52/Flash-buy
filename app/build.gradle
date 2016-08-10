@@ -29,6 +29,12 @@ dependencies {
     compile('com.mikepenz:materialdrawer:5.3.6@aar') {
         transitive = true
     }
+    //util包
+    compile 'com.luffykou:android-common-utils:1.1.3'
+    //animator
+    compile 'jp.wasabeef:recyclerview-animators:2.0.0'
+    //CardView
+    compile 'com.github.dexafree:materiallist:3.2.1'
     //文本框
     compile 'com.github.florent37:materialtextfield:1.0.5'
     //底部划动菜单
