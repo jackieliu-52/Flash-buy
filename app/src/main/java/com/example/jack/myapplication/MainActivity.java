@@ -32,6 +32,7 @@ import com.example.jack.myapplication.Fragment.Fragment_account;
 import com.example.jack.myapplication.Fragment.Fragment_buy;
 import com.example.jack.myapplication.Fragment.Fragment_cuxiao;
 import com.example.jack.myapplication.Fragment.Fragment_item;
+import com.example.jack.myapplication.Util.ActivityCollector;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.github.mrengineer13.snackbar.SnackBar;
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ActivityCollector.addActivity(this);
         //打印内存
         ActivityManager activityManager = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
         Log.i("内存最大值",activityManager.getMemoryClass() + "");
@@ -395,10 +397,17 @@ public class MainActivity extends AppCompatActivity  {
                 result.setSelection(3, false);
             return;
         }
+        Log.i("finish","1");
 
+        ActivityCollector.finishAll();
             super.onBackPressed();
 
     }
 
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        ActivityCollector.removeActivity(this);
+    }
 
 }

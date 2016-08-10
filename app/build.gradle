@@ -29,7 +29,8 @@ dependencies {
     compile('com.mikepenz:materialdrawer:5.3.6@aar') {
         transitive = true
     }
-
+    //文本框
+    compile 'com.github.florent37:materialtextfield:1.0.5'
     //底部划动菜单
     compile 'com.github.kingideayou:SlideBottomPanel:1.0.6'
     // Fresco图片加载库
