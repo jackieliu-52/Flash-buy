@@ -8,7 +8,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.card.CardProvider;
@@ -17,25 +16,18 @@ import com.dexafree.materialList.card.action.TextViewAction;
 import com.dexafree.materialList.listeners.OnDismissCallback;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
 import com.dexafree.materialList.view.MaterialListView;
-import com.example.jack.myapplication.Model.Item;
-import com.example.jack.myapplication.Model.LineItem;
 import com.example.jack.myapplication.Model.Order;
 import com.example.jack.myapplication.Model.User;
 import com.example.jack.myapplication.R;
-import com.example.jack.myapplication.Util.Event.ListEvent;
 import com.litesuits.common.assist.Toastor;
 import com.squareup.picasso.RequestCreator;
 
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.ArrayList;
 import java.util.Iterator;
-
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
 /**
+ *
  * Created by Jack on 2016/8/5.
  */
 public class Fragment_list extends android.support.v4.app.Fragment {
@@ -121,24 +113,44 @@ public class Fragment_list extends android.support.v4.app.Fragment {
 
     private void fillArray(final Order order) {
         if(order.getStatus() == 1) {
-            Card card = new Card.Builder(mContext)
+            final CardProvider provider = new Card.Builder(mContext)
                     .setTag(order.getOrderId())
-                    .withProvider(new CardProvider())
-                    .setLayout(R.layout.material_small_image_card)
-                    .setTitle(order.getSm_name() + "：已支付")
+                    .setDismissible()
+                    .withProvider(new CardProvider<>())
+                    .setLayout(R.layout.material_basic_image_buttons_card_layout)
+                    .setTitle(order.getSm_name() + " ：已支付")
+                    .setTitleGravity(Gravity.START)
                     .setDescription("总价： "+order.getPayment())
+                    .setDescriptionGravity(Gravity.START)
                     .setDrawable(R.drawable.dog)
                     .setDrawableConfiguration(new CardProvider.OnImageConfigListener() {
                         @Override
-                        public void onImageConfigure(@NonNull  RequestCreator requestCreator) {
-                            requestCreator.rotate(0 * 180.0f)
-                                    .resize(300, 300)
-                                    .centerCrop();
+                        public void onImageConfigure(@NonNull RequestCreator requestCreator) {
+                            requestCreator.fit();
                         }
                     })
-                    .endConfig()
-                    .build();
-            mListView.getAdapter().add(card);
+                    .addAction(R.id.left_text_button, new TextViewAction(mContext)
+                            .setText("打印发票")
+                            .setTextResourceColor(R.color.black_button)
+                            .setListener(new OnActionClickListener() {
+                                @Override
+                                public void onActionClicked(View view, Card card) {
+                                    //发票打印
+                                    showDialog();
+                                }
+                            }))
+                    .addAction(R.id.right_text_button, new TextViewAction(mContext)
+                            .setText("查看明细")
+                            .setTextResourceColor(R.color.orange_button)
+                            .setListener(new OnActionClickListener() {
+                                @Override
+                                public void onActionClicked(View view, Card card) {
+                                   //查看明细
+                                }
+                            }));
+            provider.setDividerVisible(true);
+            Card card2 = provider.endConfig().build();
+            mListView.getAdapter().add(card2);
         }
         else {
             final CardProvider provider = new Card.Builder(mContext)
@@ -166,7 +178,7 @@ public class Fragment_list extends android.support.v4.app.Fragment {
                                     //跳转支付
                                     toastor.showSingletonToast("暂时未开发支付功能");
                                     String temp = card.getProvider().getTitle();
-                                    temp.substring(0,temp.length()-4);
+                                    temp = temp.substring(0,temp.length()-4);
                                     card.getProvider().setTitle(temp + "：已支付");
                                     order.setStatus(1);
                                 }

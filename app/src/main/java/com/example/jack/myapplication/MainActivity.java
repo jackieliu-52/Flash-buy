@@ -446,9 +446,11 @@ public class MainActivity extends AppCompatActivity  {
                 Order order1 = new Order(lineItems,"1","2","8/10","aliPay","家乐福",0,0);
 
                 User.orders.add(order1);
+                ArrayList<LineItem> lineItems1 = new ArrayList<>();
+                lineItems1.addAll(lineItems);
+                lineItems1.add(lineItem3);
 
-                lineItems.add(lineItem3);
-                Order order2 = new Order(lineItems,"2","2","8/12","weixin","沃尔玛",0,1);
+                Order order2 = new Order(lineItems1,"2","2","8/12","weixin","沃尔玛",0,1);
 
                 User.orders.add(order2);
                 break;

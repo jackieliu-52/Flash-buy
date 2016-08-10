@@ -140,22 +140,7 @@ public class Fragment1 extends android.support.v4.app.Fragment implements OnItem
         super.onViewCreated(view, savedInstanceState);
         Log.i("F1","onViewCreated");
 
-        // EventBus演示
-        new Thread()
-        {
-            public void run()
-            {
-                try
-                {
-                    Thread.sleep(2000); // 模拟延时
-                    // 发布事件，在后台线程发的事件
-                    EventBus.getDefault().post(new MessageEvent("Hello everyone!"));
-                } catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
-            };
-        }.start();
+
     }
 
     @Override
