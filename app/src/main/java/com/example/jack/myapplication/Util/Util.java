@@ -11,6 +11,7 @@ import android.util.Base64;
 
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by Jack on 2016/8/7.
@@ -37,6 +38,12 @@ public  class Util {
     public static synchronized int stringToId(Context context,String icon) {
         int image = context.getResources().getIdentifier(icon, "drawable", "com.example.jack.myapplication");
         return  image;
+    }
+
+    public static String getCurrentDate(){
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM");
+        String date = sdf.format(new java.util.Date());
+        return date;
     }
 
 

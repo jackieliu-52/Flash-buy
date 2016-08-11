@@ -13,11 +13,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jack.myapplication.Adapter.ItemAdapter;
 import com.example.jack.myapplication.Fragment.Fragment1;
 import com.example.jack.myapplication.Fragment.Fragment2;
 import com.example.jack.myapplication.Fragment.Fragment_account;
@@ -28,6 +31,7 @@ import com.example.jack.myapplication.Model.LineItem;
 import com.example.jack.myapplication.Model.Order;
 import com.example.jack.myapplication.Model.User;
 import com.example.jack.myapplication.Util.Event.ListEvent;
+import com.example.jack.myapplication.Util.Util;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.github.mrengineer13.snackbar.SnackBar;
@@ -63,6 +67,7 @@ import me.next.slidebottompanel.SlideBottomPanel;
 public class MainActivity extends AppCompatActivity  {
     private static final int PROFILE_SETTING = 1;
     public static Activity instance;
+    private User user = new User(); //当前用户
 
     //save our header or result
     private AccountHeader headerResult = null;
@@ -73,7 +78,8 @@ public class MainActivity extends AppCompatActivity  {
     //底部窗口
     private SlideBottomPanel sbv;
     private ListView lv_cart;
-    private ArrayList<String> cart;
+    private ArrayList<LineItem> cart;
+    private TextView tv_total_cost;
 
     //Fragments
     private Stack<Fragment> fragments = null;   //作为一个fragments的栈
@@ -130,7 +136,7 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private void setListen(){
-        ImageView iv_check_out=(ImageView)findViewById(R.id.iv_checkout);
+        ImageView iv_check_out = (ImageView)findViewById(R.id.iv_checkout);
         iv_check_out.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -141,21 +147,74 @@ public class MainActivity extends AppCompatActivity  {
                         .withStyle(SnackBar.Style.INFO)
                         .withDuration((short)2000)
                         .show();
+
+                user.setId("jack");
+                //生成新的订单，清空购物车，跳转支付页面
+                Order order = new Order(cart,"订单号",user.getId(), Util.getCurrentDate(),"alipay","家润多",0,0);
+                User.orders.add(order);
+                lv_cart.setAdapter(null);
+                cart = new ArrayList<>();
             }
         });
     }
+
     private void CreateBottomPanel() {
         sbv = (SlideBottomPanel) findViewById(R.id.sbv);
         lv_cart = (ListView) findViewById(R.id.list_cart);
+        tv_total_cost = (TextView) findViewById(R.id.tv_total_cost);
 
         cart = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            cart.add("Item " + i);
-        }
-        for(String temp : cart)
-            Log.i("cart",temp);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,R.layout.list_item,cart);
+        Item item1 = new Item();
+        item1.setName("苹果");
+        item1.setImage("yibao");
+        item1.setPrice(10);
+        Item item2 = new Item();
+        item2.setPrice(12);
+        item2.setName("老干妈");
+        item2.setImage("laoganma");
+        Item item3 = new Item();
+        item3.setPrice(33);
+        item3.setName("油");
+        item3.setImage("you");
+        LineItem lineItem1 = new LineItem();
+        lineItem1.setItem(item1);
+        lineItem1.setNum(1);
+
+        LineItem lineItem2 = new LineItem();
+        lineItem2.setItem(item2);
+        lineItem2.setNum(2);
+
+        LineItem lineItem3 = new LineItem();
+        lineItem3.setItem(item3);
+        lineItem3.setNum(1);
+
+        //这里有一个小bug,第一个东西不能显示出来
+        cart.add(lineItem1);
+
+        cart.add(lineItem2);
+        cart.add(lineItem3);
+
+        ItemAdapter adapter = new ItemAdapter(this,R.layout.list_item,cart);
+
         lv_cart.setAdapter(adapter);
+        lv_cart.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,
+                                    long id) {
+                //获得Item
+                Item item = cart.get(position).getItem();
+                new SnackBar.Builder(MainActivity.this)
+                        .withMessage(item.getName())
+                        .withStyle(SnackBar.Style.INFO)
+                        .withDuration((short)2000)
+                        .show();
+            }
+        });
+        double total_price = -10;
+        for(LineItem lineItem:cart){
+            total_price += lineItem.getUnitPrice();
+        }
+        tv_total_cost.setText(total_price + "");
        // lv_cart.setAdapter(new ArrayAdapter<>(this, ,cart));
     }
 
@@ -426,7 +485,7 @@ public class MainActivity extends AppCompatActivity  {
                 Item item2 = new Item();
                 item2.setPrice(12);
                 Item item3 = new Item();
-                item2.setPrice(33);
+                item3.setPrice(33);
 
                 ArrayList<LineItem> lineItems = new ArrayList<>();
                 LineItem lineItem1 = new LineItem();

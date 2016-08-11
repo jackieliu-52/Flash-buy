@@ -29,6 +29,8 @@ dependencies {
     compile('com.mikepenz:materialdrawer:5.3.6@aar') {
         transitive = true
     }
+    //刷新框架
+    compile 'com.canyinghao:canrefresh:1.0.4'
     //util包
     compile 'com.luffykou:android-common-utils:1.1.3'
     //animator
