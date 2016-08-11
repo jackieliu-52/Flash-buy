@@ -11,8 +11,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.jack.myapplication.R;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.github.mrengineer13.snackbar.SnackBar;
 
 /**
@@ -21,7 +24,12 @@ import com.github.mrengineer13.snackbar.SnackBar;
 public class Fragment_item extends Fragment {
 
     private final String TAG = "Fragment_item";
-
+    private SimpleDraweeView sd_good;
+    private TextView tv_name;
+    private ImageView iv_star;
+    private TextView tv_company;
+    private TextView tv_source;
+    private TextView tv_size;
     /**
      * 单例对象实例
      */
@@ -66,8 +74,15 @@ public class Fragment_item extends Fragment {
     {
         View view = inflater.inflate(R.layout.fragment_item, container, false);
         Log.i(TAG,"onCreateView");
+        sd_good = (SimpleDraweeView) view.findViewById(R.id.sd_good);
+        tv_name = (TextView) view.findViewById(R.id.tv_name);
+        iv_star = (ImageView) view.findViewById(R.id.iv_star);
+        tv_company = (TextView) view.findViewById(R.id.tv_company);
+        tv_source = (TextView) view.findViewById(R.id.tv_source);
+        tv_size = (TextView) view.findViewById(R.id.tv_size);
 
 
+        //新建一个菜单
         setHasOptionsMenu(true);
 
         return view;

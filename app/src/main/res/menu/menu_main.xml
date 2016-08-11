@@ -13,7 +13,7 @@
         android:id="@+id/scan"
         android:orderInCategory="90"
         android:title="scan"
-        android:icon="@drawable/scan"
+        android:icon="@mipmap/ic_fullscreen_black_24dp"
         app:showAsAction="ifRoom"/>
 
 

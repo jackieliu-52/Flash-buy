@@ -115,7 +115,6 @@ public class Fragment_list extends android.support.v4.app.Fragment {
         if(order.getStatus() == 1) {
             final CardProvider provider = new Card.Builder(mContext)
                     .setTag(order.getOrderId())
-                    .setDismissible()
                     .withProvider(new CardProvider<>())
                     .setLayout(R.layout.material_basic_image_buttons_card_layout)
                     .setTitle(order.getSm_name() + " ：已支付")

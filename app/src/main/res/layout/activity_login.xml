@@ -2,16 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:background="@drawable/signinbg"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/header" />
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="70dp"
+        android:src="@drawable/logo" />
 
+
+
+
+    <LinearLayout
+        android:background="@drawable/signin"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
         <com.github.florent37.materialtextfield.MaterialTextField
+            android:paddingTop="50dp"
             android:layout_gravity="center"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
@@ -23,42 +36,51 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="手机号"
-                android:textColorHint="#666"
+                android:textColorHint="#000"
                 android:textSize="15sp" />
 
         </com.github.florent37.materialtextfield.MaterialTextField>
-
-
         <LinearLayout
+            android:layout_weight="1"
+            android:paddingTop="20dp"
             android:orientation="horizontal"
-            android:layout_gravity="center"
+            android:layout_gravity="center_horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="300dp">
+
+
             <TextView
                 android:text="验证码"
-                android:layout_width="match_parent"
+                android:textSize="22dp"
+                android:paddingLeft="50dp"
+                android:textColor="#cfc391"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
             <EditText
+                android:paddingLeft="90dp"
                 android:id="@+id/et_code"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="38dp"
                 android:hint="验证码"
-                android:textColor="#333"
-                android:textColorHint="#666"
+                android:textColor="#cfc391"
+                android:textColorHint="#cfc391"
                 android:textSize="15sp" />
             <ImageButton
+                android:paddingRight="50dp"
                 android:id="@+id/ib_get_code"
                 android:src="@drawable/item_good"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
+                android:layout_height="wrap_content" />
         </LinearLayout>
 
     <ImageButton
         android:id="@+id/ib_login"
+        android:padding="50dp"
         android:layout_gravity="center_horizontal"
         android:src="@drawable/item_good"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-
+</LinearLayout>
 </LinearLayout>

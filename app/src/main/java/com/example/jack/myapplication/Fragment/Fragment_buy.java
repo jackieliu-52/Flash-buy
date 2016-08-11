@@ -2,6 +2,7 @@ package com.example.jack.myapplication.Fragment;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -12,6 +13,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.jack.myapplication.R;
+import com.mikepenz.fontawesome_typeface_library.FontAwesome;
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.iconics.IconicsDrawable;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.ViewPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.ViewPagerItems;
@@ -79,7 +83,7 @@ public class Fragment_buy extends android.support.v4.app.Fragment {
 
     private boolean setupTab(SmartTabLayout layout){
         final LayoutInflater inflater = LayoutInflater.from(layout.getContext());
-        final Resources res = layout.getContext().getResources();
+
 
         layout.setCustomTabView(new SmartTabLayout.TabProvider() {
             @Override
@@ -88,13 +92,19 @@ public class Fragment_buy extends android.support.v4.app.Fragment {
                         false);
                 switch (position) {
                     case 0:
-                        icon.setImageDrawable(res.getDrawable(R.mipmap.ic_home_white_24dp));
+                        icon.setImageDrawable(new IconicsDrawable(context)
+                                .icon(GoogleMaterial.Icon.gmd_mall)
+                                .sizeDp(24));
                         break;
                     case 1:
-                        icon.setImageDrawable(res.getDrawable(R.mipmap.ic_search_white_24dp));
+                        icon.setImageDrawable(new IconicsDrawable(context)
+                                .icon(FontAwesome.Icon.faw_map)
+                                .sizeDp(24));
                         break;
                     case 2:
-                        icon.setImageDrawable(res.getDrawable(R.mipmap.ic_person_white_24dp));
+                        icon.setImageDrawable(new IconicsDrawable(context)
+                                .icon(GoogleMaterial.Icon.gmd_layers)
+                                .sizeDp(24));
                         break;
                     default:
                         throw new IllegalStateException("Invalid position: " + position);
