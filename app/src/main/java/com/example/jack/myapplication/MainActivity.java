@@ -3,6 +3,7 @@ package com.example.jack.myapplication;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -32,6 +33,7 @@ import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.Model.LineItem;
 import com.example.jack.myapplication.Model.Order;
 import com.example.jack.myapplication.Model.User;
+import com.example.jack.myapplication.Util.Constant;
 import com.example.jack.myapplication.Util.Event.ListEvent;
 import com.example.jack.myapplication.Util.Util;
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -101,15 +103,17 @@ public class MainActivity extends AppCompatActivity  {
     @Override
     protected void onStart(){
         super.onStart();
-        EventBus.getDefault().register(this);
-        EventBus.getDefault().post(new ListEvent("init"));
+
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //使用Icon
         LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
         super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
 
+        EventBus.getDefault().post(new ListEvent("init"));
         //关闭上一个Activity
         instance.finish();
 
@@ -439,13 +443,9 @@ public class MainActivity extends AppCompatActivity  {
                 onBackPressed();
                 return true;
             case R.id.scan:
-                Toast.makeText(MainActivity.this , "scan!" , Toast.LENGTH_SHORT).show();
-                //需要先隐藏之前的
-                if(!(getSupportActionBar().isShowing()) )
-                    getSupportActionBar().show();
-                fragment_item = Fragment_item.GetInstance();
-                switchContent(mContent,fragment_item);
-//
+                Intent intent =new Intent(this,ScanActivity.class);
+                intent.putExtra(Constant.REQUEST_SCAN_MODE, Constant.REQUEST_SCAN_MODE_ALL_MODE);
+                startActivity(intent);
 //                Intent intent = new Intent(MainActivity.this,TestActivity.class);
 //                startActivity(intent);
                 return true;
@@ -503,9 +503,14 @@ public class MainActivity extends AppCompatActivity  {
     }
     @Override
     protected void onStop(){
-        EventBus.getDefault().unregister(this);
+
         super.onStop();
 
+    }
+    @Override
+    protected void onDestroy(){
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)

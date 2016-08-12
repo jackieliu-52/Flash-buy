@@ -38,4 +38,6 @@
     <color name="secondText">#757575</color>
     <color name="divider_color">#BDBDBD</color>
     <color name="text">#FFFFFFFF</color>
+
+    <color name="scan_bg">#7f000000</color>
 </resources>

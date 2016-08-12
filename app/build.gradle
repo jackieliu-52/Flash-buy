@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
 
 
 android {
@@ -29,6 +30,9 @@ dependencies {
     compile('com.mikepenz:materialdrawer:5.3.6@aar') {
         transitive = true
     }
+    //butterKnife
+    compile 'com.jakewharton:butterknife:8.0.1'
+    apt 'com.jakewharton:butterknife-compiler:8.0.1'
     //刷新框架
     compile 'com.canyinghao:canrefresh:1.0.4'
     //util包
@@ -49,9 +53,9 @@ dependencies {
     compile 'com.getbase:floatingactionbutton:1.10.1'
     //viewpager
     compile 'com.ogaclejapan.smarttablayout:library:1.6.1@aar'
-      //Optional: see how to use the utility.
+    //Optional: see how to use the utility.
     compile 'com.ogaclejapan.smarttablayout:utils-v4:1.6.1@aar'
-      //Optional: see how to use the utility.
+    //Optional: see how to use the utility.
     compile 'com.ogaclejapan.smarttablayout:utils-v13:1.6.1@aar'
     //toast
     compile 'com.github.mrengineer13:snackbar:1.2.0'
@@ -62,10 +66,6 @@ dependencies {
     compile 'com.mikepenz:google-material-typeface:2.2.0.1@aar'
     compile 'com.mikepenz:fontawesome-typeface:4.4.0.1@aar'
     compile 'com.mikepenz:octicons-typeface:3.0.0.1@aar'
-    compile "com.mikepenz:iconics-core:2.7.2@aar"
-
-
-
-
-
+    compile 'com.mikepenz:iconics-core:2.7.2@aar'
+    compile files('libs/zxing.jar')
 }
