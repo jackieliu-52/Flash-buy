@@ -5,7 +5,6 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.LayoutInflaterCompat;
@@ -17,12 +16,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.jack.myapplication.Adapter.ItemAdapter;
 import com.example.jack.myapplication.Fragment.Fragment1;
@@ -38,7 +35,6 @@ import com.example.jack.myapplication.Model.User;
 import com.example.jack.myapplication.Util.Constant;
 import com.example.jack.myapplication.Util.Event.InternetEvent;
 import com.example.jack.myapplication.Util.Event.ListEvent;
-import com.example.jack.myapplication.Util.Event.MessageEvent;
 import com.example.jack.myapplication.Util.Util;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
@@ -48,7 +44,6 @@ import com.google.gson.GsonBuilder;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
-import com.mikepenz.iconics.context.IconicsContextWrapper;
 import com.mikepenz.iconics.context.IconicsLayoutInflater;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -72,9 +67,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -189,10 +182,10 @@ public class MainActivity extends AppCompatActivity  {
         tv_total_cost = (TextView) findViewById(R.id.tv_total_cost);
 
 
+        //"http://localhost:8080/Flash-buy/cart?cartNumber=" +"1&userId="+user.getId()
 
-
-        EventBus.getDefault().post(new InternetEvent("http://localhost:8080/Flash-buy/cart?cartNumber=" +
-                "1&userId="+user.getId(),Constant.REQUEST_Cart));
+        String temp = "http://10.10.6.85:8080/Flash-buy/";
+        EventBus.getDefault().post(new InternetEvent(temp,Constant.REQUEST_Cart));
 
 
 
@@ -242,8 +235,10 @@ public class MainActivity extends AppCompatActivity  {
             public void onClick(View view) {
                 //先清空购物车
                 lv_cart.setAdapter(null);
-                EventBus.getDefault().post(new InternetEvent("http://localhost:8080/Flash-buy/cart?cartNumber=" +
-                        "1&userId="+user.getId(),Constant.REQUEST_Cart));
+
+                String temp = "http://10.10.6.85:8080/Flash-buy/";
+                EventBus.getDefault().post(new InternetEvent(temp,Constant.REQUEST_Cart));
+
                 sbv.displayPanel();    //打开下面的面板
             }
         });
@@ -592,7 +587,10 @@ public class MainActivity extends AppCompatActivity  {
                 //避免Unicode转义
                 Gson gson = new GsonBuilder().disableHtmlEscaping().create();
                 //将json转换为一个Order
+                Log.i("json",json);
                 Order order = gson.fromJson(json,Order.class);
+
+
                 //将剩下的加入购物车
                 cart.addAll(order.getLineItems());
             }
