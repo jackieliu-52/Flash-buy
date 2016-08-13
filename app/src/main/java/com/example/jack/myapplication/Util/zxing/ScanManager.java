@@ -195,6 +195,7 @@ public class ScanManager implements SurfaceHolder.Callback{
 		}
 		isOpenLight=!isOpenLight;
 	}
+
 	public Handler getHandler() {
 		return handler;
 	}

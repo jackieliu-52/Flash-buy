@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
@@ -16,12 +17,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jack.myapplication.Util.Constant;
+import com.example.jack.myapplication.Util.Event.InternetEvent;
+import com.example.jack.myapplication.Util.Event.MessageEvent;
 import com.example.jack.myapplication.Util.zxing.ScanListener;
 import com.example.jack.myapplication.Util.zxing.ScanManager;
 import com.example.jack.myapplication.Util.zxing.decode.DecodeThread;
 import com.example.jack.myapplication.Util.zxing.decode.Utils;
 import com.example.jack.myapplication.View.MyImageView;
 import com.google.zxing.Result;
+
+import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,6 +60,7 @@ public class ScanActivity extends Activity implements ScanListener, View.OnClick
     TextView scan_hint;
     @BindView(R.id.scan_image)
     MyImageView scan_image;
+
 
 
     @Override
@@ -107,23 +113,23 @@ public class ScanActivity extends Activity implements ScanListener, View.OnClick
 
 
     public void scanResult(Result rawResult, Bundle bundle) {
-        //scanManager.reScan();
-//		Toast.makeText(that, "result="+rawResult.getText(), Toast.LENGTH_LONG).show();
 
-        if (!scanManager.isScanning()) { //如果当前不是在扫描状态
-            //设置再次扫描按钮出现
-            scan_image.setVisibility(View.VISIBLE);
-            Bitmap barcode = null;
-            byte[] compressedBitmap = bundle.getByteArray(DecodeThread.BARCODE_BITMAP);
-            if (compressedBitmap != null) {
-                barcode = BitmapFactory.decodeByteArray(compressedBitmap, 0, compressedBitmap.length, null);
-                barcode = barcode.copy(Bitmap.Config.ARGB_8888, true);
-            }
-            scan_image.setImageBitmap(barcode);
-        }
-        scan_image.setVisibility(View.VISIBLE);
+//        if (!scanManager.isScanning()) { //如果当前不是在扫描状态
+//            scan_image.setVisibility(View.VISIBLE);
+//            Bitmap barcode = null;
+//            byte[] compressedBitmap = bundle.getByteArray(DecodeThread.BARCODE_BITMAP);
+//            if (compressedBitmap != null) {
+//                barcode = BitmapFactory.decodeByteArray(compressedBitmap, 0, compressedBitmap.length, null);
+//                barcode = barcode.copy(Bitmap.Config.ARGB_8888, true);
+//            }
+//            scan_image.setImageBitmap(barcode);
+//        }
+//        scan_image.setVisibility(View.VISIBLE);
         tv_scan_result.setVisibility(View.VISIBLE);
+        //rawResult.getText()就是扫描结果，条形码就是一串数字
         tv_scan_result.setText("结果："+rawResult.getText());
+        EventBus.getDefault().post(new InternetEvent(rawResult.getText(),Constant.REQUEST_INTERNET_BAR));
+        finish();
     }
 
     @Override
@@ -165,11 +171,16 @@ public class ScanActivity extends Activity implements ScanListener, View.OnClick
             }
         }
     }
-
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        Log.i("ScanActivity","onSaveInstanceState");
+        super.onSaveInstanceState(outState);
+    }
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.qrcode_g_gallery:
+                //打开相册
                 showPictures(PHOTOREQUESTCODE);
                 break;
             case R.id.iv_light:

@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.LayoutInflaterCompat;
@@ -29,16 +30,21 @@ import com.example.jack.myapplication.Fragment.Fragment2;
 import com.example.jack.myapplication.Fragment.Fragment_account;
 import com.example.jack.myapplication.Fragment.Fragment_buy;
 import com.example.jack.myapplication.Fragment.Fragment_item;
+import com.example.jack.myapplication.Model.InternetItem;
 import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.Model.LineItem;
 import com.example.jack.myapplication.Model.Order;
 import com.example.jack.myapplication.Model.User;
 import com.example.jack.myapplication.Util.Constant;
+import com.example.jack.myapplication.Util.Event.InternetEvent;
 import com.example.jack.myapplication.Util.Event.ListEvent;
+import com.example.jack.myapplication.Util.Event.MessageEvent;
 import com.example.jack.myapplication.Util.Util;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.github.mrengineer13.snackbar.SnackBar;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -66,6 +72,11 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -117,7 +128,7 @@ public class MainActivity extends AppCompatActivity  {
         //关闭上一个Activity
         instance.finish();
 
-
+        user.setId("jack");
         //打印内存
         ActivityManager activityManager = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
         Log.i("内存最大值",activityManager.getMemoryClass() + "");
@@ -162,7 +173,7 @@ public class MainActivity extends AppCompatActivity  {
                         .withDuration((short)2000)
                         .show();
 
-                user.setId("jack");
+
                 //生成新的订单，清空购物车，跳转支付页面
                 Order order = new Order(cart,"订单号",user.getId(), Util.getCurrentDate(),"alipay","家润多",0,0);
                 User.orders.add(order);
@@ -177,44 +188,20 @@ public class MainActivity extends AppCompatActivity  {
         lv_cart = (ListView) findViewById(R.id.list_cart);
         tv_total_cost = (TextView) findViewById(R.id.tv_total_cost);
 
-        cart = new ArrayList<>();
-        Item item1 = new Item();
-        item1.setName("苹果");
-        item1.setImage("yibao");
-        item1.setPrice(10);
-        Item item2 = new Item();
-        item2.setPrice(12);
-        item2.setName("老干妈");
-        item2.setImage("laoganma");
-        Item item3 = new Item();
-        item3.setPrice(33);
-        item3.setName("油");
-        item3.setImage("you");
-        LineItem lineItem1 = new LineItem();
-        lineItem1.setItem(item1);
-        lineItem1.setNum(1);
 
-        LineItem lineItem2 = new LineItem();
-        lineItem2.setItem(item2);
-        lineItem2.setNum(2);
 
-        LineItem lineItem3 = new LineItem();
-        lineItem3.setItem(item3);
-        lineItem3.setNum(1);
 
-        //这里有一个小bug,第一个东西不能显示出来
-        cart.add(lineItem1);
+        EventBus.getDefault().post(new InternetEvent("http://localhost:8080/Flash-buy/cart?cartNumber=" +
+                "1&userId="+user.getId(),Constant.REQUEST_Cart));
 
-        cart.add(lineItem2);
-        cart.add(lineItem3);
 
-        ItemAdapter adapter = new ItemAdapter(this,R.layout.list_item,cart);
 
-        lv_cart.setAdapter(adapter);
         lv_cart.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
                                     long id) {
+                if(position == 0)
+                    return;
                 //获得Item
                 Item item = cart.get(position).getItem();
                 new SnackBar.Builder(MainActivity.this)
@@ -224,11 +211,8 @@ public class MainActivity extends AppCompatActivity  {
                         .show();
             }
         });
-        double total_price = -10;
-        for(LineItem lineItem:cart){
-            total_price += lineItem.getUnitPrice();
-        }
-        tv_total_cost.setText(total_price + "");
+
+
        // lv_cart.setAdapter(new ArrayAdapter<>(this, ,cart));
     }
 
@@ -256,6 +240,10 @@ public class MainActivity extends AppCompatActivity  {
         cart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //先清空购物车
+                lv_cart.setAdapter(null);
+                EventBus.getDefault().post(new InternetEvent("http://localhost:8080/Flash-buy/cart?cartNumber=" +
+                        "1&userId="+user.getId(),Constant.REQUEST_Cart));
                 sbv.displayPanel();    //打开下面的面板
             }
         });
@@ -401,6 +389,14 @@ public class MainActivity extends AppCompatActivity  {
      * @param to
      */
     public void switchContent(Fragment from, Fragment to) {
+        if(from instanceof Fragment_item && to instanceof Fragment_item){
+            //不加入栈中
+            mContent = to;
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().setCustomAnimations(
+                    android.R.anim.fade_in, android.R.anim.fade_out);
+            transaction.replace(R.id.fragment_container,to,to.toString()).commit();
+            return;
+        }
         if (mContent != to) {
             //将跳转的页面加入栈中
             fragments.push(from);
@@ -419,7 +415,7 @@ public class MainActivity extends AppCompatActivity  {
             }
 */
             if (!to.isAdded()) {    // 先判断是否被add过
-                transaction.hide(from).add(R.id.fragment_container, to,to.toString()).commit(); // 隐藏当前的fragment，add下一个到Activity中
+                transaction.hide(from).add(R.id.fragment_container, to,to.toString()).commitAllowingStateLoss(); // 隐藏当前的fragment，add下一个到Activity中
             } else {
                 transaction.hide(from).show(to).commit(); // 隐藏当前的fragment，显示下一个
             }
@@ -461,6 +457,7 @@ public class MainActivity extends AppCompatActivity  {
         outState = result.saveInstanceState(outState);
         //add the values which need to be saved from the accountHeader to the bundle
         outState = headerResult.saveInstanceState(outState);
+        Log.i("MainActivity","onSaveInstanceState");
         super.onSaveInstanceState(outState);
     }
 
@@ -512,10 +509,120 @@ public class MainActivity extends AppCompatActivity  {
         EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void getInfo(InternetEvent internetEvent) {
+        switch (internetEvent.type){
+            case Constant.REQUEST_INTERNET_BAR:
+                String httpUrl = "http://apis.baidu.com/3023/barcode/barcode";
+                String httpArg = "barcode=" + internetEvent.message;
+                httpUrl = httpUrl + "?" + httpArg;
+                //保存网页信息
+                String info;
+
+                try {
+                    URL url = new URL(httpUrl);
+                    HttpURLConnection connection = (HttpURLConnection) url
+                            .openConnection();
+                    connection.setRequestMethod("GET");
+                    // 填入apikey到HTTP header
+                    connection.setRequestProperty("apikey",  "ab7d6eef4f735da9892ee2c6682f5088");
+                    connection.connect();
+                    //网页返回的状态码
+                    int code = connection.getResponseCode();
+
+                    Log.i("result","状态码 ：" + code);
+                    if(code == 200) {
+                        InputStream is = connection.getInputStream();
+                        info = Util.readStream(is);
+                        //避免Unicode转义
+                        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+                        //将json转换为一个InternetItem
+                        InternetItem internetItem = gson.fromJson(info,InternetItem.class);
+                        Fragment_item.item = new Item(internetItem);  //获得一个Item
+                        //首先实例化fragment
+                        Fragment_item fragment_item = new Fragment_item();
+
+                  //      EventBus.getDefault().post(new MessageEvent("Item",item));
+                        Log.i("result","info:"+ info );
+                        switchContent(mContent,fragment_item);
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.i("result","Exception:"+ e.toString() );
+                }
+                break;
+            case Constant.REQUEST_Cart:
+                initCart(internetEvent.message); //初始化购物车
+
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void initCart(String url){
+        cart = new ArrayList<>();
+        //因为这里有个bug，所以我这里处理的时候先加了一个Item
+        Item item1 = new Item();
+        item1.setName("");
+        item1.setImage("");
+        item1.setPrice(0);
+        LineItem lineItem1 = new LineItem();
+        lineItem1.setItem(item1);
+        lineItem1.setNum(1);
+        //这里有一个小bug,第一个东西不能显示出来
+        cart.add(lineItem1);
+
+
+        String json;
+        try {
+            URL url1 = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) url1
+                    .openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            //网页返回的状态码
+            int code = connection.getResponseCode();
+            Log.i("购物车查询","结果码" + code);
+            if(code == 200) {
+                InputStream is = connection.getInputStream();
+                json = Util.readStream(is);
+                //避免Unicode转义
+                Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+                //将json转换为一个Order
+                Order order = gson.fromJson(json,Order.class);
+                //将剩下的加入购物车
+                cart.addAll(order.getLineItems());
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        final ItemAdapter adapter = new ItemAdapter(this,R.layout.list_item,cart);
+
+        //在主线程中去更新UI
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                lv_cart.setAdapter(adapter);
+                double total_price = 0;
+                for(LineItem lineItem:cart){
+                    total_price += lineItem.getUnitPrice();
+                }
+                tv_total_cost.setText(total_price + "元");
+            }
+        });
+    }
+
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void getList(ListEvent listEvent){
         switch (listEvent.message){
+            //cardView历史订单
             case "init":
                 Item item1 = new Item();
                 item1.setPrice(10);

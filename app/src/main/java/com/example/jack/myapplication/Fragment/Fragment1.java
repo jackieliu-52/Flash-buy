@@ -72,8 +72,8 @@ public class Fragment1 extends android.support.v4.app.Fragment implements OnItem
                 return new LocalImageHolderView();
             }
         };
-        Log.i("test",cbViewHolderCreator.toString());
-        Log.i("test",convenientBanner.toString());
+ //       Log.i("test",cbViewHolderCreator.toString());
+ //       Log.i("test",convenientBanner.toString());
         //本地图片例子
         convenientBanner.setPages(cbViewHolderCreator
                 , localImages)

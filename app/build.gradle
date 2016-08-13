@@ -4,7 +4,7 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    buildToolsVersion '23.0.3'
     defaultConfig {
         applicationId "com.example.jack.myapplication"
         minSdkVersion 19
@@ -68,4 +68,5 @@ dependencies {
     compile 'com.mikepenz:octicons-typeface:3.0.0.1@aar'
     compile 'com.mikepenz:iconics-core:2.7.2@aar'
     compile files('libs/zxing.jar')
+    compile files('libs/gson-2.7.jar')
 }

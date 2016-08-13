@@ -59,7 +59,7 @@ public class Fragment2 extends android.support.v4.app.Fragment{
     @Override
     public void onStart() {
         super.onStart();
-        EventBus.getDefault().register(this);
+
         Log.i("F2","onStart");
     }
     @Override
@@ -74,7 +74,6 @@ public class Fragment2 extends android.support.v4.app.Fragment{
     }
     @Override
     public void onStop() {
-        EventBus.getDefault().unregister(this);
         Log.i("F2","onStop");
         super.onStop();
     }
@@ -101,9 +100,5 @@ public class Fragment2 extends android.support.v4.app.Fragment{
         return "f2";
     }
 
-    // This method will be called when a MessageEvent is posted (in the UI thread for Toast)
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(MessageEvent event) {
-        Toast.makeText(getActivity(), event.message, Toast.LENGTH_SHORT).show();
-    }
+
 }

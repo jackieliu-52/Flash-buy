@@ -1,5 +1,7 @@
 package com.example.jack.myapplication.Fragment;
 
+import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -13,10 +15,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.R;
+import com.example.jack.myapplication.Util.Event.MessageEvent;
+import com.example.jack.myapplication.Util.Util;
+import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.github.mrengineer13.snackbar.SnackBar;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * Created by Jack on 2016/8/8.
@@ -24,26 +35,21 @@ import com.github.mrengineer13.snackbar.SnackBar;
 public class Fragment_item extends Fragment {
 
     private final String TAG = "Fragment_item";
+    public static Item item;  //当前展示的Item
+    private Context mContext;
     private SimpleDraweeView sd_good;
     private TextView tv_name;
     private ImageView iv_star;
     private TextView tv_company;
     private TextView tv_source;
     private TextView tv_size;
-    /**
-     * 单例对象实例
-     */
-    private static Fragment_item instance = null;
 
-    /**
-     * 对外接口
-     * @return Fragment_item
-     */
-    public static Fragment_item GetInstance()
-    {
-        if(instance == null)
-            instance = new Fragment_item();
-        return instance;
+
+    @Override
+    public void onAttach(Context context){
+        Log.i(TAG,"onAttach");
+        super.onAttach(context);
+        this.mContext = context;
     }
     @Override
     public void onResume() {
@@ -80,7 +86,17 @@ public class Fragment_item extends Fragment {
         tv_company = (TextView) view.findViewById(R.id.tv_company);
         tv_source = (TextView) view.findViewById(R.id.tv_source);
         tv_size = (TextView) view.findViewById(R.id.tv_size);
-
+        int resId = Util.stringToId(mContext,"you");
+        Uri uri = new Uri.Builder()
+                .scheme(UriUtil.LOCAL_RESOURCE_SCHEME) // "res"
+                .path(String.valueOf(resId))
+                .build();
+        //刷新UI
+        sd_good.setImageURI(uri);
+        tv_name.setText(item.getName());
+        tv_company.setText(item.getCompany());
+        tv_size.setText(item.getSize());
+        tv_source.setText(item.getSource());
 
         //新建一个菜单
         setHasOptionsMenu(true);
@@ -91,9 +107,16 @@ public class Fragment_item extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        Log.e(TAG, "onCreateOptionsMenu()");
+        Log.i(TAG, "onCreateOptionsMenu()");
         menu.clear();
         inflater.inflate(R.menu.menu_item, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
+
+    @Override
+    public String toString(){
+        return TAG;
+    }
+
+
 }

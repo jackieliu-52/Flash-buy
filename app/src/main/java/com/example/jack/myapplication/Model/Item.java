@@ -21,6 +21,15 @@ public class Item implements Parcelable {
     private int staus; //商品状态，0-未售出，1-已售出
     private int discount;  //折扣，10表示没有折扣，5表示五折
     private boolean isStar;  //是否被收藏，True表示被收藏了
+    private String source; //来源，中国还是外国?
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
 
     public double realPrice(){
 
@@ -134,7 +143,29 @@ public class Item implements Parcelable {
         this(name, pid, iid, image, company, price, size, "233", 0, 10);
     }
 
+    public Item (InternetItem internetItem){
+        this.name = internetItem.getName();
+        this.Pid = "";
+        this.Iid = "";
+        this.image = "";
+        this.company = internetItem.getCompany();
+        this.price = internetItem.getPrice();
+        if(!internetItem.getSpec().equals(""))
+            this.size = internetItem.getSpec();
+        else
+            this.size = "未知";
+        this.EPC = "";
+        this.staus = 0;
+        this.discount = 10;
+        this.isStar = false;
+        this.bar_code = internetItem.getPrefix();  //条形码前缀
+        this.source = internetItem.getCountry();
+    }
     public Item(String name, String pid, String iid, String image, String company, double price, String size, String EPC, int staus, int discount) {
+       this(name,pid,iid,image,company,price,size,"",EPC,staus,discount,false,"未知");
+    }
+
+    public Item(String name, String pid, String iid, String image, String company, double price, String size, String bar_code, String EPC, int staus, int discount, boolean isStar, String source) {
         this.name = name;
         Pid = pid;
         Iid = iid;
@@ -142,20 +173,12 @@ public class Item implements Parcelable {
         this.company = company;
         this.price = price;
         this.size = size;
+        this.bar_code = bar_code;
         this.EPC = EPC;
         this.staus = staus;
         this.discount = discount;
-        this.isStar = false; //默认为false
-    }
-
-    /**
-     * 这个方法专门用于条形码查询
-     * @param bar_code
-     */
-    public Item(String bar_code){
-        this.bar_code = bar_code;
-        //调用网络接口或者是本地接口查询条形码商品
-
+        this.isStar = isStar;
+        this.source = source;
     }
 
 
@@ -178,6 +201,7 @@ public class Item implements Parcelable {
         dest.writeInt(this.staus);
         dest.writeInt(this.discount);
         dest.writeByte(this.isStar ? (byte) 1 : (byte) 0);
+        dest.writeString(this.source);
     }
 
     protected Item(Parcel in) {
@@ -193,6 +217,7 @@ public class Item implements Parcelable {
         this.staus = in.readInt();
         this.discount = in.readInt();
         this.isStar = in.readByte() != 0;
+        this.source = in.readString();
     }
 
     public static final Parcelable.Creator<Item> CREATOR = new Parcelable.Creator<Item>() {
