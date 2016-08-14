@@ -85,7 +85,7 @@ public class StaggeredHomeAdapter extends
                 .build();
 
       //  Uri uri = Uri.parse("res://" + mContext.getPackageName()+"/R.drawable." + item.getImage());
-        Log.i("wrong",uri.toString());
+//        Log.i("wrong",uri.toString());
 //        holder.ib_pic.setImageResource(ResId);
 //        holder.draweeView.setImageResource(ResId);
         holder.draweeView.setImageURI(uri);

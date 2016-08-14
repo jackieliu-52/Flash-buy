@@ -33,8 +33,10 @@ import com.example.jack.myapplication.Model.LineItem;
 import com.example.jack.myapplication.Model.Order;
 import com.example.jack.myapplication.Model.User;
 import com.example.jack.myapplication.Util.Constant;
+import com.example.jack.myapplication.Util.Event.CartEvent;
 import com.example.jack.myapplication.Util.Event.InternetEvent;
 import com.example.jack.myapplication.Util.Event.ListEvent;
+import com.example.jack.myapplication.Util.Event.MessageEvent;
 import com.example.jack.myapplication.Util.Util;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
@@ -92,7 +94,7 @@ public class MainActivity extends AppCompatActivity  {
     //底部窗口
     private SlideBottomPanel sbv;
     private ListView lv_cart;
-    private ArrayList<LineItem> cart;
+    public static ArrayList<LineItem> cart;
     private TextView tv_total_cost;
 
     //Fragments
@@ -184,7 +186,10 @@ public class MainActivity extends AppCompatActivity  {
 
         //"http://localhost:8080/Flash-buy/cart?cartNumber=" +"1&userId="+user.getId()
 
-        String temp = "http://10.10.6.85:8080/Flash-buy/";
+        String temp = "http://155o554j78.iok.la:49590/";
+      //  String args = "cart?cartNumber=001&userId=ceshi";
+        String args = "";
+        temp += args;
         EventBus.getDefault().post(new InternetEvent(temp,Constant.REQUEST_Cart));
 
 
@@ -206,7 +211,6 @@ public class MainActivity extends AppCompatActivity  {
         });
 
 
-       // lv_cart.setAdapter(new ArrayAdapter<>(this, ,cart));
     }
 
 
@@ -236,7 +240,10 @@ public class MainActivity extends AppCompatActivity  {
                 //先清空购物车
                 lv_cart.setAdapter(null);
 
-                String temp = "http://10.10.6.85:8080/Flash-buy/";
+                String temp = "http://155o554j78.iok.la:49590/";
+           //     String args = "cart?cartNumber=001&userId=ceshi";
+                String args = "";
+                temp += args;
                 EventBus.getDefault().post(new InternetEvent(temp,Constant.REQUEST_Cart));
 
                 sbv.displayPanel();    //打开下面的面板
@@ -253,7 +260,7 @@ public class MainActivity extends AppCompatActivity  {
 
 
         // Create a few sample profile
-        final IProfile profile = new ProfileDrawerItem().withName("Jack").withEmail("878923730@gmail.com").withIcon(R.drawable.profile).withIdentifier(233);
+        final IProfile profile = new ProfileDrawerItem().withName("Jack").withEmail("878923730@qq.com").withIcon(R.drawable.profile).withIdentifier(233);
 
 
         // Create the AccountHeader
@@ -550,7 +557,6 @@ public class MainActivity extends AppCompatActivity  {
                 break;
             case Constant.REQUEST_Cart:
                 initCart(internetEvent.message); //初始化购物车
-
                 break;
             default:
                 break;
@@ -587,33 +593,38 @@ public class MainActivity extends AppCompatActivity  {
                 //避免Unicode转义
                 Gson gson = new GsonBuilder().disableHtmlEscaping().create();
                 //将json转换为一个Order
-                Log.i("json",json);
+            //    Log.i("json",json);
                 Order order = gson.fromJson(json,Order.class);
-
 
                 //将剩下的加入购物车
                 cart.addAll(order.getLineItems());
+
+
+
+                final ItemAdapter adapter = new ItemAdapter(this,R.layout.list_item,cart);
+
+                //在主线程中去更新UI
+                this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        lv_cart.setAdapter(adapter);
+                        double total_price = 0;
+                        for(LineItem lineItem:cart){
+                            total_price += lineItem.getUnitPrice();
+                        }
+                        tv_total_cost.setText(total_price + "元");
+                    }
+                });
             }
+            else {
+                EventBus.getDefault().post(new MessageEvent("刷新失败，请检查网络"));
+            }
+
         }
         catch (Exception e) {
             e.printStackTrace();
         }
 
-
-        final ItemAdapter adapter = new ItemAdapter(this,R.layout.list_item,cart);
-
-        //在主线程中去更新UI
-        this.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                lv_cart.setAdapter(adapter);
-                double total_price = 0;
-                for(LineItem lineItem:cart){
-                    total_price += lineItem.getUnitPrice();
-                }
-                tv_total_cost.setText(total_price + "元");
-            }
-        });
     }
 
 

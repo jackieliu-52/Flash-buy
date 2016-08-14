@@ -50,7 +50,9 @@ public class ItemAdapter extends ArrayAdapter<LineItem> {
                 .scheme(UriUtil.LOCAL_RESOURCE_SCHEME) // "res"
                 .path(String.valueOf(picId))
                 .build();
-        viewHolder.simpleDraweeView.setImageURI(uri);
+
+        Uri temp =  Uri.parse(item.getItem().getImage());
+        viewHolder.simpleDraweeView.setImageURI(temp);
         viewHolder.tv_good_name.setText(item.getItem().getName());
         viewHolder.tv_num.setText("   ×  "+item.getNum());
         viewHolder.item_1price.setText("单价："+item.getItem().realPrice());

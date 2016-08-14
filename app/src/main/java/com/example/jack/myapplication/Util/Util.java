@@ -1,6 +1,7 @@
 package com.example.jack.myapplication.Util;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -8,6 +9,8 @@ import android.graphics.PixelFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Base64;
+
+import com.example.jack.myapplication.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -75,4 +78,19 @@ public  class Util {
         }
     }
 
+    /**
+     * 获得Toolbar的高度
+     * @param context
+     * @return
+     */
+    public static int getToolbarHeight(Context context) {
+        final TypedArray styledAttributes = context.getTheme().obtainStyledAttributes(
+                new int[]{R.attr.actionBarSize});
+        int toolbarHeight = (int) styledAttributes.getDimension(0, 0);
+        styledAttributes.recycle();
+
+        return toolbarHeight;
+    }
+
 }
+

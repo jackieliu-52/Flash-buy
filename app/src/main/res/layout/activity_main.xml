@@ -36,11 +36,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        fab:fab_addButtonColorNormal="@color/white"
         android:layout_margin="16dp"
         android:layout_gravity="end|bottom"
+
+        fab:fab_addButtonColorNormal="@color/white"
         fab:fab_addButtonColorPressed="@color/white_pressed"
-        fab:fab_addButtonPlusIconColor="@color/half_black">
+        fab:fab_addButtonPlusIconColor="@color/half_black"
+        fab:borderWidth="0dp"
+        fab:layout_behavior="com.example.jack.myapplication.Behavior.MyBehavior">
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/cart"
