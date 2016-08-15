@@ -3,14 +3,16 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:id="@+id/viewpagertab"
   android:layout_width="match_parent"
-  android:layout_height="48dp" android:background="@color/divider"
+  android:layout_height="48dp"
+    android:background="@color/divider"
   app:stl_distributeEvenly="true"
-  app:stl_dividerColor="@color/my_colorNoDark"
+  app:stl_dividerColor="@color/pink"
   app:stl_dividerThickness="0dp"
   app:stl_indicatorColor="@color/transparent"
   app:stl_indicatorThickness="0dp"
   app:stl_underlineColor="@color/transparent"
   app:stl_underlineThickness="0dp"
+    app:stl_drawDecorationAfterTab = "true"
   />
 
 

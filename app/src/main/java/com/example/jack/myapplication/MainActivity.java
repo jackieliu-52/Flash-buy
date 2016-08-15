@@ -90,6 +90,8 @@ public class MainActivity extends AppCompatActivity  {
     private Drawer result = null;
     public Toolbar toolbar = null;
 
+    //Floating Button
+    private FloatingActionsMenu menuMultipleActions;
 
     //底部窗口
     private SlideBottomPanel sbv;
@@ -186,9 +188,9 @@ public class MainActivity extends AppCompatActivity  {
 
         //"http://localhost:8080/Flash-buy/cart?cartNumber=" +"1&userId="+user.getId()
 
-        String temp = "http://155o554j78.iok.la:49590/";
-      //  String args = "cart?cartNumber=001&userId=ceshi";
-        String args = "";
+        String temp = "http://155o554j78.iok.la:49817/";
+        String args = "Flash-buy/cart?cartNumber=9&userId=9";
+      //  String args = "";
         temp += args;
         EventBus.getDefault().post(new InternetEvent(temp,Constant.REQUEST_Cart));
 
@@ -228,8 +230,8 @@ public class MainActivity extends AppCompatActivity  {
                 star.setVisibility(star.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
             }
         });
-
-        final FloatingActionsMenu menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.floating_button);
+        //Menu选项
+        menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.floating_button);
         menuMultipleActions.addButton(actionC);
 
         final FloatingActionButton cart = (FloatingActionButton) findViewById(R.id.cart);
@@ -237,12 +239,14 @@ public class MainActivity extends AppCompatActivity  {
         cart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //关闭Menu
+                menuMultipleActions.collapse();
                 //先清空购物车
                 lv_cart.setAdapter(null);
 
-                String temp = "http://155o554j78.iok.la:49590/";
-           //     String args = "cart?cartNumber=001&userId=ceshi";
-                String args = "";
+                String temp = "http://155o554j78.iok.la:49817/";
+                String args = "Flash-buy/cart?cartNumber=9&userId=9";
+
                 temp += args;
                 EventBus.getDefault().post(new InternetEvent(temp,Constant.REQUEST_Cart));
 
@@ -299,7 +303,7 @@ public class MainActivity extends AppCompatActivity  {
                         new PrimaryDrawerItem().withName(R.string.drawer_item_custom).withIcon(FontAwesome.Icon.faw_eye).withIdentifier(2),
                         new SectionDrawerItem().withName(R.string.drawer_item_section_header),
                         new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIcon(FontAwesome.Icon.faw_cog).withIdentifier(5),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_help).withIcon(FontAwesome.Icon.faw_question).withEnabled(false).withIdentifier(6),
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_help).withIcon(FontAwesome.Icon.faw_question).withIdentifier(6),
                         new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).withIcon(FontAwesome.Icon.faw_github).withIdentifier(7),
                         new SecondaryDrawerItem().withName(R.string.drawer_item_contact).withIcon(FontAwesome.Icon.faw_bullhorn).withIdentifier(8),
                         new DividerDrawerItem(),
@@ -444,7 +448,7 @@ public class MainActivity extends AppCompatActivity  {
                 Intent intent =new Intent(this,ScanActivity.class);
                 intent.putExtra(Constant.REQUEST_SCAN_MODE, Constant.REQUEST_SCAN_MODE_ALL_MODE);
                 startActivity(intent);
-//                Intent intent = new Intent(MainActivity.this,TestActivity.class);
+//               Intent intent = new Intent(MainActivity.this,TestActivity.class);
 //                startActivity(intent);
                 return true;
             default:
@@ -469,6 +473,10 @@ public class MainActivity extends AppCompatActivity  {
 
         if (sbv.isPanelShowing()) {
             sbv.hide();
+            return;
+        }
+        if (menuMultipleActions.isExpanded() ){
+            menuMultipleActions.collapse();
             return;
         }
         //handle the back press :D close the drawer first and if the drawer is closed close the activity

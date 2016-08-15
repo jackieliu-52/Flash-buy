@@ -132,9 +132,9 @@ public class Fragment1 extends Fragment {
                 // TODO Auto-generated method stub
                 EventBus.getDefault().post(new MessageEvent("刷新购物车"));
                 //获取信息，然后再刷新UI
-                String temp = "http://155o554j78.iok.la:49590/";
-              //  String args = "cart?cartNumber=001&userId=ceshi";
-                String args = "";
+                String temp = "http://155o554j78.iok.la:49817/";
+                String args = "Flash-buy/cart?cartNumber=9&userId=9";
+
                 temp += args;
                 EventBus.getDefault().post(new InternetEvent(temp, Constant.REQUEST_Cart));
 
