@@ -17,7 +17,8 @@
 
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
 
     <application
         android:name=".MyApplication"
@@ -26,7 +27,7 @@
         android:label="@string/app_name"
         >  <!--android:largeHeap="true" 更多的内存，因为加载图片需要更多内存 -->
         <activity android:name=".LogInActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            android:theme="@style/CustomTheme">
 
             <intent-filter>
             <action android:name="android.intent.action.MAIN" />
