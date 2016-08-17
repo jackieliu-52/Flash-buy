@@ -8,7 +8,10 @@ import android.support.design.widget.Snackbar;
 import android.util.AttributeSet;
 import android.view.View;
 
-
+/**
+ * 这个是和CoordinatorLayout有关的，可以定义控件的空间位置
+ * 这里定义了一个FloatingButton和Toolbar在滚动时的行为
+ */
 public class MyBehavior extends CoordinatorLayout.Behavior {
     private int toolbarHeight;
 

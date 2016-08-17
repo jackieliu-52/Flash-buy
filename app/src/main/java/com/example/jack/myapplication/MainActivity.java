@@ -2,12 +2,15 @@ package com.example.jack.myapplication;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.LayoutInflaterCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -85,6 +88,7 @@ public class MainActivity extends AppCompatActivity  {
     public static Activity instance;
     private User user = new User(); //当前用户
 
+
     //save our header or result
     private AccountHeader headerResult = null;
     private Drawer result = null;
@@ -119,11 +123,13 @@ public class MainActivity extends AppCompatActivity  {
         //使用Icon
         LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
         super.onCreate(savedInstanceState);
+        //获取屏幕信息
         EventBus.getDefault().register(this);
 
         EventBus.getDefault().post(new ListEvent("init"));
         //关闭上一个Activity
-        instance.finish();
+        if(instance != null)
+            instance.finish();
 
         user.setId("jack");
         //打印内存
@@ -347,6 +353,10 @@ public class MainActivity extends AppCompatActivity  {
                                             .withDuration((short)2000)
                                             .show();
                                     break;
+                                case 5:
+                                    Intent intent = new Intent(MainActivity.this,SettingActivity.class);
+
+                                    startActivity(intent);
                             }
 
                            // startSupportActionMode(new ActionBarCallBack());
@@ -504,8 +514,7 @@ public class MainActivity extends AppCompatActivity  {
         }
         Log.i("finish","1");
 
-
-            super.onBackPressed();
+        super.onBackPressed();
 
     }
     @Override
@@ -514,10 +523,15 @@ public class MainActivity extends AppCompatActivity  {
         super.onStop();
 
     }
+    /**
+     * 因为有个Activity用到了WebView，但是根据网上说法，WebView可能没有正常地释放资源
+     * 所以这里偷懒选择了这样一种方法来保证程序退出之后没有另外泄露
+     */
     @Override
     protected void onDestroy(){
         EventBus.getDefault().unregister(this);
         super.onDestroy();
+        System.exit(0);
     }
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void getInfo(InternetEvent internetEvent) {

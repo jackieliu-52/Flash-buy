@@ -226,13 +226,13 @@ public class LogInActivity  extends AppCompatActivity  {
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
 
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-                //这里需要做验证码的核实之类
-            } catch (InterruptedException e) {
-                return false;
-            }
+//            try {
+//                // Simulate network access.
+//                Thread.sleep(2000);
+//                //这里需要做验证码的核实之类
+//            } catch (InterruptedException e) {
+//                return false;
+//            }
             //身份认证的过程
             for (String credential : DUMMY_CREDENTIALS) {
                 String[] pieces = credential.split(":");

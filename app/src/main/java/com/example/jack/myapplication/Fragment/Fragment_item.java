@@ -30,7 +30,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 /**
- * Created by Jack on 2016/8/8.
+ * 展示物品的页面
+ * 本来一开始是单例模式，但考虑它会经常刷新页面，没有必要考虑单例模式
+ * 但是要注意资源的释放
  */
 public class Fragment_item extends Fragment {
 

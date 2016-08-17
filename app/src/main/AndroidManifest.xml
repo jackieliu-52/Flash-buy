@@ -51,7 +51,13 @@
         <activity android:name=".ScanActivity"
             android:label="Scan"
             android:theme="@android:style/Theme.Light.NoTitleBar" />
+        <activity android:name=".WebActivity"
+            android:label="智能家居"
+            android:theme="@style/CustomTheme" />
 
+        <activity android:name=".SettingActivity"
+            android:label="setting"
+            android:theme="@style/SettingStyle" />
     </application>
 
 </manifest>

@@ -4,12 +4,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:gravity="center"
-        android:text="智能家居"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipe_jList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+        <com.dexafree.materialList.view.MaterialListView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/material_jiaju_list"/>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
 </LinearLayout>

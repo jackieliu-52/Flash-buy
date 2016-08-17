@@ -1,0 +1,58 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
+    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="mail"
+        android:title="是否开启邮箱推送" />
+
+
+    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+    <ListPreference
+        android:defaultValue="1"
+        android:dependency="mail"
+        android:entries="@array/frequency_list"
+        android:entryValues="@array/frequency_list_values"
+        android:key="frequency_list"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="发送总结账单的频率" />
+
+
+    <!-- A 'parent' preference, which enables/disables child preferences (below)
+         when checked/unchecked. -->
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="allergic"
+        android:title="是否开启过敏源提醒" />
+
+    <!-- Allows the user to choose a ringtone in the 'notification' category. -->
+    <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
+    <!-- NOTE: RingtonePreference's summary should be set to its value by the activity code. -->
+    <RingtonePreference
+        android:defaultValue="content://settings/system/notification_sound"
+        android:dependency="allergic"
+        android:key="allergic_ringtone"
+        android:ringtoneType="notification"
+        android:title="铃声" />
+
+    <!-- 过敏源提醒震动 -->
+    <SwitchPreference
+        android:defaultValue="true"
+        android:dependency="allergic"
+        android:key="allergic_vibrate"
+        android:title="是否开启震动" />
+
+
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="like_switch"
+        android:summary="根据你的浏览历史为你推荐你可能喜欢的商品"
+        android:title="是否开启猜你喜欢" />
+
+
+</PreferenceScreen>

@@ -1,5 +1,6 @@
 package com.example.jack.myapplication.Fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,6 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.jack.myapplication.R;
+import com.litesuits.common.utils.ClipboardUtil;
+import com.litesuits.common.utils.DisplayUtil;
+import com.litesuits.common.utils.NotificationUtil;
+import com.litesuits.common.utils.VibrateUtil;
 
 /**
  * 因为虽然这边用viewpager去管理，而且指示器用的是弱引用去管理，但是还是不需要
@@ -17,12 +22,24 @@ import com.example.jack.myapplication.R;
  */
 public class Fragment_map extends android.support.v4.app.Fragment {
     final private String TAG = "Fragment_map";
+    private Context mContext;
 
+    @Override
+    public void onAttach(Context context){
+        super.onAttach(context);
+        mContext = context;
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
         Log.i(TAG,"onCreateView");
+        //打印屏幕信息
+        DisplayUtil.printDisplayInfo(mContext);
+        //获得剪贴板最后一条信息
+        Log.i(TAG,ClipboardUtil.getLatestText(mContext));
+        //震动测试
+        VibrateUtil.vibrate(mContext,1000);
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
     @Override
@@ -41,8 +58,10 @@ public class Fragment_map extends android.support.v4.app.Fragment {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
             //相当于Fragment的onResume
+            Log.i(TAG,"v");
         } else {
             //相当于Fragment的onPause
+            Log.i(TAG,"in");
         }
     }
 }
