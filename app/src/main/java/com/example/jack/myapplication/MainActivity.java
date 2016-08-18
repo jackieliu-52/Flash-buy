@@ -112,9 +112,17 @@ public class MainActivity extends AppCompatActivity  {
     private Fragment_buy fragment_buy = null;
     private Fragment_item fragment_item = null;
 
+    //Url
+    String root = "http://155o554j78.iok.la:49817/";
+    String args1 = "Flash-buy/cart?cartNumber=9&userId=9";
+    String cartUrl = root + args1;
+
     @Override
     protected void onStart(){
         super.onStart();
+
+
+
 
     }
 
@@ -122,11 +130,10 @@ public class MainActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         //使用Icon
         LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
-        super.onCreate(savedInstanceState);
-        //获取屏幕信息
-        EventBus.getDefault().register(this);
 
-        EventBus.getDefault().post(new ListEvent("init"));
+
+        super.onCreate(savedInstanceState);
+
         //关闭上一个Activity
         if(instance != null)
             instance.finish();
@@ -142,6 +149,10 @@ public class MainActivity extends AppCompatActivity  {
         CreateButton();
 
         setListen();
+
+        EventBus.getDefault().register(this);
+        EventBus.getDefault().post(new ListEvent("init"));
+        EventBus.getDefault().post(new InternetEvent(cartUrl,Constant.REQUEST_Cart));
 
         //设置默认fragment
         if (savedInstanceState == null) {
@@ -194,11 +205,8 @@ public class MainActivity extends AppCompatActivity  {
 
         //"http://localhost:8080/Flash-buy/cart?cartNumber=" +"1&userId="+user.getId()
 
-        String temp = "http://155o554j78.iok.la:49817/";
-        String args = "Flash-buy/cart?cartNumber=9&userId=9";
-      //  String args = "";
-        temp += args;
-        EventBus.getDefault().post(new InternetEvent(temp,Constant.REQUEST_Cart));
+
+
 
 
 
@@ -250,11 +258,7 @@ public class MainActivity extends AppCompatActivity  {
                 //先清空购物车
                 lv_cart.setAdapter(null);
 
-                String temp = "http://155o554j78.iok.la:49817/";
-                String args = "Flash-buy/cart?cartNumber=9&userId=9";
-
-                temp += args;
-                EventBus.getDefault().post(new InternetEvent(temp,Constant.REQUEST_Cart));
+                EventBus.getDefault().post(new InternetEvent(cartUrl,Constant.REQUEST_Cart));
 
                 sbv.displayPanel();    //打开下面的面板
             }
@@ -566,9 +570,11 @@ public class MainActivity extends AppCompatActivity  {
                         //首先实例化fragment
                         Fragment_item fragment_item = new Fragment_item();
 
-                  //      EventBus.getDefault().post(new MessageEvent("Item",item));
-                        Log.i("result","info:"+ info );
+                        //没有网络不能跳转
                         switchContent(mContent,fragment_item);
+                    }
+                    else {
+                        EventBus.getDefault().post(new MessageEvent("查询失败，请检查网络"));
                     }
 
 
@@ -649,7 +655,15 @@ public class MainActivity extends AppCompatActivity  {
 
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void snackBar(MessageEvent messageEvent){
 
+        new SnackBar.Builder(MainActivity.this)
+                .withMessage(messageEvent.message)
+                .withStyle(SnackBar.Style.ALERT)
+                .withDuration((short)2000)
+                .show();
+    }
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void getList(ListEvent listEvent){
         switch (listEvent.message){

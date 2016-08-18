@@ -4,8 +4,11 @@
 
     <header
         android:fragment="com.example.jack.myapplication.SettingActivity$GeneralPreferenceFragment"
+        android:icon="@drawable/ic_mail_black_24dp"
+        android:title="邮箱设置" />
+    <header
+        android:fragment="com.example.jack.myapplication.SettingActivity$AllergicFragment"
         android:icon="@drawable/ic_settings_black_24dp"
-        android:title="设置" />
-
+        android:title="过敏源设置" />
 
 </preference-headers>

@@ -9,116 +9,42 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
+import android.preference.SwitchPreference;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
-
-import com.example.jack.myapplication.Util.AppCompatPreferenceActivity;
 
 import java.util.List;
 
 /**
  * Created by Jack on 2016/8/17.
  */
-public class SettingActivity extends AppCompatPreferenceActivity {
-    /**
-     * A preference value change listener that updates the preference's summary
-     * to reflect its new value.
-     */
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object value) {
-            String stringValue = value.toString();
+public class SettingActivity extends PreferenceActivity {
 
-            if (preference instanceof ListPreference) {
-                // For list preferences, look up the correct display value in
-                // the preference's 'entries' list.
-                ListPreference listPreference = (ListPreference) preference;
-                int index = listPreference.findIndexOfValue(stringValue);
-                Log.i("ListPreference",listPreference.getEntries()[index]+"");
-                // Set the summary to reflect the new value.
-                preference.setSummary(
-                        index >= 0
-                                ? listPreference.getEntries()[index]
-                                : null);
-
-            } else if (preference instanceof RingtonePreference) {
-                // For ringtone preferences, look up the correct display value
-                // using RingtoneManager.
-                if (TextUtils.isEmpty(stringValue)) {
-                    // Empty values correspond to 'silent' (no ringtone).
-                    preference.setSummary("没有铃声");
-
-                } else {
-                    Ringtone ringtone = RingtoneManager.getRingtone(
-                            preference.getContext(), Uri.parse(stringValue));
-
-                    if (ringtone == null) {
-                        // Clear the summary if there was a lookup error.
-                        preference.setSummary(null);
-                    } else {
-                        // Set the summary to reflect the new ringtone display
-                        // name.
-                        String name = ringtone.getTitle(preference.getContext());
-                        preference.setSummary(name);
-                        /**
-                         * 这里保存所播放音乐的名字
-                         */
-
-                    }
-                }
-
-            } else {
-                // For all other preferences, set the summary to the value's
-                // simple string representation.
-                preference.setSummary(stringValue);
-                Log.i(preference.getKey(),stringValue);
-            }
-            return true;
-        }
-    };
-
-    /**
-     * Binds a preference's summary to its value. More specifically, when the
-     * preference's value is changed, its summary (line of text below the
-     * preference title) is updated to reflect the value. The summary is also
-     * immediately updated upon calling this method. The exact display format is
-     * dependent on the type of preference.
-     *
-     * @see #sBindPreferenceSummaryToValueListener
-     */
-    private static void bindPreferenceSummaryToValue(Preference preference) {
-        // Set the listener to watch for value changes.
-        preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-
-        // Trigger the listener immediately with the preference's
-        // current value.
-        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
-    }
+    private static boolean mail;
+    private static boolean like;
+    private static boolean allergic;
+    private static boolean vibrate;
+    private static String frequency = "";
+    private static String ringtone = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setupActionBar();
+
+    }
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        //这里把更新后的值全部发送给服务器
+
     }
 
-    /**
-     * Set up the {@link android.app.ActionBar}, if the API is available.
-     */
-    private void setupActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            // Show the Up button in the action bar.
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-    }
 
     @Override
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -131,45 +57,183 @@ public class SettingActivity extends AppCompatPreferenceActivity {
      */
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
-                || GeneralPreferenceFragment.class.getName().equals(fragmentName);
+                || GeneralPreferenceFragment.class.getName().equals(fragmentName)
+                || AllergicFragment.class.getName().equals(fragmentName);
     }
 
     /**
-     * This fragment shows general preferences only. It is used when the
-     * activity is showing a two-pane settings UI.
+     * 用来设置邮箱和彩泥喜欢
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public static class GeneralPreferenceFragment extends PreferenceFragment {
+        private SwitchPreference switch_mail;
+        private SwitchPreference switch_like;
+        private ListPreference list_fre;
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
-            //回到主页
-            setHasOptionsMenu(true);
+            initView();
+            init();
 
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
+            list_fre.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+                    //1表示一周，2表示两周，3表示一个月
+                    frequency =  PreferenceManager
+                            .getDefaultSharedPreferences(preference.getContext())
+                            .getString(preference.getKey(),"1");
+                    //在这里我就去保存需要所需要的值就可以了
+                    // For list preferences, look up the correct display value in
+                    // the preference's 'entries' list.
+                    ListPreference listPreference = (ListPreference) preference;
+                    int index = listPreference.findIndexOfValue(frequency);
+                    Log.i("ListPreference",listPreference.getEntries()[index]+"");
+                    // Set the summary to reflect the new value.
+                    preference.setSummary(
+                            index >= 0
+                                    ? listPreference.getEntries()[index]
+                                    : null);
+                    return true;
+                }
+            });
+            switch_mail.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
 
-            bindPreferenceSummaryToValue(findPreference("frequency_list"));
-            bindPreferenceSummaryToValue(findPreference("allergic_ringtone"));
-//
-//            bindPreferenceSummaryToValue(findPreference("mail"));
-//            bindPreferenceSummaryToValue(findPreference("allergic"));
-//            bindPreferenceSummaryToValue(findPreference("allergic_vibrate"));
-//            bindPreferenceSummaryToValue(findPreference("like_switch"));
+                    mail = PreferenceManager
+                            .getDefaultSharedPreferences(preference.getContext())
+                            .getBoolean(preference.getKey(),true);
+
+                    return true;
+                }
+            });
+            switch_like.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+                   like =  PreferenceManager
+                            .getDefaultSharedPreferences(preference.getContext())
+                            .getBoolean(preference.getKey(),true);
+
+                    return true;
+                }
+            });
         }
 
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingActivity.class));
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
+
+        private void init(){
+            mail = PreferenceManager
+                    .getDefaultSharedPreferences(switch_mail.getContext())
+                    .getBoolean(switch_mail.getKey(),true);
+
+            frequency = PreferenceManager
+                    .getDefaultSharedPreferences(list_fre.getContext())
+                    .getString(list_fre.getKey(),"1");
+
+            like = PreferenceManager
+                    .getDefaultSharedPreferences(switch_like.getContext())
+                    .getBoolean(switch_like.getKey(),true);
+
+            int index = Integer.valueOf(frequency);
+            switch_mail.setDefaultValue(mail);
+            list_fre.setSummary(
+                    index >= 0
+                            ? list_fre.getEntries()[index]
+                            : null);
+        }
+        private void initView(){
+            switch_mail = (SwitchPreference) findPreference("mail");
+            list_fre = (ListPreference)  findPreference("frequency_list");
+            switch_like = (SwitchPreference) findPreference("like_switch");
         }
     }
 
+    /**
+     * 用来设置过敏源
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static class AllergicFragment extends PreferenceFragment {
+        private SwitchPreference switch_allergic;
+        private SwitchPreference switch_vibrate;
+        private RingtonePreference allergic_ringtone;
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_allergic);
+            initView();
+            init();
+
+            switch_allergic.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+                    allergic =  PreferenceManager
+                            .getDefaultSharedPreferences(preference.getContext())
+                            .getBoolean(preference.getKey(),true);
+
+                    return true;
+                }
+            });
+
+            switch_vibrate.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+                    vibrate =  PreferenceManager
+                            .getDefaultSharedPreferences(preference.getContext())
+                            .getBoolean(preference.getKey(),true);
+
+                    return true;
+                }
+            });
+
+            allergic_ringtone.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object o) {
+                    String stringValue = o.toString();
+                    ringtone = o.toString();
+                    if (TextUtils.isEmpty(stringValue)) {
+                        // Empty values correspond to 'silent' (no ringtone).
+                        preference.setSummary("静音");
+
+                    } else {
+                        Ringtone ringtone = RingtoneManager.getRingtone(
+                                preference.getContext(), Uri.parse(stringValue));
+
+                        if (ringtone == null) {
+                            // Clear the summary if there was a lookup error.
+                            preference.setSummary(null);
+                        } else {
+                            // Set the summary to reflect the new ringtone display
+                            // name.
+                            String name = ringtone.getTitle(preference.getContext());
+                            preference.setSummary(name);
+                        }
+                    }
+                    return true;
+                }
+            });
+        }
+
+        private void initView(){
+            switch_allergic = (SwitchPreference) findPreference("allergic");
+            switch_vibrate = (SwitchPreference)  findPreference("allergic_vibrate");
+            allergic_ringtone = (RingtonePreference) findPreference("allergic_ringtone");
+        }
+
+        private void init(){
+            allergic = PreferenceManager
+                    .getDefaultSharedPreferences(switch_allergic.getContext())
+                    .getBoolean(switch_allergic.getKey(),true);
+
+            ringtone = PreferenceManager
+                    .getDefaultSharedPreferences(allergic_ringtone.getContext())
+                    .getString(allergic_ringtone.getKey(),"");
+
+            vibrate = PreferenceManager
+                    .getDefaultSharedPreferences(switch_vibrate.getContext())
+                    .getBoolean(switch_vibrate.getKey(),true);
+        }
+
+
+    }
 }

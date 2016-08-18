@@ -41,7 +41,6 @@ public class LogInActivity  extends AppCompatActivity  {
     private static final int REQUEST_READ_CONTACTS = 0;
     /**
      * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
      */
     private static final String[] DUMMY_CREDENTIALS = new String[]{
             "15111076742:2333", "13142390858:2333"
@@ -64,7 +63,7 @@ public class LogInActivity  extends AppCompatActivity  {
         setContentView(R.layout.activity_login);
 
         MainActivity.instance = this;
-        //todo
+
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();  //手机号填充事件
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -96,7 +95,6 @@ public class LogInActivity  extends AppCompatActivity  {
      * @return
      */
     private boolean isEmailValid(String mobiles) {
-        //TODO: Replace this with your own logic
         Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(18[0-9]))\\d{8}$");
         Matcher m = p.matcher(mobiles);
         return m.matches();
@@ -108,7 +106,6 @@ public class LogInActivity  extends AppCompatActivity  {
      * @return
      */
     private boolean isPasswordValid(String code) {
-        //TODO: Replace this with your own logic
         return code.length() == 4;
     }
 
@@ -224,8 +221,6 @@ public class LogInActivity  extends AppCompatActivity  {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
 //            try {
 //                // Simulate network access.
 //                Thread.sleep(2000);
@@ -242,7 +237,6 @@ public class LogInActivity  extends AppCompatActivity  {
                 }
             }
 
-            // TODO: register the new account here.
             // 如果之前没有注册过，那么可以注册一个新的账号
 
             return true;

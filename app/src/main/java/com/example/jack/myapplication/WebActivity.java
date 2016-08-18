@@ -53,7 +53,6 @@ public class WebActivity extends AppCompatActivity {
         m_webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
-                // TODO Auto-generated method stub
                 if (newProgress == 100) {
                     // 网页加载完成
 

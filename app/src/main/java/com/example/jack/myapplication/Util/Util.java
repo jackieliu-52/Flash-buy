@@ -18,10 +18,13 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 
-/**
+/**工具类
  * Created by Jack on 2016/8/7.
  */
 public  class Util {
+    private Util(){
+
+    }
     /**
      * 通过文件名获取资源id 例子：getResId("icon", R.drawable.class);
      *
