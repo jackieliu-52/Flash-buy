@@ -42,4 +42,8 @@ public class Fragment_account extends android.support.v4.app.Fragment {
         return inflater.inflate(R.layout.fragment_account, container, false);
     }
 
+    @Override
+    public String toString(){
+        return "fragment_account";
+    }
 }

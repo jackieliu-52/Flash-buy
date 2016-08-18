@@ -15,7 +15,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
@@ -23,7 +25,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVMobilePhoneVerifyCallback;
+import com.avos.avoscloud.AVOSCloud;
+import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.LogInCallback;
+import com.avos.avoscloud.RequestMobileCodeCallback;
+import com.avos.avoscloud.SignUpCallback;
 import com.mikepenz.iconics.context.IconicsLayoutInflater;
 
 import java.util.regex.Matcher;
@@ -43,7 +53,7 @@ public class LogInActivity  extends AppCompatActivity  {
      * A dummy authentication store containing known user names and passwords.
      */
     private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "15111076742:2333", "13142390858:2333"
+            "15111076742:233333", "13142390858:233333"
     };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -55,6 +65,10 @@ public class LogInActivity  extends AppCompatActivity  {
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private View mGetPwd;
+    //验证码
+    private String code;
+    AVUser avUser = new AVUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +81,15 @@ public class LogInActivity  extends AppCompatActivity  {
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();  //手机号填充事件
         mPasswordView = (EditText) findViewById(R.id.password);
+        //这里自动进行了缓存
+        AVUser currentUser = AVUser.getCurrentUser();
+        if (currentUser != null) {
+            // 跳转到首页
+            Intent intent = new Intent(this,MainActivity.class);
+            startActivity(intent);
+        } else {
+            //doNothing
+        }
 
         Button ib_login =(Button) findViewById(R.id.ib_login);
         //Button的响应事件
@@ -78,6 +101,35 @@ public class LogInActivity  extends AppCompatActivity  {
         });
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        mGetPwd = findViewById(R.id.get_pwd);
+        mGetPwd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //获取验证码
+                String mobile = mEmailView.getText().toString();
+                if(isEmailValid(mobile)){
+                    avUser.setEmail("");
+                    avUser.setUsername("");
+                    avUser.setPassword("");
+                    avUser.setMobilePhoneNumber(mobile);
+
+                    AVUser.requestLoginSmsCodeInBackground(avUser.getMobilePhoneNumber(), new RequestMobileCodeCallback() {
+                        @Override
+                        public void done(AVException e) {
+                            if (e == null) {
+                                mPasswordView.requestFocus();
+                            } else {
+                                Log.e("Home.OperationVerify", e.getMessage());
+                            }
+                        }
+                    });
+                }
+                else {
+                    mEmailView.setError("手机号错误");
+                    mEmailView.requestFocus();
+                }
+            }
+        });
     }
 
     /**
@@ -101,12 +153,12 @@ public class LogInActivity  extends AppCompatActivity  {
     }
 
     /**
-     * 判断是否是4位验证码
+     * 判断是否是6位验证码
      * @param code
      * @return
      */
     private boolean isPasswordValid(String code) {
-        return code.length() == 4;
+        return code.length() == 6;
     }
 
 
@@ -148,7 +200,7 @@ public class LogInActivity  extends AppCompatActivity  {
             focusView = mEmailView;
             cancel = true;
         }
-        //如果取消了那么聚焦于那个有问题的TextView
+        //如果取消了,那么聚焦于那个有问题的TextView
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
@@ -213,22 +265,46 @@ public class LogInActivity  extends AppCompatActivity  {
 
         private final String mEmail;
         private final String mPassword;
+        private boolean flag;
 
         UserLoginTask(String email, String password) {
             mEmail = email;
             mPassword = password;
+            flag = false;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-//            try {
-//                // Simulate network access.
-//                Thread.sleep(2000);
-//                //这里需要做验证码的核实之类
-//            } catch (InterruptedException e) {
-//                return false;
-//            }
-            //身份认证的过程
+
+            //身份认证的过程(网络版)
+            AVUser.signUpOrLoginByMobilePhoneInBackground(avUser.getMobilePhoneNumber(), mPassword, new LogInCallback<AVUser>() {
+                @Override
+                public void done(AVUser user, AVException e) {
+                    // 如果 e 为空就可以表示登录成功了，并且 user 是一个全新的用户
+                    if(e == null){
+                        flag = true;
+                        avUser.signUpInBackground(new SignUpCallback() {
+                            public void done(AVException e) {
+                                if (e == null) {
+                                    Toast.makeText(getBaseContext(),"注册成功", Toast.LENGTH_SHORT).show();
+                                    // successfully
+                                } else {
+                                    Toast.makeText(getBaseContext(),"您已经注册过了", Toast.LENGTH_SHORT).show();
+                                    // failed
+                                }
+                            }
+                        });
+                    }else {
+                        if(!mPassword.equals("233333")) {
+                            Toast.makeText(getBaseContext(), "验证码不对", Toast.LENGTH_SHORT).show();
+                            Log.e("Home.DoOperationVerify", e.getMessage());
+                        }
+                    }
+                }
+            });
+
+            if(flag) return true;
+            //身份认证的过程(本地版)
             for (String credential : DUMMY_CREDENTIALS) {
                 String[] pieces = credential.split(":");
                 if (pieces[0].equals(mEmail)) {
@@ -239,7 +315,7 @@ public class LogInActivity  extends AppCompatActivity  {
 
             // 如果之前没有注册过，那么可以注册一个新的账号
 
-            return true;
+            return false;
         }
 
         @Override

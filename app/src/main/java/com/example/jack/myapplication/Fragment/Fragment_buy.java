@@ -120,4 +120,8 @@ public class Fragment_buy extends android.support.v4.app.Fragment {
         super.onCreate(savedInstanceState);
 
     }
+    @Override
+    public String toString(){
+        return "fragment_buy";
+    }
 }

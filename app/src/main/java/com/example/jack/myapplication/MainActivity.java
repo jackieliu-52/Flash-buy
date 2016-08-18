@@ -2,16 +2,15 @@ package com.example.jack.myapplication;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.LayoutInflaterCompat;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -24,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.avos.avoscloud.AVUser;
 import com.example.jack.myapplication.Adapter.ItemAdapter;
 import com.example.jack.myapplication.Fragment.Fragment1;
 import com.example.jack.myapplication.Fragment.Fragment2;
@@ -36,7 +36,6 @@ import com.example.jack.myapplication.Model.LineItem;
 import com.example.jack.myapplication.Model.Order;
 import com.example.jack.myapplication.Model.User;
 import com.example.jack.myapplication.Util.Constant;
-import com.example.jack.myapplication.Util.Event.CartEvent;
 import com.example.jack.myapplication.Util.Event.InternetEvent;
 import com.example.jack.myapplication.Util.Event.ListEvent;
 import com.example.jack.myapplication.Util.Event.MessageEvent;
@@ -81,14 +80,14 @@ import java.util.Stack;
 import me.next.slidebottompanel.SlideBottomPanel;
 
 /**
- * test
+ * 主页
  */
 public class MainActivity extends AppCompatActivity  {
     private static final int PROFILE_SETTING = 1;
     public static Activity instance;
-    private User user = new User(); //当前用户
-
-
+    public static User user = new User(); //当前用户
+    SearchView mSearchView;
+    private String mSearchText;
     //save our header or result
     private AccountHeader headerResult = null;
     private Drawer result = null;
@@ -121,24 +120,20 @@ public class MainActivity extends AppCompatActivity  {
     protected void onStart(){
         super.onStart();
 
-
-
-
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //使用Icon
+        //使用Icon库
         LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
-
-
         super.onCreate(savedInstanceState);
 
+        getUser();
         //关闭上一个Activity
         if(instance != null)
             instance.finish();
 
-        user.setId("jack");
+
         //打印内存
         ActivityManager activityManager = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
         Log.i("内存最大值",activityManager.getMemoryClass() + "");
@@ -164,13 +159,33 @@ public class MainActivity extends AppCompatActivity  {
             result.setSelection(2, false);   //默认的选中DrawerItem
         }
         else{
-            f1 = (Fragment1) getSupportFragmentManager().findFragmentByTag("f1");
-            f2 = (Fragment2) getSupportFragmentManager().findFragmentByTag("f2");
+            if(f1 != null)
+                f1 = (Fragment1) getSupportFragmentManager().findFragmentByTag("f1");
+            if(f2 != null)
+                f2 = (Fragment2) getSupportFragmentManager().findFragmentByTag("f2");
+            if(fragment_account != null)
+                fragment_account = (Fragment_account) getSupportFragmentManager().findFragmentByTag("fragment_account");
+            if(fragment_buy != null)
+                fragment_buy = (Fragment_buy)  getSupportFragmentManager().findFragmentByTag("fragment_buy");
+
             getSupportFragmentManager().beginTransaction()
                     .show(f2)
                     .hide(f1)
+                    .hide(fragment_buy)
+                    .hide(fragment_account)
                     .commit();
         }
+
+    }
+
+    private void getUser(){
+        AVUser avUser = AVUser.getCurrentUser();
+        if(!avUser.getEmail().equals("")){
+            user.setId(avUser.getEmail());
+        }else{
+            user.setId("jack");
+        }
+        user.setName(avUser.getUsername());
 
     }
 
@@ -313,7 +328,7 @@ public class MainActivity extends AppCompatActivity  {
                         new PrimaryDrawerItem().withName(R.string.drawer_item_custom).withIcon(FontAwesome.Icon.faw_eye).withIdentifier(2),
                         new SectionDrawerItem().withName(R.string.drawer_item_section_header),
                         new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIcon(FontAwesome.Icon.faw_cog).withIdentifier(5),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_help).withIcon(FontAwesome.Icon.faw_question).withIdentifier(6),
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_log_out).withIcon(FontAwesome.Icon.faw_question).withIdentifier(6),
                         new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).withIcon(FontAwesome.Icon.faw_github).withIdentifier(7),
                         new SecondaryDrawerItem().withName(R.string.drawer_item_contact).withIcon(FontAwesome.Icon.faw_bullhorn).withIdentifier(8),
                         new DividerDrawerItem(),
@@ -358,9 +373,14 @@ public class MainActivity extends AppCompatActivity  {
                                             .show();
                                     break;
                                 case 5:
+                                    //打开设置
                                     Intent intent = new Intent(MainActivity.this,SettingActivity.class);
 
                                     startActivity(intent);
+                                    break;
+                                case 6:
+                                    //登出
+                                    AVUser.logOut();// 清除缓存用户对象
                             }
 
                            // startSupportActionMode(new ActionBarCallBack());
@@ -448,7 +468,31 @@ public class MainActivity extends AppCompatActivity  {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
+
+        final MenuItem item = menu.findItem(R.id.ab_search);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(item);
+
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                mSearchText = newText ;
+                doSearch();
+                return true;
+            }
+        });
         return true;
+    }
+
+    /**
+     * 搜索商品
+     */
+    private void doSearch(){
+
     }
 
     @Override
