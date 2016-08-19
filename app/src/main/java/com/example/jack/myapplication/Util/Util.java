@@ -11,12 +11,18 @@ import android.graphics.drawable.Drawable;
 import android.util.Base64;
 
 import com.example.jack.myapplication.R;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**工具类
  * Created by Jack on 2016/8/7.
@@ -94,6 +100,25 @@ public  class Util {
 
         return toolbarHeight;
     }
+
+    /**
+     * 将json转换为一个数组，使用泛型
+     * @param json
+     * @param clazz
+     * @param <T>
+     * @return
+     * @throws Exception
+     */
+    public static <T> List<T> fromJsonArray(String json, Class<T> clazz) throws Exception {
+        List<T> lst = new ArrayList<T>();
+
+        JsonArray array = new JsonParser().parse(json).getAsJsonArray();
+        for(final JsonElement elem : array){
+            lst.add(new Gson().fromJson(elem, clazz));
+        }
+        return lst;
+    }
+
 
 }
 

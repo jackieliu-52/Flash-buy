@@ -23,13 +23,17 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.SaveCallback;
 import com.example.jack.myapplication.Adapter.ItemAdapter;
 import com.example.jack.myapplication.Fragment.Fragment1;
 import com.example.jack.myapplication.Fragment.Fragment2;
 import com.example.jack.myapplication.Fragment.Fragment_account;
 import com.example.jack.myapplication.Fragment.Fragment_buy;
 import com.example.jack.myapplication.Fragment.Fragment_item;
+import com.example.jack.myapplication.Fragment.Fragment_search;
 import com.example.jack.myapplication.Model.InternetItem;
 import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.Model.LineItem;
@@ -45,6 +49,7 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.github.mrengineer13.snackbar.SnackBar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.litesuits.common.assist.Toastor;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -75,6 +80,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import me.next.slidebottompanel.SlideBottomPanel;
@@ -178,15 +184,25 @@ public class MainActivity extends AppCompatActivity  {
 
     }
 
+    /**
+     * 得到当前的用户，注意区分网络版和本地版
+     */
     private void getUser(){
         AVUser avUser = AVUser.getCurrentUser();
-        if(!avUser.getEmail().equals("")){
-            user.setId(avUser.getEmail());
-        }else{
-            user.setId("jack");
+        if(avUser != null) {
+            if(avUser.getMobilePhoneNumber() != null)
+                user.setId(avUser.getMobilePhoneNumber());
+            else
+                user.setId("11111111111");
+            if(avUser.getUsername() != null)
+                user.setName(avUser.getUsername());
+            else
+                user.setName("jack");
+        } else{
+            user.setId("11111111111");
+            user.setName("jack");
         }
-        user.setName(avUser.getUsername());
-
+      //  Log.i("username",avUser.getUsername() );
     }
 
     private void setListen(){
@@ -289,7 +305,7 @@ public class MainActivity extends AppCompatActivity  {
 
 
         // Create a few sample profile
-        final IProfile profile = new ProfileDrawerItem().withName("Jack").withEmail("878923730@qq.com").withIcon(R.drawable.profile).withIdentifier(233);
+        final IProfile profile = new ProfileDrawerItem().withName(user.getName()).withEmail(user.getId()).withIcon(R.drawable.profile).withIdentifier(233);
 
 
         // Create the AccountHeader
@@ -475,13 +491,14 @@ public class MainActivity extends AppCompatActivity  {
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                return false;
+                doSearch(query);
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 mSearchText = newText ;
-                doSearch();
+
                 return true;
             }
         });
@@ -491,8 +508,10 @@ public class MainActivity extends AppCompatActivity  {
     /**
      * 搜索商品
      */
-    private void doSearch(){
-
+    private void doSearch(String query){
+        Toastor toastor = new Toastor(this);
+        toastor.showSingleLongToast(query);
+        EventBus.getDefault().post(new InternetEvent(query,Constant.REQUEST_Search));
     }
 
     @Override
@@ -506,8 +525,6 @@ public class MainActivity extends AppCompatActivity  {
                 Intent intent =new Intent(this,ScanActivity.class);
                 intent.putExtra(Constant.REQUEST_SCAN_MODE, Constant.REQUEST_SCAN_MODE_ALL_MODE);
                 startActivity(intent);
-//               Intent intent = new Intent(MainActivity.this,TestActivity.class);
-//                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -618,7 +635,7 @@ public class MainActivity extends AppCompatActivity  {
                         switchContent(mContent,fragment_item);
                     }
                     else {
-                        EventBus.getDefault().post(new MessageEvent("查询失败，请检查网络"));
+                        EventBus.getDefault().post(new MessageEvent("查询商品失败，请检查网络"));
                     }
 
 
@@ -630,11 +647,55 @@ public class MainActivity extends AppCompatActivity  {
             case Constant.REQUEST_Cart:
                 initCart(internetEvent.message); //初始化购物车
                 break;
+            case Constant.REQUEST_Search:
+                if(getSearchInfo(internetEvent.message)) {
+                    //成功
+                    Fragment_search fragment_search = new Fragment_search();
+                    switchContent(mContent,fragment_search);
+                }
+                else{
+                    //搜索没成功
+                    EventBus.getDefault().post(new MessageEvent("搜索商品失败，请检查网络"));
+                }
             default:
                 break;
         }
     }
 
+    private boolean getSearchInfo(String name){
+        String searchUrl = root + "Flash-buy/search?name="+name;
+        try{
+            URL temp = new URL(searchUrl);
+            HttpURLConnection connection = (HttpURLConnection) temp
+                    .openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            //网页返回的状态码
+            int code = connection.getResponseCode();
+            if(code == 200){
+                InputStream is = connection.getInputStream();
+                String json = Util.readStream(is);
+                //把json转换成一个 Item数组，应该用Fragment_search的一个static变量保存结果
+                if(!json.equals(""))
+                    Fragment_search.items = Util.fromJsonArray(json,Item.class);
+                else
+                    Fragment_search.items = new ArrayList<>();
+                return true;
+            }
+            else {
+                return false;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            EventBus.getDefault().post(new MessageEvent("搜索商品失败，请检查网络"));
+            return false;
+        }
+    }
+
+    /**
+     * 向服务器请求购物车信息
+     * @param url
+     */
     private void initCart(String url){
         cart = new ArrayList<>();
         //因为这里有个bug，所以我这里处理的时候先加了一个Item
@@ -665,7 +726,7 @@ public class MainActivity extends AppCompatActivity  {
                 //避免Unicode转义
                 Gson gson = new GsonBuilder().disableHtmlEscaping().create();
                 //将json转换为一个Order
-            //    Log.i("json",json);
+
                 Order order = gson.fromJson(json,Order.class);
 
                 //将剩下的加入购物车

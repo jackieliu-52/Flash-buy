@@ -108,18 +108,21 @@ public class LogInActivity  extends AppCompatActivity  {
                 //获取验证码
                 String mobile = mEmailView.getText().toString();
                 if(isEmailValid(mobile)){
-                    avUser.setEmail("");
-                    avUser.setUsername("");
-                    avUser.setPassword("");
+                    avUser.setEmail("878923730@qq.com");
+                    avUser.setUsername("jack");
+                    avUser.setPassword("123456");
                     avUser.setMobilePhoneNumber(mobile);
 
-                    AVUser.requestLoginSmsCodeInBackground(avUser.getMobilePhoneNumber(), new RequestMobileCodeCallback() {
+                    AVOSCloud.requestSMSCodeInBackground(avUser.getMobilePhoneNumber(), new RequestMobileCodeCallback() {
                         @Override
                         public void done(AVException e) {
-                            if (e == null) {
+                            // 发送失败可以查看 e 里面提供的信息
+                            if(e == null){
                                 mPasswordView.requestFocus();
-                            } else {
-                                Log.e("Home.OperationVerify", e.getMessage());
+                            }
+                            else
+                            {
+                                Log.e("Home.OperationVerify",e.getMessage());
                             }
                         }
                     });
@@ -290,6 +293,8 @@ public class LogInActivity  extends AppCompatActivity  {
                                     // successfully
                                 } else {
                                     Toast.makeText(getBaseContext(),"您已经注册过了", Toast.LENGTH_SHORT).show();
+                                    flag = true;
+                                    Log.i("Home.OperationVerify",e.getMessage());
                                     // failed
                                 }
                             }

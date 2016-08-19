@@ -1,7 +1,7 @@
 package com.example.jack.myapplication.Util;
 
 /**
- * Created by 刘红亮 on 2015/9/24 14:08.
+ * 常数
  */
 public interface Constant {
     /**
@@ -43,7 +43,11 @@ public interface Constant {
      */
     public static final int REQUEST_INTERNET_BAR = 0X400;
     /**
-     *
+     * 查询购物车
      */
     public static final int REQUEST_Cart = 0X500;
+    /**
+     * 搜索商品
+     */
+    public static final int REQUEST_Search = 0X600;
 }

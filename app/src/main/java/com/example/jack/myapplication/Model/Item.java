@@ -22,6 +22,15 @@ public class Item implements Parcelable {
     private int discount;  //折扣，10表示没有折扣，5表示五折
     private boolean isStar;  //是否被收藏，True表示被收藏了
     private String source; //来源，中国还是外国?
+    private String category = "未知"; //种类
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
     public String getSource() {
         return source;
@@ -202,6 +211,7 @@ public class Item implements Parcelable {
         dest.writeInt(this.discount);
         dest.writeByte(this.isStar ? (byte) 1 : (byte) 0);
         dest.writeString(this.source);
+        dest.writeString(this.category);
     }
 
     protected Item(Parcel in) {
@@ -218,6 +228,7 @@ public class Item implements Parcelable {
         this.discount = in.readInt();
         this.isStar = in.readByte() != 0;
         this.source = in.readString();
+        this.category = in.readString();
     }
 
     public static final Parcelable.Creator<Item> CREATOR = new Parcelable.Creator<Item>() {

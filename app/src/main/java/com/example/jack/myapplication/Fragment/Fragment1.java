@@ -91,7 +91,6 @@ public class Fragment1 extends Fragment {
             else
                 descri = item.getSize();
 
-            Log.i("debug","233");
             final CardProvider provider = new Card.Builder(mContext)
                     .setTag(item)
                     .withProvider(new CardProvider<>())
