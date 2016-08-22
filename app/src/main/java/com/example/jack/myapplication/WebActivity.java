@@ -3,6 +3,8 @@ package com.example.jack.myapplication;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -39,6 +41,10 @@ public class WebActivity extends AppCompatActivity {
         //更改默认的404页面
         m_webView.setWebViewClient(new WebViewClient(){
 
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                view.loadUrl("file:///android_assets/error.html");
+                                       }
             @Override
             public void onReceivedError(WebView view, int errorCode,
                                         String description, String failingUrl) {
@@ -83,6 +89,7 @@ public class WebActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         loadUrl = "";
+        m_webView.loadUrl(loadUrl);
         super.onDestroy();
 
     }

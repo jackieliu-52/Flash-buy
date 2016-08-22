@@ -1,6 +1,7 @@
 package com.example.jack.myapplication.Fragment;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -8,6 +9,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.card.CardProvider;
@@ -107,7 +109,12 @@ public class Fragment_list extends android.support.v4.app.Fragment {
         builder.setTitle("发票打印");
         builder.setMessage("您是否要打印发票?");
         builder.setNegativeButton("取消", null);
-        builder.setPositiveButton("确定", null);
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(mContext, "打印发票", Toast.LENGTH_SHORT).show();
+            }
+        });
         builder.show();
     }
 

@@ -23,10 +23,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
-import com.avos.avoscloud.SaveCallback;
 import com.example.jack.myapplication.Adapter.ItemAdapter;
 import com.example.jack.myapplication.Fragment.Fragment1;
 import com.example.jack.myapplication.Fragment.Fragment2;
@@ -34,6 +31,7 @@ import com.example.jack.myapplication.Fragment.Fragment_account;
 import com.example.jack.myapplication.Fragment.Fragment_buy;
 import com.example.jack.myapplication.Fragment.Fragment_item;
 import com.example.jack.myapplication.Fragment.Fragment_search;
+import com.example.jack.myapplication.Fragment.Fragment_spend;
 import com.example.jack.myapplication.Model.InternetItem;
 import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.Model.LineItem;
@@ -43,6 +41,7 @@ import com.example.jack.myapplication.Util.Constant;
 import com.example.jack.myapplication.Util.Event.InternetEvent;
 import com.example.jack.myapplication.Util.Event.ListEvent;
 import com.example.jack.myapplication.Util.Event.MessageEvent;
+import com.example.jack.myapplication.Util.InternetUtil;
 import com.example.jack.myapplication.Util.Util;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
@@ -80,7 +79,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 
 import me.next.slidebottompanel.SlideBottomPanel;
@@ -117,10 +115,7 @@ public class MainActivity extends AppCompatActivity  {
     private Fragment_buy fragment_buy = null;
     private Fragment_item fragment_item = null;
 
-    //Url
-    String root = "http://155o554j78.iok.la:49817/";
-    String args1 = "Flash-buy/cart?cartNumber=9&userId=9";
-    String cartUrl = root + args1;
+
 
     @Override
     protected void onStart(){
@@ -152,8 +147,9 @@ public class MainActivity extends AppCompatActivity  {
         setListen();
 
         EventBus.getDefault().register(this);
+        //自己定义一些历史订单
         EventBus.getDefault().post(new ListEvent("init"));
-        EventBus.getDefault().post(new InternetEvent(cartUrl,Constant.REQUEST_Cart));
+        EventBus.getDefault().post(new InternetEvent(InternetUtil.cartUrl,Constant.REQUEST_Cart));
 
         //设置默认fragment
         if (savedInstanceState == null) {
@@ -289,7 +285,7 @@ public class MainActivity extends AppCompatActivity  {
                 //先清空购物车
                 lv_cart.setAdapter(null);
 
-                EventBus.getDefault().post(new InternetEvent(cartUrl,Constant.REQUEST_Cart));
+                EventBus.getDefault().post(new InternetEvent(InternetUtil.cartUrl,Constant.REQUEST_Cart));
 
                 sbv.displayPanel();    //打开下面的面板
             }
@@ -598,6 +594,7 @@ public class MainActivity extends AppCompatActivity  {
         super.onDestroy();
         System.exit(0);
     }
+
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void getInfo(InternetEvent internetEvent) {
         switch (internetEvent.type){
@@ -663,7 +660,7 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private boolean getSearchInfo(String name){
-        String searchUrl = root + "Flash-buy/search?name="+name;
+        String searchUrl = InternetUtil.searchUrl + name;
         try{
             URL temp = new URL(searchUrl);
             HttpURLConnection connection = (HttpURLConnection) temp
@@ -691,6 +688,8 @@ public class MainActivity extends AppCompatActivity  {
             return false;
         }
     }
+
+
 
     /**
      * 向服务器请求购物车信息
@@ -769,6 +768,12 @@ public class MainActivity extends AppCompatActivity  {
                 .withDuration((short)2000)
                 .show();
     }
+
+    /**
+     * 本来只想用来做初始化订单之类的信息，但是发现可能注册的监听事件太多，
+     * 所以这里同时进行了切换服务
+     * @param listEvent
+     */
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void getList(ListEvent listEvent){
         switch (listEvent.message){
@@ -809,7 +814,14 @@ public class MainActivity extends AppCompatActivity  {
                 break;
             case "update":
                 break;
+            case "fragment_spend":
+                Fragment_spend fragment_spend = new Fragment_spend();
+                switchContent(mContent,fragment_spend);
+                break;
+            case "fragment_aler":
+
             default:
+                Log.e("getList()","cann't find fragment" + listEvent.message);
                 break;
         }
 

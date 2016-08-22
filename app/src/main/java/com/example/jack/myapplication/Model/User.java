@@ -6,16 +6,98 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 
 /**
- * Created by Jack on 2016/8/10.
+ * 用户类
  */
-public class User implements Parcelable {
+public class User {
     public static ArrayList<Order> orders = new ArrayList<>(); //用户所有订单
     private String id;     //手机号码
-    private String password;
-    private String name;   //姓名
-    private String sex; //性别
-    private int age;  //年龄
-    private double remaining; //余额
+    private String password = "";    //暂时无用
+    private String name = "";   //姓名
+    private String sex = "女"; //性别，默认为女
+    private int age = 18;  //年龄，默认18岁
+    private double remaining = 0; //余额
+    //新增
+    private double spend = 0 ; //已消费金额
+    private String mail = ""; //邮箱
+    private int frequency = 1 ; //发送总结账单的频率，默认一周一次
+    private boolean sendMail = true; //是否发送账单，默认为true
+    private boolean allergic = true; //是否启动过敏源提醒，默认开启
+    private ArrayList<String>  sources = new ArrayList<>();    //过敏源列表
+    private ArrayList<Item> starItems = new ArrayList<>(); //收藏的商品
+    private boolean isLike = true; //是否打开猜你喜欢
+    private ArrayList<Item> like = new ArrayList<>(); //猜你喜欢的商品
+
+    public double getSpend() {
+        return spend;
+    }
+
+    public void setSpend(double spend) {
+        this.spend = spend;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
+    }
+
+    public int getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(int frequency) {
+        this.frequency = frequency;
+    }
+
+    public boolean isSendMail() {
+        return sendMail;
+    }
+
+    public void setSendMail(boolean sendMail) {
+        this.sendMail = sendMail;
+    }
+
+    public boolean isAllergic() {
+        return allergic;
+    }
+
+    public void setAllergic(boolean allergic) {
+        this.allergic = allergic;
+    }
+
+    public ArrayList<String> getSources() {
+        return sources;
+    }
+
+    public void setSources(ArrayList<String> sources) {
+        this.sources = sources;
+    }
+
+    public ArrayList<Item> getStarItems() {
+        return starItems;
+    }
+
+    public void setStarItems(ArrayList<Item> starItems) {
+        this.starItems = starItems;
+    }
+
+    public boolean isLike() {
+        return isLike;
+    }
+
+    public void setLike(boolean like) {
+        isLike = like;
+    }
+
+    public ArrayList<Item> getLike() {
+        return like;
+    }
+
+    public void setLike(ArrayList<Item> like) {
+        this.like = like;
+    }
 
     public static ArrayList<Order> getOrders() {
         return orders;
@@ -73,42 +155,11 @@ public class User implements Parcelable {
         this.remaining = remaining;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.id);
-        dest.writeString(this.password);
-        dest.writeString(this.name);
-        dest.writeString(this.sex);
-        dest.writeInt(this.age);
-        dest.writeDouble(this.remaining);
-    }
-
     public User() {
     }
 
-    protected User(Parcel in) {
-        this.id = in.readString();
-        this.password = in.readString();
-        this.name = in.readString();
-        this.sex = in.readString();
-        this.age = in.readInt();
-        this.remaining = in.readDouble();
+    public User(String id) {
+        this.id = id;
     }
 
-    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
-        @Override
-        public User createFromParcel(Parcel source) {
-            return new User(source);
-        }
-
-        @Override
-        public User[] newArray(int size) {
-            return new User[size];
-        }
-    };
 }

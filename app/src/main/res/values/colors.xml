@@ -28,7 +28,8 @@
 
     <!-- 浅灰色 -->
     <color name="bg_Gray_light">#EEEEEE</color>
-    
+    <color name="bg_Gray">#DDDDDD</color>
+
     <!-- 自己定义的主题 -->
     <color name="my_colorNoDark">#04FAF5</color>
     <color name="my_colorPrimary">#0288D1</color>
