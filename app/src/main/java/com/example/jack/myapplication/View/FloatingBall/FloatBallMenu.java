@@ -8,7 +8,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jack.myapplication.Util.Event.ListEvent;
 import com.example.jack.myapplication.View.FloatingBall.Interface.IMenu;
+
+import org.greenrobot.eventbus.EventBus;
 
 
 /**
@@ -51,6 +54,7 @@ public class FloatBallMenu implements IMenu {
         tvLeftGift.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                EventBus.getDefault().post(new ListEvent("fragment_sz"));
                 toast(context, "散装商品");
                 hideMenu();
             }
@@ -101,6 +105,7 @@ public class FloatBallMenu implements IMenu {
         tvRightCenter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                EventBus.getDefault().post(new ListEvent("fragment_sz"));
                 toast(context, "散装商品");
                 hideMenu();
             }

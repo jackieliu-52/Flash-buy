@@ -27,11 +27,16 @@ android {
     }
 }
 
+
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha1'
     compile 'com.android.support:design:23.4.0'
+
+    //购物篮
+    compile 'com.github.Jawnnypoo:PhysicsLayout:2.0.0'
 
     //可以扩展的recyclerView
     compile 'com.bignerdranch.android:expandablerecyclerview:2.1.1'

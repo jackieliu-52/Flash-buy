@@ -28,8 +28,10 @@ import com.example.jack.myapplication.Adapter.ItemAdapter;
 import com.example.jack.myapplication.Fragment.Fragment1;
 import com.example.jack.myapplication.Fragment.Fragment2;
 import com.example.jack.myapplication.Fragment.Fragment_account;
+import com.example.jack.myapplication.Fragment.Fragment_aler;
 import com.example.jack.myapplication.Fragment.Fragment_buy;
 import com.example.jack.myapplication.Fragment.Fragment_item;
+import com.example.jack.myapplication.Fragment.Fragment_sanzhuang;
 import com.example.jack.myapplication.Fragment.Fragment_search;
 import com.example.jack.myapplication.Fragment.Fragment_spend;
 import com.example.jack.myapplication.Model.InternetItem;
@@ -114,7 +116,7 @@ public class MainActivity extends AppCompatActivity  {
     private Fragment_account fragment_account = null;
     private Fragment_buy fragment_buy = null;
     private Fragment_item fragment_item = null;
-
+    private Fragment_sanzhuang fragment_sanzhuang = null;
 
 
     @Override
@@ -819,7 +821,13 @@ public class MainActivity extends AppCompatActivity  {
                 switchContent(mContent,fragment_spend);
                 break;
             case "fragment_aler":
-
+                Fragment_aler fragment_aler = new Fragment_aler();
+                switchContent(mContent,fragment_aler);
+                break;
+            case "fragment_sz":
+                fragment_sanzhuang = Fragment_sanzhuang.GetInstance();
+                switchContent(mContent,fragment_sanzhuang);
+                break;
             default:
                 Log.e("getList()","cann't find fragment" + listEvent.message);
                 break;
