@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
 /**
- * Created by Jack on 2016/8/1.
+ * 智能家具
  */
 public class Fragment2 extends android.support.v4.app.Fragment{
 
@@ -94,19 +94,21 @@ public class Fragment2 extends android.support.v4.app.Fragment{
 
         // Add the ItemTouchListener
         mListView.addOnItemTouchListener(new RecyclerItemClickListener.OnItemClickListener() {
+            //单击打开详情
             @Override
             public void onItemClick(@NonNull Card card, int position) {
+
+
+            }
+
+            //长击打开WebView
+            @Override
+            public void onItemLongClick(@NonNull Card card, int position) {
                 Jiaju item = (Jiaju) card.getTag();
                 Intent intent = new Intent(mContext, WebActivity.class);
                 //将url信息传给WebView
                 intent.putExtra("url",item.getUrl());
                 startActivity(intent);
-
-            }
-
-            @Override
-            public void onItemLongClick(@NonNull Card card, int position) {
-
             }
         });
 

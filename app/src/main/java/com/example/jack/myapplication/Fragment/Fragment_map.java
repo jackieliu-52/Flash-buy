@@ -34,12 +34,11 @@ public class Fragment_map extends android.support.v4.app.Fragment {
                              Bundle savedInstanceState)
     {
         Log.i(TAG,"onCreateView");
-        //打印屏幕信息
-        DisplayUtil.printDisplayInfo(mContext);
+
         //获得剪贴板最后一条信息
         Log.i(TAG,ClipboardUtil.getLatestText(mContext));
         //震动测试
-        VibrateUtil.vibrate(mContext,1000);
+  //    VibrateUtil.vibrate(mContext,1000);
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
     @Override

@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.avos.avoscloud.AVOSCloud;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.litesuits.common.utils.DisplayUtil;
 
 /**
  * 初始化
@@ -15,5 +16,8 @@ public class MyApplication extends Application {
         super.onCreate();
         Fresco.initialize(this);
         AVOSCloud.initialize(this,"FjLwORtACC64HFAKWNvA4Nh7-gzGzoHsz","5LTRklNRhPEbAFLh8SayIpaW");
+        //打印屏幕信息
+        DisplayUtil.printDisplayInfo(this);
+
     }
 }

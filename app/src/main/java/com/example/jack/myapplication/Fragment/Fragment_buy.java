@@ -1,8 +1,6 @@
 package com.example.jack.myapplication.Fragment;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -22,7 +20,7 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
 /**
- * Created by Jack on 2016/8/4.
+ * 用户在购买的时候主要用到的三个Fragment
  */
 public class Fragment_buy extends android.support.v4.app.Fragment {
 
@@ -66,9 +64,9 @@ public class Fragment_buy extends android.support.v4.app.Fragment {
 
         FragmentPagerItems pages = new FragmentPagerItems(context);
         //add fragments
-        pages.add(FragmentPagerItem.of(getString(R.string.demo_tab_no_title), Fragment_cuxiao.class));
+        pages.add(FragmentPagerItem.of(getString(R.string.demo_tab_no_title), Fragment_plan.class));
         pages.add(FragmentPagerItem.of(getString(R.string.demo_tab_no_title), Fragment_map.class));
-        pages.add(FragmentPagerItem.of(getString(R.string.demo_tab_no_title), Fragment_list.class));
+        pages.add(FragmentPagerItem.of(getString(R.string.demo_tab_no_title), Fragment_cart.class));
 
         //Fragment嵌套Fragment一定要使用getChildFragmentManager
         FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
