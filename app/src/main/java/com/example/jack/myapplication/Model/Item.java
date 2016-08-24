@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import android.util.Log;
 
 /**
- * Created by Jack on 2016/8/7.
+ * 商品类
  */
 public class Item implements Parcelable {
     private String name;
@@ -23,6 +23,7 @@ public class Item implements Parcelable {
     private boolean isStar;  //是否被收藏，True表示被收藏了
     private String source; //来源，中国还是外国?
     private String category = "未知"; //种类
+
 
     public String getCategory() {
         return category;
@@ -231,7 +232,7 @@ public class Item implements Parcelable {
         this.category = in.readString();
     }
 
-    public static final Parcelable.Creator<Item> CREATOR = new Parcelable.Creator<Item>() {
+    public static final Creator<Item> CREATOR = new Creator<Item>() {
         @Override
         public Item createFromParcel(Parcel source) {
             return new Item(source);

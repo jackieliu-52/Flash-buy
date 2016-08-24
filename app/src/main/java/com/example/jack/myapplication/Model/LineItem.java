@@ -12,7 +12,8 @@ public class LineItem implements Parcelable {
     private String orderId; //订单ID
     private int num; //商品数量
     private double unitPrice; //商品总价
-
+    //新增
+    public boolean isBulk = false; //是否是散装商品
 
     public Item getItem() {
         return item;

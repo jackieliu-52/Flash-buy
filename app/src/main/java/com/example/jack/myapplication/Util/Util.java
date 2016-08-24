@@ -3,13 +3,6 @@ package com.example.jack.myapplication.Util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.PixelFormat;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Window;
@@ -28,15 +21,35 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 /**工具类
  * Created by Jack on 2016/8/7.
  */
 public  class Util {
-    private Util(){
 
+    public  static HashMap<String,Integer> Months = new HashMap<>();
+    static {
+        Months.put("1",31);
+        Months.put("3",31);
+        Months.put("5",31);
+        Months.put("7",31);
+        Months.put("8",31);
+        Months.put("10",31);
+        Months.put("12",31);
+        //这里不考虑闰年
+        Months.put("2",28);
+        Months.put("4",30);
+        Months.put("6",30);
+        Months.put("9",30);
+        Months.put("11",30);
     }
+    private Util(){
+    }
+
     /**
      * 通过文件名获取资源id 例子：getResId("icon", R.drawable.class);
      *
@@ -148,17 +161,6 @@ public  class Util {
         }
         return dpi;
     }
-    /**
-     * 获取 虚拟按键的高度
-     *
-     * @param context
-     * @return
-     */
-    public static int getBottomStatusHeight(Context context) {
-        int totalHeight = getDpi(context);
-        int contentHeight = getScreenHeight(context);
-        return totalHeight - contentHeight;
-    }
 
     /**
      * 标题栏高度
@@ -218,5 +220,41 @@ public  class Util {
         return outMetrics.widthPixels;
     }
 
+    /**
+     * 获取系统时间
+     */
+    public static String getCurrentTime(){
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        int minute = c.get(Calendar.MINUTE);
+        int second = c.get(Calendar.SECOND);
+
+        return year+"/"+month+"/"+day+"/"+hour+"/"+minute+"/"+second;
+    }
+
+    /**
+     * 获取系统时间
+     */
+    public static String getBefoceTime(int before){
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH) > before? c.get(Calendar.DAY_OF_MONTH) - before:1;
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        int minute = c.get(Calendar.MINUTE);
+        int second = c.get(Calendar.SECOND);
+
+        return year+"/"+month+"/"+day+"/"+hour+"/"+minute+"/"+second;
+    }
+    /**
+     * 获取今天是星期几
+     */
+    public static int getCurrentDay(){
+        Calendar c = Calendar.getInstance();
+        return c.get(Calendar.DAY_OF_WEEK);
+    }
 }
 

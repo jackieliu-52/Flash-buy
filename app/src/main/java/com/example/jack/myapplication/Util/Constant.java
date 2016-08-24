@@ -50,4 +50,8 @@ public interface Constant {
      * 搜索商品
      */
     public static final int REQUEST_Search = 0X600;
+    /**
+     * 修改过敏源
+     */
+    public static final int POST_Aller = 0X700;
 }

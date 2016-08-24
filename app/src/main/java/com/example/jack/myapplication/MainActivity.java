@@ -34,6 +34,7 @@ import com.example.jack.myapplication.Fragment.Fragment_item;
 import com.example.jack.myapplication.Fragment.Fragment_sanzhuang;
 import com.example.jack.myapplication.Fragment.Fragment_search;
 import com.example.jack.myapplication.Fragment.Fragment_spend;
+import com.example.jack.myapplication.Model.Aller_father;
 import com.example.jack.myapplication.Model.InternetItem;
 import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.Model.LineItem;
@@ -655,6 +656,17 @@ public class MainActivity extends AppCompatActivity  {
                 else{
                     //搜索没成功
                     EventBus.getDefault().post(new MessageEvent("搜索商品失败，请检查网络"));
+                }
+                break;
+            case Constant.POST_Aller:
+                Gson gson = new Gson();
+                String json = gson.toJson(Fragment_aler.mAllergens, Aller_father.class);
+                if(InternetUtil.postInfo(json,"aller?userId=9")){
+                    //设置成功
+                    EventBus.getDefault().post(new MessageEvent("设置过敏源完成"));
+                }else {
+                    //设置没有成功
+                    EventBus.getDefault().post(new MessageEvent("设置过敏源失败，请检查网络"));
                 }
             default:
                 break;
