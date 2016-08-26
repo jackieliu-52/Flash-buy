@@ -92,7 +92,7 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
         FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
                 getChildFragmentManager(), pages);
         viewPager.setAdapter(adapter);
-        viewPager.setOffscreenPageLimit(0); //取消viewPager的预加载功能
+        viewPager.setOffscreenPageLimit(0); //取消viewPager的预加载功能2
         viewPagerTab.setViewPager(viewPager);
         return view;
     }
