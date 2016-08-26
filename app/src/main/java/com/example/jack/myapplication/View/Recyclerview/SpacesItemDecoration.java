@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 /**
- * Created by Jack on 2016/8/7.
+ * RecyclerView的分割线
  */
 public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
     private int space;
@@ -21,6 +21,8 @@ public class SpacesItemDecoration extends RecyclerView.ItemDecoration {
         outRect.bottom=space;
         if(parent.getChildAdapterPosition(view)==0){
             outRect.top=space;
+        } else {
+            outRect.top = 0;
         }
     }
 }

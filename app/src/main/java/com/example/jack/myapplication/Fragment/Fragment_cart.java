@@ -1,24 +1,31 @@
 package com.example.jack.myapplication.Fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.card.CardProvider;
 import com.dexafree.materialList.card.action.TextViewAction;
+import com.dexafree.materialList.view.MaterialListAdapter;
 import com.dexafree.materialList.view.MaterialListView;
 import com.example.jack.myapplication.MainActivity;
 import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.Model.LineItem;
 import com.example.jack.myapplication.R;
+import com.example.jack.myapplication.ScanActivity;
 import com.example.jack.myapplication.Util.Constant;
 import com.example.jack.myapplication.Util.Event.InternetEvent;
 import com.example.jack.myapplication.Util.Event.MessageEvent;
@@ -37,8 +44,10 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
     private  final String TAG = "Fragment_cart";
     Context mContext;
     MaterialListView mListView;
-    public static int first = 1;
+    private MaterialListAdapter mListAdapter;
 
+    public static int first = 1;   //是否是第一次进入
+    static boolean isMutiList = false;  //是否是多重列表
     //悬浮窗口，不需要权限
     private FloatBallMenu menu;
     private FloatBall.SingleIcon singleIcon;
@@ -63,13 +72,19 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
         mListView.getItemAnimator().setAddDuration(300);
         mListView.getItemAnimator().setRemoveDuration(300);
         init();
+        mListAdapter = mListView.getAdapter();
+
         initRefresh();
 
         menu = new FloatBallMenu();
         singleIcon = new FloatBall.SingleIcon(R.drawable.shop_basket, 1f, 0.3f);
         mFloatBall = new FloatBall.Builder(mContext.getApplicationContext()).menu(menu).icon(singleIcon).build();
-        mFloatBall.setLayoutGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+        mFloatBall.setLayoutGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
         mFloatBall.show();
+
+        //新建一个菜单
+        setHasOptionsMenu(true);
+
         return view;
     }
 
@@ -153,6 +168,44 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
         super.onDestroyView();
         mFloatBall.dismiss();
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.menu_cart, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //handle the click on the back arrow click
+        switch (item.getItemId()) {
+            case R.id.diff_mode:
+                if(!isMutiList){
+                    //变成单排列表
+                    isMutiList = true;
+                    //设置两列
+                    mListView.setLayoutManager(new StaggeredGridLayoutManager(2,
+                            StaggeredGridLayoutManager.VERTICAL));
+                    item.setIcon(R.drawable.ic_view_module_white_24dp);
+                }else {
+                    isMutiList = false;
+                    //设置为单列
+                    mListView.setLayoutManager(new StaggeredGridLayoutManager(1,
+                            StaggeredGridLayoutManager.VERTICAL));
+                    item.setIcon(R.drawable.ic_view_stream_black_24dp);
+                }
+
+                return true;
+            case R.id.scan1:
+                Intent intent =new Intent(getActivity(),ScanActivity.class);
+                intent.putExtra(Constant.REQUEST_SCAN_MODE, Constant.REQUEST_SCAN_MODE_ALL_MODE);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
@@ -164,7 +217,6 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
         } else {
             //相当于Fragment的onPause
             Log.i(TAG,"不可见");
-
         }
     }
 }

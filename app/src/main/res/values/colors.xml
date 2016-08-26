@@ -41,4 +41,6 @@
     <color name="text">#FFFFFFFF</color>
 
     <color name="scan_bg">#7f000000</color>
+    <color name="realwhite">#FFFFFF</color>
+
 </resources>

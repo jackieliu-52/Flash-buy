@@ -63,6 +63,8 @@ public class Fragment_buy extends android.support.v4.app.Fragment {
         Log.i("setupTab", setupTab(viewPagerTab) + "");
 
         FragmentPagerItems pages = new FragmentPagerItems(context);
+
+
         //add fragments
         pages.add(FragmentPagerItem.of(getString(R.string.demo_tab_no_title), Fragment_plan.class));
         pages.add(FragmentPagerItem.of(getString(R.string.demo_tab_no_title), Fragment_map.class));

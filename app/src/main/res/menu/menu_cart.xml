@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/scan1"
+        android:orderInCategory="90"
+        android:title="scan"
+        android:icon="@mipmap/ic_fullscreen_black_24dp"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/diff_mode"
+        android:orderInCategory="90"
+        android:title="不同模式"
+        android:icon="@drawable/ic_view_stream_black_24dp"
+        app:showAsAction="always"/>
+</menu>

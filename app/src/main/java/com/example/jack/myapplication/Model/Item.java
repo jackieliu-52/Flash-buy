@@ -25,6 +25,7 @@ public class Item implements Parcelable {
     private String category = "未知"; //种类
 
 
+
     public String getCategory() {
         return category;
     }

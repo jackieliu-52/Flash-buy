@@ -721,7 +721,8 @@ public class MainActivity extends AppCompatActivity  {
         lineItem1.setNum(1);
         //这里有一个小bug,第一个东西不能显示出来
         cart.add(lineItem1);
-
+        //测试
+        testMode();
 
         String json;
         try {
@@ -771,6 +772,29 @@ public class MainActivity extends AppCompatActivity  {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * 测试模式下的初始化
+     */
+    private void testMode(){
+        Item item2 = new Item();
+        item2.setName("233");
+        item2.setImage("http://obsyvbwp3.bkt.clouddn.com/food.png");
+        item2.setPrice(2);
+        LineItem lineItem1 = new LineItem();
+        lineItem1.setItem(item2);
+        lineItem1.setNum(1);
+        cart.add(lineItem1);
+
+        Item item3 = new Item();
+        item3.setName("233");
+        item3.setImage("http://obsyvbwp3.bkt.clouddn.com/liquid.png");
+        item3.setPrice(5);
+        LineItem lineItem = new LineItem();
+        lineItem.setItem(item3);
+        lineItem.setNum(1);
+        cart.add(lineItem);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
