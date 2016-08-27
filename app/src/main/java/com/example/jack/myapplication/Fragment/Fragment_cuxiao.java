@@ -1,6 +1,7 @@
 package com.example.jack.myapplication.Fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -13,10 +14,12 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.jack.myapplication.Adapter.StaggeredHomeAdapter;
+import com.example.jack.myapplication.CommentActivity;
 import com.example.jack.myapplication.MainActivity;
 import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.R;
 import com.example.jack.myapplication.Util.Event.MessageEvent;
+import com.example.jack.myapplication.View.Recyclerview.FeedItemAnimator;
 import com.example.jack.myapplication.View.Recyclerview.SpacesItemDecoration;
 
 import org.greenrobot.eventbus.EventBus;
@@ -63,7 +66,7 @@ public class Fragment_cuxiao extends android.support.v4.app.Fragment   {
         mRecyclerView.setAdapter(mStaggeredHomeAdapter);
         //加入分割线
         mRecyclerView.addItemDecoration(new SpacesItemDecoration(16));
-
+        mRecyclerView.setItemAnimator(new FeedItemAnimator());
 
         Log.i(TAG,"onCreateView");
         initEvent();
@@ -129,6 +132,7 @@ public class Fragment_cuxiao extends android.support.v4.app.Fragment   {
         //设置点击图片的方法
         mStaggeredHomeAdapter.setOnItemClickLitener(new StaggeredHomeAdapter.OnItemClickLitener()
         {
+            //进入商品详情
             @Override
             public void onItemClick(View view, int position)
             {
@@ -136,13 +140,30 @@ public class Fragment_cuxiao extends android.support.v4.app.Fragment   {
                         position + " click", Toast.LENGTH_SHORT).show();
             }
 
-            //考虑直接可以加入购物车
+            //收藏该商品
             @Override
             public void onItemLongClick(View view, int position)
             {
+                //收藏该商品
                 Toast.makeText(mContext,
                         position + " long click", Toast.LENGTH_SHORT).show();
             }
+
+            @Override
+            public void onCommentClick(View view, int pos){
+                final Intent intent = new Intent(mContext, CommentActivity.class);
+                int[] startingLocation = new int[2];
+                view.getLocationOnScreen(startingLocation);
+                intent.putExtra(CommentActivity.ARG_DRAWING_START_LOCATION, startingLocation[1]);
+                startActivity(intent);
+                getActivity().overridePendingTransition(0, 0);
+            }
+
+            @Override
+            public void onLikeClick(View view,int pos){
+                //加入收藏夹
+            }
+
         });
     }
 

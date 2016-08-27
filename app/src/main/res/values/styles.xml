@@ -7,6 +7,8 @@
         <item name="colorPrimaryDark">@color/my_colorPrimary</item>
         <item name="colorAccent">@color/my_colorAccent</item>
 
+
+
         <!-- MaterialDrawer specific values -->
         <item name="material_drawer_background">@color/material_drawer_background</item>
         <item name="material_drawer_primary_text">@color/primaryText</item>
@@ -23,14 +25,11 @@
         <item name="windowActionModeOverlay">true</item>
     </style>
 
-    <!--
-    Overwrite the Style of the BezelImageView for the whole MaterialDrawer
-    <style name="BezelImageView">
-        <item name="biv_maskDrawable">@drawable/material_drawer_square_mask</item>
-        <item name="biv_drawCircularShadow">false</item>
-        <item name="biv_selectorOnPress">@color/material_drawer_primary</item>
+    <!-- 评论Activity所需要的主题-->
+    <style name="CustomTheme.TransparentActivity">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
-    -->
 
     <style name="FullscreenTheme" parent="MaterialDrawerTheme.Light.DarkToolbar.TranslucentStatus"></style>
 

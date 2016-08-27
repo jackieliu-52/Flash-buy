@@ -23,7 +23,7 @@ public class Item implements Parcelable {
     private boolean isStar;  //是否被收藏，True表示被收藏了
     private String source; //来源，中国还是外国?
     private String category = "未知"; //种类
-
+    private int storage = 0;  //存储量
 
 
     public String getCategory() {
@@ -214,6 +214,7 @@ public class Item implements Parcelable {
         dest.writeByte(this.isStar ? (byte) 1 : (byte) 0);
         dest.writeString(this.source);
         dest.writeString(this.category);
+        dest.writeInt(this.storage);
     }
 
     protected Item(Parcel in) {
@@ -231,9 +232,10 @@ public class Item implements Parcelable {
         this.isStar = in.readByte() != 0;
         this.source = in.readString();
         this.category = in.readString();
+        this.storage = in.readInt();
     }
 
-    public static final Creator<Item> CREATOR = new Creator<Item>() {
+    public static final Parcelable.Creator<Item> CREATOR = new Parcelable.Creator<Item>() {
         @Override
         public Item createFromParcel(Parcel source) {
             return new Item(source);

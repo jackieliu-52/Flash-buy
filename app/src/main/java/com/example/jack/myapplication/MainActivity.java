@@ -5,6 +5,8 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.LayoutInflaterCompat;
@@ -103,6 +105,7 @@ public class MainActivity extends AppCompatActivity  {
 
     //Floating Button
     private FloatingActionsMenu menuMultipleActions;
+    private CoordinatorLayout clContent;
 
     //底部窗口
     private SlideBottomPanel sbv;
@@ -261,7 +264,10 @@ public class MainActivity extends AppCompatActivity  {
 
 
     private void CreateButton(){
+        clContent = (CoordinatorLayout) findViewById(R.id.coordinatorLayout);
+
         final FloatingActionButton star = (FloatingActionButton) findViewById(R.id.star);
+
         star.setColorNormalResId(R.color.pink);
         star.setColorPressedResId(R.color.pink_pressed);
         star.setIcon(R.mipmap.ic_fab_star);
@@ -800,11 +806,12 @@ public class MainActivity extends AppCompatActivity  {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void snackBar(MessageEvent messageEvent){
 
-        new SnackBar.Builder(MainActivity.this)
-                .withMessage(messageEvent.message)
-                .withStyle(SnackBar.Style.ALERT)
-                .withDuration((short)2000)
-                .show();
+        Snackbar.make(clContent, messageEvent.message, Snackbar.LENGTH_SHORT).show();
+//        new SnackBar.Builder(MainActivity.this)
+//                .withMessage(messageEvent.message)
+//                .withStyle(SnackBar.Style.ALERT)
+//                .withDuration((short)2000)
+//                .show();
     }
 
     /**

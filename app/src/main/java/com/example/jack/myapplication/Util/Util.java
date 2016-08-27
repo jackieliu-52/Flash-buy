@@ -2,6 +2,7 @@ package com.example.jack.myapplication.Util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -255,6 +256,10 @@ public  class Util {
     public static int getCurrentDay(){
         Calendar c = Calendar.getInstance();
         return c.get(Calendar.DAY_OF_WEEK);
+    }
+
+    public static int dpToPx(int dp) {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
 }
 
