@@ -32,8 +32,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
 
-    //通用的一个RecyclerAdapter库，自己写好麻烦
-    compile 'com.zhy:base-rvadapter:3.0.3'
+
 
     //购物篮
     compile 'com.github.Jawnnypoo:PhysicsLayout:2.0.0'

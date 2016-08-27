@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
  * BaseFragment，使用懒加载
  */
 public  class BaseFragment extends Fragment {
+    protected String TAG = BaseFragment.class.getSimpleName();
     protected Context mContext;
     protected boolean isVisible;
 

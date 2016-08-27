@@ -20,7 +20,8 @@
     <color name="blue_semi_transparent">#805677fc</color>
     <color name="blue_semi_transparent_pressed">#80738ffe</color>
 
-
+    <color name="icon_selected">#e91e63</color>
+    <color name="icon_not_selected">#CCCCCC</color>
     <color name="icon_enabled">#FFFFFFFF</color>
     <color name="icon_disabled">#FF63727B</color>
     <color name="transparent">#00000000</color>

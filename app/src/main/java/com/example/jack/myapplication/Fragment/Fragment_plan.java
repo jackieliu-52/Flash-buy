@@ -34,7 +34,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 计划界面
+ * 计划界面，这里还是有点问题，因为如果想加入一个scrollview
+ * 那么会和viewpager产生不可描述的冲突，即使自定义scrollview,viewpager滑动的手势也会被scrollview捕获
+ * 再加上在scrollview滑动的时候还得去固定住viewpager的指示器，太过于麻烦，暂时不处理
  */
 public class Fragment_plan extends android.support.v4.app.Fragment {
     Context mContext;
@@ -73,8 +75,9 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
 
         setupTab(viewPagerTab);
 
-
+        //测试数据
         test();
+
         Bundle bundle1 = new Bundle();
         bundle1.putParcelableArrayList("list",(ArrayList<? extends Parcelable>) mItems);
         Bundle bundle2 = new Bundle();
@@ -92,7 +95,7 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
         FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
                 getChildFragmentManager(), pages);
         viewPager.setAdapter(adapter);
-        viewPager.setOffscreenPageLimit(0); //取消viewPager的预加载功能2
+        viewPager.setOffscreenPageLimit(2); //增加预加载功能
         viewPagerTab.setViewPager(viewPager);
         return view;
     }
@@ -102,19 +105,29 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
         mItems = new ArrayList<>();
         mItems1 = new ArrayList<>();
 
-        Item item2 = new Item();
-        item2.setName("牛奶");
-        item2.setImage("http://obsyvbwp3.bkt.clouddn.com/milk.png");
-        item2.setPrice(2);
+
 
         Item item3 = new Item();
-        item3.setName("233");
+        item3.setName("洗手液");
         item3.setImage("http://obsyvbwp3.bkt.clouddn.com/liquid.png");
         item3.setPrice(5);
 
-        mItems.add(item2);
+        Item item4 = new Item();
+        item4.setName("肥皂");
+        item4.setImage("http://obsyvbwp3.bkt.clouddn.com/milk.png");
+        item4.setPrice(2);
+        for(int i = 0 ; i < 10;i++) {
+            Item item2 = new Item();
+            item2.setName("牛奶");
+            item2.setImage("http://obsyvbwp3.bkt.clouddn.com/milk.png");
+            item2.setPrice(2);
+            mItems.add(item2);
+        }
+
         mItems.add(item3);
+        mItems.add(item4);
         mItems1.add(item3);
+        mItems1.add(item4);
     }
 
     private void initTop(){

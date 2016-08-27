@@ -57,24 +57,6 @@ public class Fragment_item extends Fragment {
     public void onResume() {
 
         super.onResume();
-        //这里可以让Fragment直接监听按钮事件
-//        getView().setFocusableInTouchMode(true);
-//        getView().requestFocus();
-//        getView().setOnKeyListener(new View.OnKeyListener() {
-//            @Override
-//            public boolean onKey(View v, int keyCode, KeyEvent event) {
-//
-//                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_BACK){
-//
-//                    // handle back button
-//
-//                    return true;
-//
-//                }
-//
-//                return false;
-//            }
-//        });
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

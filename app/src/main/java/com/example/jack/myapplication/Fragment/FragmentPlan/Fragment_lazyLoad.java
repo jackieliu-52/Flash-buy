@@ -1,32 +1,32 @@
 package com.example.jack.myapplication.Fragment.FragmentPlan;
 
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-
+import com.example.jack.myapplication.Adapter.LazyLoadAdapter;
 import com.example.jack.myapplication.Fragment.BaseFragment;
 import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.R;
-import com.example.jack.myapplication.View.Recyclerview.SpacesItemDecoration;
-import com.facebook.drawee.view.SimpleDraweeView;
-import com.zhy.adapter.recyclerview.CommonAdapter;
-import com.zhy.adapter.recyclerview.base.ViewHolder;
+import com.example.jack.myapplication.Util.Event.MessageEvent;
+import com.example.jack.myapplication.View.Recyclerview.DividerItemDecoration;
+import com.example.jack.myapplication.View.Recyclerview.MyItemDecoration;
 
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 实现懒加载的Fragment
  */
-public class Fragment_lazyLoad extends BaseFragment {
+public class Fragment_lazyLoad extends BaseFragment  {
     RecyclerView mRecyclerView;
-    List<Item> mItems;
+    List<Item> mItems; //要加载的商品
+    public static List<Item> planItems = new ArrayList<>(); //计划要购买的商品
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,7 +38,7 @@ public class Fragment_lazyLoad extends BaseFragment {
         StaggeredGridLayoutManager.VERTICAL));
 
         //加入分割线
-        mRecyclerView.addItemDecoration(new SpacesItemDecoration(3));
+        mRecyclerView.addItemDecoration(new MyItemDecoration(10));
 
         Load();
 
@@ -53,33 +53,20 @@ public class Fragment_lazyLoad extends BaseFragment {
         }else {
             return;
         }
-        //这里再去设置Adapter
-        mRecyclerView.setAdapter(new CommonAdapter<Item>(mContext, R.layout.plan_item, mItems)
-        {
-            @Override
-            public void convert(ViewHolder holder, Item item,int pos)
-            {
-                //设置Adapter
-                mRecyclerView.setAdapter(new CommonAdapter<Item>(mContext, R.layout.plan_item, mItems)
-                {
-                    @Override
-                    public void convert(ViewHolder holder, Item item,int pos)
-                    {
-                        holder.setText(R.id.plan_item_name,item.getName());
-                        ((SimpleDraweeView) holder.getView(R.id.plan_item_pic) ).setImageURI(item.getImage());
-                        holder.setText(R.id.plan_storage,""+1000);  //因为这个Adapter不能容纳一个二元组，我也暂时懒得重写了，库存暂时写死
-                        holder.setText(R.id.plan_price,"￥"+item.getPrice());
-                        final ImageButton buy = ((ImageButton) holder.getView(R.id.plan_buy));
-                        buy.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                buy.setImageResource(R.drawable.ic_plan_to_buy);
-                                //加入到准备购买的商品名单当中去
-                            }
-                        });
+        LazyLoadAdapter adapter = new LazyLoadAdapter(mContext,mItems);
 
-                    }
-                });
+        //这里再去设置Adapter
+        mRecyclerView.setAdapter(adapter);
+        adapter.setOnItemClickLitener(new LazyLoadAdapter.OnItemClickLitener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                //打开商品页面
+                EventBus.getDefault().post(new MessageEvent("您点击了" + mItems.get(position).getName()));
+            }
+
+            @Override
+            public void onItemPlantoBuy(View view, int position) {
+                planItems.add(mItems.get(position));  //加入要购买的商品中
             }
         });
     }

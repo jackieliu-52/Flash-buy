@@ -21,7 +21,7 @@
     android:layout_above="@id/center_anchor"
     android:layout_centerHorizontal="true"
     android:scaleType="center"
-    app:tint="@color/custom_tab_icon"
+    app:tint="@color/plan_tab_icon"
     />
 
   <TextView
@@ -31,6 +31,7 @@
     android:layout_below="@id/center_anchor"
     android:layout_centerHorizontal="true"
     android:layout_marginTop="2dp"
+      android:textColor="@color/icon_not_selected"
     android:maxLines="1"
     android:textSize="14sp"
     />

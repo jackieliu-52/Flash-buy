@@ -90,6 +90,7 @@ import me.next.slidebottompanel.SlideBottomPanel;
  * 主页
  */
 public class MainActivity extends AppCompatActivity  {
+    public static boolean TESTMODE = false;  //默认不开启测试模式
     private static final int PROFILE_SETTING = 1;
     public static Activity instance;
     public static User user = new User(); //当前用户
@@ -116,7 +117,6 @@ public class MainActivity extends AppCompatActivity  {
     private Fragment2 f2 = null;
     private Fragment_account fragment_account = null;
     private Fragment_buy fragment_buy = null;
-    private Fragment_item fragment_item = null;
     private Fragment_sanzhuang fragment_sanzhuang = null;
 
 
@@ -347,7 +347,7 @@ public class MainActivity extends AppCompatActivity  {
                         new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).withIcon(FontAwesome.Icon.faw_github).withIdentifier(7),
                         new SecondaryDrawerItem().withName(R.string.drawer_item_contact).withIcon(FontAwesome.Icon.faw_bullhorn).withIdentifier(8),
                         new DividerDrawerItem(),
-                        new SwitchDrawerItem().withName("收藏夹").withIcon(Octicons.Icon.oct_tools).withChecked(true).withOnCheckedChangeListener(onCheckedChangeListener)
+                        new SwitchDrawerItem().withName("测试模式").withIcon(Octicons.Icon.oct_tools).withChecked(false).withOnCheckedChangeListener(onCheckedChangeListener)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -422,14 +422,14 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     /**
-     * 是否开启收藏夹功能
+     * 是否开启测试模式
      */
     private OnCheckedChangeListener onCheckedChangeListener = new OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
-
+            TESTMODE = isChecked;
             new SnackBar.Builder(MainActivity.this)
-                        .withMessage(""+ isChecked )
+                        .withMessage("测试模式："+ isChecked )
                         .withStyle(SnackBar.Style.INFO)
                         .withDuration((short)2000)
                         .show();
