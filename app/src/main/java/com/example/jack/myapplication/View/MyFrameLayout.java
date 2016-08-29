@@ -29,6 +29,6 @@ public class MyFrameLayout extends FrameLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, widthMeasureSpec);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 }

@@ -3,7 +3,7 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_view"
     android:layout_width="match_parent"
-    android:layout_height="198dp"
+    android:layout_height="wrap_content"
     android:layout_margin="8dp"
     card_view:cardCornerRadius="4dp">
     <LinearLayout
@@ -15,26 +15,43 @@
         <com.example.jack.myapplication.View.MyFrameLayout
             android:id="@+id/vImageRoot"
             android:layout_width="match_parent"
-            android:layout_height="150dp">
+            android:layout_height="wrap_content">
+
             <com.facebook.drawee.view.SimpleDraweeView
                 android:id="@+id/item_pic"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="100dp"
                 fresco:placeholderImage="@drawable/good"
-                android:scaleType="centerCrop"
+                fresco:actualImageScaleType="centerInside"
                 />
+            <LinearLayout
+                android:layout_width="match_parent" android:layout_height="40dp"
+                android:background="#99000000" android:gravity="center_vertical"
+                android:layout_gravity="bottom"
+                android:paddingLeft="10dp">
+                <TextView
+                    android:textColor="@color/realwhite"
+                    android:id="@+id/item_title"
+                    android:layout_width="130dp"
+                    android:layout_height="20dp"
+                    android:text="商品名称啊啊啊"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center"/>
+
+
+            </LinearLayout>
 
             <View
                 android:id="@+id/vBgLike"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="100dp"
                 android:background="@drawable/bg_like_circle_background"
                 android:visibility="invisible" />
 
             <ImageView
                 android:id="@+id/ivLike"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="100dp"
                 android:scaleType="center"
                 android:src="@drawable/ic_heart_outline_white"
                 android:visibility="invisible" />
@@ -63,30 +80,30 @@
                 android:background="@drawable/btn_feed_action"
                 android:src="@mipmap/ic_comment_outline_grey" />
 
-            <TextView
-                android:id="@+id/item_title"
-                android:layout_width="130dp"
-                android:layout_height="20dp"
-                android:text="商品名称啊啊啊"
+            <LinearLayout
+                android:orientation="vertical"
                 android:layout_gravity="center_vertical"
-                android:gravity="center"/>
+                android:paddingRight="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|right">
+                <TextView
+                    android:id="@+id/item_price"
+                    android:layout_width="48dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_vertical"
+                    android:text="价格"
+                    android:gravity="center"/>
 
-            <TextView
-                android:id="@+id/item_price"
-                android:layout_width="48dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center_vertical"
-                android:text="价格"
-                android:gravity="center"/>
 
-
-            <TextView
-                android:id="@+id/item_discount"
-                android:layout_width="48dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center_vertical"
-                android:text="折扣"
-                android:gravity="center"/>
+                <TextView
+                    android:id="@+id/item_discount"
+                    android:layout_width="48dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center_vertical"
+                    android:text="折扣"
+                    android:gravity="center"/>
+            </LinearLayout>
 
         </LinearLayout>
 

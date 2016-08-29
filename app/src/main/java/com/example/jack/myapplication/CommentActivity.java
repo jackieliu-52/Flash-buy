@@ -9,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
@@ -51,7 +52,16 @@ public class CommentActivity extends AppCompatActivity implements SendCommentBut
         setupSendCommentButton();
 
         drawingStartLocation = getIntent().getIntExtra(ARG_DRAWING_START_LOCATION, 0);
-
+        if (savedInstanceState == null) {
+            contentRoot.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                @Override
+                public boolean onPreDraw() {
+                    contentRoot.getViewTreeObserver().removeOnPreDrawListener(this);
+                    startIntroAnimation();
+                    return true;
+                }
+            });
+        }
     }
 
     private void setupComments() {
@@ -111,6 +121,7 @@ public class CommentActivity extends AppCompatActivity implements SendCommentBut
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
+                        CommentActivity.super.onBackPressed();
                         overridePendingTransition(0, 0);
                     }
                 })

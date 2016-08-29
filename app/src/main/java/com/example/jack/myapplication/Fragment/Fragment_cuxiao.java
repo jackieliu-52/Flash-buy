@@ -64,8 +64,8 @@ public class Fragment_cuxiao extends android.support.v4.app.Fragment   {
         mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2,
                 StaggeredGridLayoutManager.VERTICAL));
         mRecyclerView.setAdapter(mStaggeredHomeAdapter);
-        //加入分割线
-        mRecyclerView.addItemDecoration(new SpacesItemDecoration(16));
+//        //加入分割线
+//        mRecyclerView.addItemDecoration(new SpacesItemDecoration(2));
         mRecyclerView.setItemAnimator(new FeedItemAnimator());
 
         Log.i(TAG,"onCreateView");

@@ -182,7 +182,7 @@ public class StaggeredHomeAdapter extends
                         notifyItemChanged(pos, ACTION_LIKE_IMAGE_CLICKED);
                         EventBus.getDefault().post(new MessageEvent("liked"));
                         mOnItemClickLitener.onItemLongClick(draweeView, pos);  //在这里去调用想实现的方法
-                        return false;
+                        return true;
                     }
                 });
 
