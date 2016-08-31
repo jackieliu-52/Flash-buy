@@ -1,80 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/bg_Gray"
-    android:orientation="vertical" >
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:background="#fffafafa"
+              android:orientation="vertical"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:background="@color/white"
-        android:orientation="horizontal"
-        android:layout_height="50dp">
-        <TextView
+        android:layout_height="230dp"
+        android:id="@+id/userinfo_header"
+        android:orientation="vertical"
+        android:background="@mipmap/user_info_header">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/avatar"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="30dp"
+            android:background="@mipmap/ic_account_circle_white_48dp"
+            android:layout_gravity="center_horizontal"/>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black_semi_transparent"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
 
-            android:text="头像"
-            android:textSize="20sp"
-            android:layout_gravity="center_vertical" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/nickname"
+                android:text="Jack"
+                android:textColor="@color/white"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="4dp"/>
 
-        <ImageView
-            android:src="@drawable/profile"
-            android:id="@+id/iv_account"
-            android:layout_width="600sp"
-            android:layout_height="match_parent"
-            android:layout_gravity="right" />
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:id="@+id/sex"
+                android:layout_gravity="center_vertical"
+                android:background="@mipmap/ic_sex_girl"/>
+        </LinearLayout>
+
+
+
     </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="#E6E8FA" />
     <LinearLayout
         android:layout_width="match_parent"
-        android:background="@color/white"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
         android:orientation="horizontal"
-        android:layout_height="50dp">
+        android:layout_height="50dp"
+        >
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black_semi_transparent"
+            android:textColor="@color/grey"
             android:text="昵称"
-            android:textSize="20sp"
+            android:textSize="14sp"
             android:layout_gravity="center_vertical" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"/>
 
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:id ="@+id/et_name"
             android:hint="Jack"
-            android:layout_marginRight="3dp"
-            android:layout_gravity="center_vertical|right" />
+            tools:text="Jack"
+            android:gravity="end"
+            android:textSize="14sp"
+            android:textColor="@color/grey"
+            android:background="@null"
+            android:layout_gravity="center_vertical" />
     </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="#E6E8FA" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#E6E8FA" />
     <LinearLayout
         android:layout_width="match_parent"
-        android:background="@color/white"
         android:orientation="horizontal"
         android:layout_height="50dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black_semi_transparent"
+            android:textColor="@color/grey"
             android:text="邮箱"
-            android:textSize="20sp"
+            android:textSize="14sp"
             android:layout_gravity="center_vertical" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"/>
 
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:id ="@+id/et_mail"
-            android:hint="233333333@qq.com"
-            android:layout_marginRight="3sp"
-            android:layout_gravity="center_vertical|right" />
+            android:hint="233@qq.com"
+            tools:text="233@qq.com"
+            android:gravity="end"
+            android:textSize="14sp"
+            android:textColor="@color/grey"
+            android:background="@null"
+            android:layout_gravity="center_vertical" />
+
     </LinearLayout>
     <View
         android:layout_width="match_parent"
@@ -88,57 +132,73 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black_semi_transparent"
+            android:textColor="@color/grey"
             android:text="性别"
-            android:textSize="20sp"
+            android:textSize="14sp"
             android:layout_gravity="center_vertical" />
-
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1"/>
         <Spinner
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:id ="@+id/sp_sex"
             android:entries="@array/sex"
-
-            android:layout_marginRight="3dp"
-            android:layout_gravity="center_vertical|right" />
+            android:layout_gravity="center_vertical"
+            android:gravity="end"
+            />
     </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:background="#DDDDDD" />
     <LinearLayout
-        android:id="@+id/ll_aler"
-        android:layout_width="match_parent"
-        android:background="@color/white"
         android:orientation="horizontal"
-        android:clickable="true"
-        android:layout_height="50dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/black_semi_transparent"
-            android:text="我的过敏源"
-            android:textSize="20sp"
-            android:layout_gravity="center_vertical" />
-    </LinearLayout>
-    <View
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="#E6E8FA" />
-    <LinearLayout
-        android:id="@+id/ll_spend"
-        android:layout_width="match_parent"
-        android:background="@color/white"
-        android:orientation="horizontal"
-        android:clickable="true"
-        android:layout_height="50dp">
-        <TextView
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/ll_aler"
             android:layout_width="wrap_content"
+            android:background="@color/white"
+            android:orientation="horizontal"
+            android:clickable="true"
+            android:layout_height="30dp"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black_semi_transparent"
+                android:text="我的过敏源"
+                android:textSize="20sp"
+                android:layout_gravity="center_vertical" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_spend"
+            android:layout_width="wrap_content"
+            android:background="@color/white"
+            android:orientation="horizontal"
+            android:clickable="true"
             android:layout_height="wrap_content"
-            android:textColor="@color/black_semi_transparent"
-            android:text="我的消费记录"
-            android:textSize="20sp"
-            android:layout_gravity="center_vertical" />
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black_semi_transparent"
+                android:text="我的消费记录"
+                android:textSize="20sp"
+                android:gravity="center_horizontal" />
+        </LinearLayout>
     </LinearLayout>
+
+    </LinearLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/commitFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/ic_popup_attachment_rename"
+        app:backgroundTint="@color/pink"
+        android:layout_gravity="bottom|end"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="@dimen/fab_margin"/>
 </LinearLayout>

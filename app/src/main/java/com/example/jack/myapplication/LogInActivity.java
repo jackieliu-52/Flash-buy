@@ -76,7 +76,6 @@ public class LogInActivity  extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        MainActivity.instance = this;
 
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();  //手机号填充事件
@@ -87,6 +86,7 @@ public class LogInActivity  extends AppCompatActivity  {
             // 跳转到首页
             Intent intent = new Intent(this,MainActivity.class);
             startActivity(intent);
+            finish();
         } else {
             //doNothing
         }
@@ -332,7 +332,7 @@ public class LogInActivity  extends AppCompatActivity  {
             if (success) {
                 Intent intent = new Intent(LogInActivity.this, MainActivity.class);
                 startActivity(intent);
-                //   finish();
+                finish();
             } else {
                 mPasswordView.setError("验证码错误");
                 mPasswordView.requestFocus();

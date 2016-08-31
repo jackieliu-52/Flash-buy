@@ -1,5 +1,9 @@
 package com.example.jack.myapplication.Util;
 
+import com.example.jack.myapplication.Util.Event.MessageEvent;
+
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -51,6 +55,7 @@ public class InternetUtil {
             }
         }catch (Exception e)
         {
+            EventBus.getDefault().post(new MessageEvent("更新失败"));
             e.printStackTrace();
         }
         return flag;

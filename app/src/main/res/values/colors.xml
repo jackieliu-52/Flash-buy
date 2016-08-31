@@ -27,9 +27,10 @@
     <color name="transparent">#00000000</color>
     <color name="divider">#03A9F4</color>
 
-    <!-- 浅灰色 -->
+    <!-- 灰色 -->
     <color name="bg_Gray_light">#EEEEEE</color>
     <color name="bg_Gray">#DDDDDD</color>
+    <color name="grey">#777777</color>
 
     <!-- 自己定义的主题 -->
     <color name="my_colorNoDark">#04FAF5</color>

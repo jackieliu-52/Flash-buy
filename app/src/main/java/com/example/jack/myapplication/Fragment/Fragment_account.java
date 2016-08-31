@@ -3,6 +3,7 @@ package com.example.jack.myapplication.Fragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -29,6 +30,8 @@ import com.google.gson.Gson;
 
 import org.greenrobot.eventbus.EventBus;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 
 /**
  * 设置账号信息，本来想用PreferFragment，但是不兼容v4下的Fragment
@@ -42,12 +45,13 @@ public class Fragment_account extends Fragment {
      */
     private static Fragment_account instance = null;
 
-    ImageView ivAccount;
     EditText etName;
     EditText etMail;
     Spinner spSex;
     LinearLayout llAler;
     LinearLayout llSpend;
+    FloatingActionButton commitFab;
+    CircleImageView avatar;
 
     private String name;
     private String sex;
@@ -130,18 +134,17 @@ public class Fragment_account extends Fragment {
                 //do nothing
             }
         });
-        ivAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                isChanged = true;
-                Toast.makeText(mContext,"你点击了头像",Toast.LENGTH_SHORT).show();
-            }
-        });
 
         setLayoutListener();
         //新建一个菜单
         setHasOptionsMenu(true);
-
+        //保存数据，发送给服务器
+        commitFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new SendData().execute();
+            }
+        });
         return view;
 
     }
@@ -154,9 +157,10 @@ public class Fragment_account extends Fragment {
         llSpend = (LinearLayout) view.findViewById(R.id.ll_spend);
         llAler = (LinearLayout) view.findViewById(R.id.ll_aler);
         spSex = (Spinner)view.findViewById(R.id.sp_sex);
-        ivAccount=(ImageView)view.findViewById(R.id.iv_account);
         etName=(EditText)view.findViewById(R.id.et_name);
         etMail=(EditText)view.findViewById(R.id.et_mail);
+        commitFab = (FloatingActionButton)view.findViewById(R.id.commitFab);
+        avatar = (CircleImageView)view.findViewById(R.id.avatar);
     }
 
     /**
@@ -185,19 +189,21 @@ public class Fragment_account extends Fragment {
     }
 
     @Override
+    public void onDestroy(){
+        super.onDestroy();
+
+    }
+
+    @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser) {
             //相当于Fragment的onResume
             Log.i(TAG,"v");
-            isChanged = false;
         } else {
             //相当于Fragment的onPause，如果数据有改动，就传给服务器
             Log.i(TAG,"in");
-            if(isChanged){
-                //传给服务器
-                new SendData().execute();
-            }
+            ((MainActivity)getActivity()).menuMultipleActions.setVisibility(View.VISIBLE);
         }
     }
     class SendData extends AsyncTask<Void,Void,Boolean> {

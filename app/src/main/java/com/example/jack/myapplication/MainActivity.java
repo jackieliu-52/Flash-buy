@@ -94,7 +94,6 @@ import me.next.slidebottompanel.SlideBottomPanel;
 public class MainActivity extends AppCompatActivity  {
     public static boolean TESTMODE = false;  //默认不开启测试模式
     private static final int PROFILE_SETTING = 1;
-    public static Activity instance;
     public static User user = new User(); //当前用户
     SearchView mSearchView;
     private String mSearchText;
@@ -104,7 +103,7 @@ public class MainActivity extends AppCompatActivity  {
     public Toolbar toolbar = null;
 
     //Floating Button
-    private FloatingActionsMenu menuMultipleActions;
+    public FloatingActionsMenu menuMultipleActions;
     private CoordinatorLayout clContent;
 
     //底部窗口
@@ -122,6 +121,12 @@ public class MainActivity extends AppCompatActivity  {
     private Fragment_buy fragment_buy = null;
     private Fragment_sanzhuang fragment_sanzhuang = null;
 
+    public static final int DRAWER_BUY = 1;
+    public static final int DRAWER_SMART = 2;
+    public static final int DRAWER_HOME = 3;
+    public static final int DRAWER_ABOUT = 4;
+    public static final int DRAWER_LOGOUT = 5;
+    public static final int DRAWER_SETTING = 6;
 
     @Override
     protected void onStart(){
@@ -133,13 +138,10 @@ public class MainActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         //使用Icon库
         LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
+        EventBus.getDefault().register(this);
         super.onCreate(savedInstanceState);
 
         getUser();
-        //关闭上一个Activity
-        if(instance != null)
-            instance.finish();
-
 
         //打印内存
         ActivityManager activityManager = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
@@ -150,11 +152,7 @@ public class MainActivity extends AppCompatActivity  {
         CreateBottomPanel();
         CreateButton();
 
-        setListen();
 
-        EventBus.getDefault().register(this);
-        //自己定义一些历史订单
-        EventBus.getDefault().post(new ListEvent("init"));
         EventBus.getDefault().post(new InternetEvent(InternetUtil.cartUrl,Constant.REQUEST_Cart));
 
         //设置默认fragment
@@ -207,7 +205,27 @@ public class MainActivity extends AppCompatActivity  {
       //  Log.i("username",avUser.getUsername() );
     }
 
-    private void setListen(){
+
+    private void CreateBottomPanel() {
+        sbv = (SlideBottomPanel) findViewById(R.id.sbv);
+        lv_cart = (ListView) findViewById(R.id.list_cart);
+        tv_total_cost = (TextView) findViewById(R.id.tv_total_cost);
+        lv_cart.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,
+                                    long id) {
+                if(position == 0)
+                    return;
+                //获得Item
+                Item item = cart.get(position).getItem();
+                new SnackBar.Builder(MainActivity.this)
+                        .withMessage(item.getName())
+                        .withStyle(SnackBar.Style.INFO)
+                        .withDuration((short)2000)
+                        .show();
+            }
+        });
+        //底部面板的结账按钮
         ImageView iv_check_out = (ImageView)findViewById(R.id.iv_checkout);
         iv_check_out.setOnClickListener(new View.OnClickListener()
         {
@@ -228,37 +246,6 @@ public class MainActivity extends AppCompatActivity  {
                 cart = new ArrayList<>();
             }
         });
-    }
-
-    private void CreateBottomPanel() {
-        sbv = (SlideBottomPanel) findViewById(R.id.sbv);
-        lv_cart = (ListView) findViewById(R.id.list_cart);
-        tv_total_cost = (TextView) findViewById(R.id.tv_total_cost);
-
-
-        //"http://localhost:8080/Flash-buy/cart?cartNumber=" +"1&userId="+user.getId()
-
-
-
-
-
-
-        lv_cart.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position,
-                                    long id) {
-                if(position == 0)
-                    return;
-                //获得Item
-                Item item = cart.get(position).getItem();
-                new SnackBar.Builder(MainActivity.this)
-                        .withMessage(item.getName())
-                        .withStyle(SnackBar.Style.INFO)
-                        .withDuration((short)2000)
-                        .show();
-            }
-        });
-
 
     }
 
@@ -283,7 +270,6 @@ public class MainActivity extends AppCompatActivity  {
         //Menu选项
         menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.floating_button);
         menuMultipleActions.addButton(actionC);
-
         final FloatingActionButton cart = (FloatingActionButton) findViewById(R.id.cart);
         cart.setIcon(R.mipmap.ic_shopping_cart_black_24dp);
         cart.setOnClickListener(new View.OnClickListener() {
@@ -291,11 +277,12 @@ public class MainActivity extends AppCompatActivity  {
             public void onClick(View view) {
                 //关闭Menu
                 menuMultipleActions.collapse();
-                //先清空购物车
-                lv_cart.setAdapter(null);
+                if(!TESTMODE) {
+                    //先清空购物车
+                    lv_cart.setAdapter(null);
 
-                EventBus.getDefault().post(new InternetEvent(InternetUtil.cartUrl,Constant.REQUEST_Cart));
-
+                    EventBus.getDefault().post(new InternetEvent(InternetUtil.cartUrl, Constant.REQUEST_Cart));
+                }
                 sbv.displayPanel();    //打开下面的面板
             }
         });
@@ -319,10 +306,7 @@ public class MainActivity extends AppCompatActivity  {
                 .withCompactStyle(true)
                 .withHeaderBackground(R.drawable.header)
                 .addProfiles(
-                        profile,
-                        //don't ask but google uses 14dp for the add account icon in gmail but 20dp for the normal icons (like manage account)
-                        new ProfileSettingDrawerItem().withName("Add Account").withDescription("Add new GitHub Account").withIcon(new IconicsDrawable(this, GoogleMaterial.Icon.gmd_plus).actionBar().paddingDp(5).colorRes(R.color.material_drawer_dark_primary_text)).withIdentifier(PROFILE_SETTING),
-                        new ProfileSettingDrawerItem().withName("Manage Account").withIcon(GoogleMaterial.Icon.gmd_settings)
+                        profile
                 )
                 .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
                     @Override
@@ -331,6 +315,7 @@ public class MainActivity extends AppCompatActivity  {
                         {
                             fragment_account = Fragment_account.GetInstance();
                             switchContent(mContent,fragment_account);
+                            menuMultipleActions.setVisibility(View.INVISIBLE);
                         }
                         return false;
                     }
@@ -344,13 +329,13 @@ public class MainActivity extends AppCompatActivity  {
                 .withToolbar(toolbar)
                 .withAccountHeader(headerResult) //set the AccountHeader we created earlier for the header
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_home).withIcon(FontAwesome.Icon.faw_home).withIdentifier(1),
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_buy).withIcon(FontAwesome.Icon.faw_shopping_cart).withIdentifier(3),
-                        new PrimaryDrawerItem().withName(R.string.drawer_item_custom).withIcon(FontAwesome.Icon.faw_eye).withIdentifier(2),
+                        new PrimaryDrawerItem().withName(R.string.drawer_item_home).withIcon(FontAwesome.Icon.faw_home).withIdentifier(DRAWER_HOME),
+                        new PrimaryDrawerItem().withName(R.string.drawer_item_buy).withIcon(FontAwesome.Icon.faw_shopping_cart).withIdentifier(DRAWER_BUY),
+                        new PrimaryDrawerItem().withName(R.string.drawer_item_custom).withIcon(FontAwesome.Icon.faw_eye).withIdentifier(DRAWER_SMART),
                         new SectionDrawerItem().withName(R.string.drawer_item_section_header),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIcon(FontAwesome.Icon.faw_cog).withIdentifier(5),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_log_out).withIcon(FontAwesome.Icon.faw_question).withIdentifier(6),
-                        new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).withIcon(FontAwesome.Icon.faw_github).withIdentifier(7),
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIcon(FontAwesome.Icon.faw_cog).withIdentifier(DRAWER_SETTING),
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_log_out).withIcon(FontAwesome.Icon.faw_question).withIdentifier(DRAWER_LOGOUT),
+                        new SecondaryDrawerItem().withName(R.string.drawer_item_open_source).withIcon(FontAwesome.Icon.faw_github).withIdentifier(DRAWER_ABOUT),
                         new SecondaryDrawerItem().withName(R.string.drawer_item_contact).withIcon(FontAwesome.Icon.faw_bullhorn).withIdentifier(8),
                         new DividerDrawerItem(),
                         new SwitchDrawerItem().withName("测试模式").withIcon(Octicons.Icon.oct_tools).withChecked(false).withOnCheckedChangeListener(onCheckedChangeListener)
@@ -360,7 +345,7 @@ public class MainActivity extends AppCompatActivity  {
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         if (drawerItem != null ) {
                             switch ((int)drawerItem.getIdentifier()){
-                                case 1:
+                                case DRAWER_HOME:
                                     if(!(getSupportActionBar().isShowing()) )
                                         getSupportActionBar().show();
                                     f1 = Fragment1.GetInstance();
@@ -382,7 +367,7 @@ public class MainActivity extends AppCompatActivity  {
                                             .withDuration((short)2000)
                                             .show();
                                     break;
-                                case 3:
+                                case DRAWER_BUY:
                                     if(!(getSupportActionBar().isShowing()) )
                                         getSupportActionBar().show();
                                     fragment_buy = Fragment_buy.GetInstance();
@@ -393,15 +378,19 @@ public class MainActivity extends AppCompatActivity  {
                                             .withDuration((short)2000)
                                             .show();
                                     break;
-                                case 5:
+                                case DRAWER_SETTING:
                                     //打开设置
                                     Intent intent = new Intent(MainActivity.this,SettingActivity.class);
-
                                     startActivity(intent);
                                     break;
-                                case 6:
+                                case DRAWER_LOGOUT:
                                     //登出
                                     AVUser.logOut();// 清除缓存用户对象
+                                    break;
+                                case DRAWER_ABOUT:
+                                    break;
+                                default:
+                                    EventBus.getDefault().post(new MessageEvent("暂未开发"));
                             }
 
                            // startSupportActionMode(new ActionBarCallBack());
@@ -420,7 +409,7 @@ public class MainActivity extends AppCompatActivity  {
                 .withShowDrawerOnFirstLaunch(true)
                 .build();
 
-
+        //添加动态
         result.updateBadge(1, new StringHolder(10 + ""));
         //set the back arrow in the toolbar
     //    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -439,6 +428,10 @@ public class MainActivity extends AppCompatActivity  {
                         .withStyle(SnackBar.Style.INFO)
                         .withDuration((short)2000)
                         .show();
+            if(isChecked){
+                //测试
+                testMode();
+            }
             Log.i("material-drawer", "DrawerItem: " + ((Nameable) drawerItem).getName() + " - toggleChecked: " + isChecked);
 
         }
@@ -519,6 +512,11 @@ public class MainActivity extends AppCompatActivity  {
         EventBus.getDefault().post(new InternetEvent(query,Constant.REQUEST_Search));
     }
 
+    /**
+     * 菜单选择
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         //handle the click on the back arrow click
@@ -587,12 +585,7 @@ public class MainActivity extends AppCompatActivity  {
         super.onBackPressed();
 
     }
-    @Override
-    protected void onStop(){
 
-        super.onStop();
-
-    }
     /**
      * 因为有个Activity用到了WebView，但是根据网上说法，WebView可能没有正常地释放资源
      * 所以这里偷懒选择了这样一种方法来保证程序退出之后没有另外泄露
@@ -727,8 +720,6 @@ public class MainActivity extends AppCompatActivity  {
         lineItem1.setNum(1);
         //这里有一个小bug,第一个东西不能显示出来
         cart.add(lineItem1);
-        //测试
-        testMode();
 
         String json;
         try {
@@ -775,6 +766,7 @@ public class MainActivity extends AppCompatActivity  {
 
         }
         catch (Exception e) {
+            EventBus.getDefault().post(new MessageEvent("刷新失败，请检查网络"));
             e.printStackTrace();
         }
 
@@ -784,6 +776,18 @@ public class MainActivity extends AppCompatActivity  {
      * 测试模式下的初始化
      */
     private void testMode(){
+        cart = new ArrayList<>();
+//        //因为这里有个bug，所以我这里处理的时候先加了一个Item
+//        Item item1 = new Item();
+//        item1.setName("");
+//        item1.setImage("");
+//        item1.setPrice(0);
+//        LineItem lineItem = new LineItem();
+//        lineItem.setItem(item1);
+//        lineItem.setNum(1);
+//        //这里有一个小bug,第一个东西不能显示出来
+//        cart.add(lineItem);
+
         Item item2 = new Item();
         item2.setName("233");
         item2.setImage("http://obsyvbwp3.bkt.clouddn.com/food.png");
@@ -794,13 +798,31 @@ public class MainActivity extends AppCompatActivity  {
         cart.add(lineItem1);
 
         Item item3 = new Item();
-        item3.setName("233");
+        item3.setName("洗发液");
         item3.setImage("http://obsyvbwp3.bkt.clouddn.com/liquid.png");
         item3.setPrice(5);
-        LineItem lineItem = new LineItem();
-        lineItem.setItem(item3);
-        lineItem.setNum(1);
-        cart.add(lineItem);
+        LineItem lineItem3 = new LineItem();
+        lineItem3.setItem(item3);
+        lineItem3.setNum(1);
+        cart.add(lineItem3);
+
+        final ItemAdapter adapter = new ItemAdapter(this,R.layout.list_item,cart);
+
+        //在主线程中去更新UI
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                lv_cart.setAdapter(adapter);
+                double total_price = 0;
+                for(LineItem lineItem:cart){
+                    total_price += lineItem.getUnitPrice();
+                }
+                tv_total_cost.setText(total_price + "元");
+            }
+        });
+
+        //自己定义一些历史订单
+        EventBus.getDefault().post(new ListEvent("init"));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

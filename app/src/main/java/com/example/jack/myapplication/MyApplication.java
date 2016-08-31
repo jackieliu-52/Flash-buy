@@ -8,6 +8,7 @@ import com.facebook.cache.disk.DiskCacheConfig;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.litesuits.common.utils.DisplayUtil;
+import com.squareup.leakcanary.LeakCanary;
 
 import java.io.File;
 
@@ -19,6 +20,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate(){
         super.onCreate();
+        LeakCanary.install(this);
        // Fresco.initialize(this);
         AVOSCloud.initialize(this,"FjLwORtACC64HFAKWNvA4Nh7-gzGzoHsz","5LTRklNRhPEbAFLh8SayIpaW");
 
