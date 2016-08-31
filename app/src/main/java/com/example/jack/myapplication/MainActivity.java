@@ -42,10 +42,13 @@ import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.Model.LineItem;
 import com.example.jack.myapplication.Model.Order;
 import com.example.jack.myapplication.Model.User;
+import com.example.jack.myapplication.Util.Cache.ACache;
 import com.example.jack.myapplication.Util.Constant;
+import com.example.jack.myapplication.Util.Event.ImageEvent;
 import com.example.jack.myapplication.Util.Event.InternetEvent;
 import com.example.jack.myapplication.Util.Event.ListEvent;
 import com.example.jack.myapplication.Util.Event.MessageEvent;
+import com.example.jack.myapplication.Util.Interface.refreshPic;
 import com.example.jack.myapplication.Util.InternetUtil;
 import com.example.jack.myapplication.Util.Util;
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -75,23 +78,27 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 import com.mikepenz.materialdrawer.model.interfaces.Nameable;
 import com.mikepenz.octicons_typeface_library.Octicons;
+import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Stack;
 
+import me.nereo.multi_image_selector.MultiImageSelectorActivity;
 import me.next.slidebottompanel.SlideBottomPanel;
 
 /**
  * 主页
  */
 public class MainActivity extends AppCompatActivity  {
+    public static ACache aCache;
     public static boolean TESTMODE = false;  //默认不开启测试模式
     private static final int PROFILE_SETTING = 1;
     public static User user = new User(); //当前用户
@@ -128,6 +135,7 @@ public class MainActivity extends AppCompatActivity  {
     public static final int DRAWER_LOGOUT = 5;
     public static final int DRAWER_SETTING = 6;
 
+    private refreshPic mRefreshPic;
     @Override
     protected void onStart(){
         super.onStart();
@@ -139,6 +147,7 @@ public class MainActivity extends AppCompatActivity  {
         //使用Icon库
         LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
         EventBus.getDefault().register(this);
+        aCache = ACache.get(this); //获得缓存实例
         super.onCreate(savedInstanceState);
 
         getUser();
@@ -315,6 +324,7 @@ public class MainActivity extends AppCompatActivity  {
                         {
                             fragment_account = Fragment_account.GetInstance();
                             switchContent(mContent,fragment_account);
+                            mRefreshPic = fragment_account;
                             menuMultipleActions.setVisibility(View.INVISIBLE);
                         }
                         return false;
@@ -898,5 +908,28 @@ public class MainActivity extends AppCompatActivity  {
                 break;
         }
 
+    }
+
+    /**
+     * 获得图片的地址并且加载图片
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == Fragment_account.RESULT_CHOOSE_PHOTO) {
+            if (resultCode == RESULT_OK) {
+                ArrayList<String> mSelectPath =
+                        data.getStringArrayListExtra(MultiImageSelectorActivity.EXTRA_RESULT);
+
+                for (String p : mSelectPath) {
+                    Fragment_account.picPath = p;   //把图片传给它
+                    aCache.put("avatar",p,365 * ACache.TIME_DAY); //保存图片
+                    mRefreshPic.refresh();
+                }
+            }
+        }
     }
 }

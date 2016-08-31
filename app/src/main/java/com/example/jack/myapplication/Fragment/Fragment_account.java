@@ -23,21 +23,29 @@ import android.widget.Toast;
 import com.example.jack.myapplication.MainActivity;
 import com.example.jack.myapplication.Model.User;
 import com.example.jack.myapplication.R;
+import com.example.jack.myapplication.Util.Event.ImageEvent;
 import com.example.jack.myapplication.Util.Event.ListEvent;
 import com.example.jack.myapplication.Util.Event.MessageEvent;
+import com.example.jack.myapplication.Util.Interface.refreshPic;
 import com.example.jack.myapplication.Util.InternetUtil;
 import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.io.File;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import me.nereo.multi_image_selector.MultiImageSelectorActivity;
 
 
 /**
  * 设置账号信息，本来想用PreferFragment，但是不兼容v4下的Fragment
  * 只能手动绘制
  */
-public class Fragment_account extends Fragment {
+public class Fragment_account extends Fragment implements refreshPic {
     final private String TAG = "Fragment_account";
     private Context mContext;
     /**
@@ -56,7 +64,10 @@ public class Fragment_account extends Fragment {
     private String name;
     private String sex;
     private String mail;
-    private boolean isChanged = false;
+
+    public static final int RESULT_CHOOSE_LOCATION = 1;
+    public static final int RESULT_CHOOSE_PHOTO = 2;
+    public static String picPath = "";
     /**
      * 对外接口
      *
@@ -90,7 +101,6 @@ public class Fragment_account extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                isChanged = true;
                 name = etName.getText().toString();
                 MainActivity.user.setName(name);
             }
@@ -108,7 +118,6 @@ public class Fragment_account extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                isChanged = true;
                 mail = etMail.getText().toString();
                 MainActivity.user.setMail(mail);
             }
@@ -123,7 +132,6 @@ public class Fragment_account extends Fragment {
         spSex.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
-                isChanged = true;
                 String[] sexes = getResources().getStringArray(R.array.sex);
                 sex = sexes[pos];
                 MainActivity.user.setSex(sex);
@@ -132,6 +140,14 @@ public class Fragment_account extends Fragment {
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
                 //do nothing
+            }
+        });
+        //头像选择
+        avatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MultiImageSelectorActivity.startSelect(getActivity(),
+                        RESULT_CHOOSE_PHOTO, 1, MultiImageSelectorActivity.MODE_SINGLE);
             }
         });
 
@@ -145,8 +161,9 @@ public class Fragment_account extends Fragment {
                 new SendData().execute();
             }
         });
-        return view;
+        checkImage(); //看看是不是可以放头像
 
+        return view;
     }
 
     /**
@@ -191,21 +208,51 @@ public class Fragment_account extends Fragment {
     @Override
     public void onDestroy(){
         super.onDestroy();
-
     }
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
             //相当于Fragment的onResume
             Log.i(TAG,"v");
+            checkImage();
         } else {
             //相当于Fragment的onPause，如果数据有改动，就传给服务器
             Log.i(TAG,"in");
             ((MainActivity)getActivity()).menuMultipleActions.setVisibility(View.VISIBLE);
         }
     }
+
+    /**
+     * 因为EventBus好像出了点问题，所以这里就自定义接口然后进行回调
+     */
+    public void refresh(){
+        updateImage(picPath);
+    }
+
+
+    private void checkImage(){
+        if(MainActivity.aCache.getAsString("avatar") != null){
+            picPath = MainActivity.aCache.getAsString("avatar");
+            if(!picPath.equals(""))
+                updateImage(picPath);
+        }
+    }
+
+    /**
+     * 刷新头像
+     * @param image
+     */
+    private void updateImage(String image){
+        Picasso.with(getActivity())
+                .load(new File(image))
+                .resize(200, 200)
+                .centerCrop()
+                .into(avatar);
+    }
+
+
     class SendData extends AsyncTask<Void,Void,Boolean> {
 
         @Override

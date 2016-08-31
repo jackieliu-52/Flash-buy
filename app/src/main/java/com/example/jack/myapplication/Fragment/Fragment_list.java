@@ -3,7 +3,9 @@ package com.example.jack.myapplication.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -18,13 +20,19 @@ import com.dexafree.materialList.card.action.TextViewAction;
 import com.dexafree.materialList.listeners.OnDismissCallback;
 import com.dexafree.materialList.listeners.RecyclerItemClickListener;
 import com.dexafree.materialList.view.MaterialListView;
+import com.example.jack.myapplication.Adapter.StaggeredHomeAdapter;
+import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.Model.Order;
 import com.example.jack.myapplication.Model.User;
 import com.example.jack.myapplication.R;
+import com.example.jack.myapplication.Util.Event.MessageEvent;
 import com.litesuits.common.assist.Toastor;
 import com.squareup.picasso.RequestCreator;
 
 
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.ArrayList;
 import java.util.Iterator;
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
@@ -37,6 +45,7 @@ public class Fragment_list extends android.support.v4.app.Fragment {
     private Context mContext = null;
     private MaterialListView mListView;
     private Toastor toastor= null;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public void onAttach(Context context){
@@ -54,13 +63,14 @@ public class Fragment_list extends android.support.v4.app.Fragment {
 
 
         mListView = (MaterialListView) view.findViewById(R.id.material_listview);
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_List);
 
         mListView.setItemAnimator(new SlideInLeftAnimator());
         mListView.getItemAnimator().setAddDuration(300);
         mListView.getItemAnimator().setRemoveDuration(300);
         Log.i(TAG,"onCreateView");
 
-
+        //填写数据
         for(Order order: User.getOrders()){
             fillArray(order);
         }
@@ -98,9 +108,34 @@ public class Fragment_list extends android.support.v4.app.Fragment {
         //        toastor.showSingletonToast("changji" + card.getTag());
             }
         });
+
+        initRefresh();
         return view;
     }
 
+    private void initRefresh(){
+        //设置刷新时动画的颜色，可以设置4个
+        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_light, android.R.color.holo_red_light, android.R.color.holo_orange_light, android.R.color.holo_green_light);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                EventBus.getDefault().post(new MessageEvent("刷新订单"));
+                //先获取订单(暂无)，再刷新界面
+                mListView.getAdapter().clear();
+                for(Order order: User.getOrders()){
+                    fillArray(order);
+              }
+
+                //最后再把刷新取消
+                new Handler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                });
+            }//onRefresh
+        });
+    }
     /**
      * 这是兼容的 AlertDialog
      */
