@@ -9,6 +9,7 @@
         android:title="action_search"
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="always"/>
+
     <item
         android:id="@+id/scan"
         android:orderInCategory="90"

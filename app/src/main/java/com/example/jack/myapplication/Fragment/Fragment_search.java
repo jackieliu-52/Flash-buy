@@ -58,6 +58,7 @@ public class Fragment_search extends Fragment {
         }
         return view;
     }
+
     private void init(){
         for(Item item:items){
             String image = item.getImage();

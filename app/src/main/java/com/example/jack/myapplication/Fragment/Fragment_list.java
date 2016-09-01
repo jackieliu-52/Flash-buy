@@ -122,6 +122,7 @@ public class Fragment_list extends android.support.v4.app.Fragment {
                 EventBus.getDefault().post(new MessageEvent("刷新订单"));
                 //先获取订单(暂无)，再刷新界面
                 mListView.getAdapter().clear();
+
                 for(Order order: User.getOrders()){
                     fillArray(order);
               }

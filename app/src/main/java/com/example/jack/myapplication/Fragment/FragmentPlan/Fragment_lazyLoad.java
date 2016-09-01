@@ -8,8 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.example.jack.myapplication.Adapter.LazyLoadAdapter;
 import com.example.jack.myapplication.Fragment.BaseFragment;
+import com.example.jack.myapplication.Fragment.Fragment_item;
+import com.example.jack.myapplication.Fragment.Fragment_plan;
 import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.R;
+import com.example.jack.myapplication.Util.Event.ListEvent;
 import com.example.jack.myapplication.Util.Event.MessageEvent;
 import com.example.jack.myapplication.View.Recyclerview.DividerItemDecoration;
 import com.example.jack.myapplication.View.Recyclerview.MyItemDecoration;
@@ -26,7 +29,6 @@ import java.util.List;
 public class Fragment_lazyLoad extends BaseFragment  {
     RecyclerView mRecyclerView;
     List<Item> mItems; //要加载的商品
-    public static List<Item> planItems = new ArrayList<>(); //计划要购买的商品
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,11 +64,15 @@ public class Fragment_lazyLoad extends BaseFragment  {
             public void onItemClick(View view, int position) {
                 //打开商品页面
                 EventBus.getDefault().post(new MessageEvent("您点击了" + mItems.get(position).getName()));
+                Fragment_item.item = mItems.get(position);
+                //这里应该通知Activity去改变UI，不能让这个Fragment获取其他Fragment的引用
+                EventBus.getDefault().post(new ListEvent("fragment_item"));
             }
 
             @Override
             public void onItemPlantoBuy(View view, int position) {
-                planItems.add(mItems.get(position));  //加入要购买的商品中
+                Fragment_plan.planItems.add(mItems.get(position));  //加入要购买的商品中
+                EventBus.getDefault().post(new MessageEvent( mItems.get(position).getName() +"已加入了购物车"));
             }
         });
     }

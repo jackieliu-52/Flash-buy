@@ -1,6 +1,7 @@
 package com.example.jack.myapplication.Fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,12 +14,15 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.jack.myapplication.CommentActivity;
 import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.R;
+import com.example.jack.myapplication.ScanActivity;
 import com.example.jack.myapplication.Util.Event.MessageEvent;
 import com.example.jack.myapplication.Util.Util;
 import com.facebook.common.util.UriUtil;
@@ -46,6 +50,9 @@ public class Fragment_item extends Fragment {
     private TextView tv_source;
     private TextView tv_size;
 
+    private ImageButton ib_add;
+    private ImageButton ib_comment;
+    private ImageButton ib_scan;
 
     @Override
     public void onAttach(Context context){
@@ -70,13 +77,9 @@ public class Fragment_item extends Fragment {
         tv_company = (TextView) view.findViewById(R.id.tv_company);
         tv_source = (TextView) view.findViewById(R.id.tv_source);
         tv_size = (TextView) view.findViewById(R.id.tv_size);
-        int resId = Util.stringToId(mContext,"you");
-        Uri uri = new Uri.Builder()
-                .scheme(UriUtil.LOCAL_RESOURCE_SCHEME) // "res"
-                .path(String.valueOf(resId))
-                .build();
+
         //刷新UI
-        sd_good.setImageURI(uri);
+        sd_good.setImageURI(item.getImage());
         tv_name.setText(item.getName());
         tv_company.setText(item.getCompany());
         tv_size.setText(item.getSize());
@@ -84,6 +87,30 @@ public class Fragment_item extends Fragment {
 
         //新建一个菜单
         setHasOptionsMenu(true);
+
+        ib_add = (ImageButton) view.findViewById(R.id.item_add);
+        ib_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clickAdd();
+            }
+        });
+
+        ib_comment=(ImageButton)view.findViewById(R.id.item_comment);
+        ib_comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clickComment();
+            }
+        });
+
+        ib_scan=(ImageButton)view.findViewById(R.id.item_scan);
+        ib_scan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clickScan();
+            }
+        });
 
         return view;
     }
@@ -103,4 +130,16 @@ public class Fragment_item extends Fragment {
     }
 
 
+    public void clickAdd(){
+        Fragment_plan.planItems.add(item);
+        EventBus.getDefault().post(new MessageEvent(item.getName() + "已加入计划购买清单"));
+    }
+
+    public void clickScan(){
+        startActivity(new Intent(getActivity(), ScanActivity.class));
+    }
+
+    public void clickComment(){
+        startActivity(new Intent(getActivity(), CommentActivity.class));
+    }
 }

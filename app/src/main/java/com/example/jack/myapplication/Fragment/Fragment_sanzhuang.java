@@ -11,10 +11,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.example.jack.myapplication.Model.BulkItem;
-import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.R;
 import com.example.jack.myapplication.Util.Util;
-import com.example.jack.myapplication.View.MyPhysicsFrameLayout;
 import com.jawnnypoo.physicslayout.Physics;
 import com.jawnnypoo.physicslayout.PhysicsFrameLayout;
 import com.squareup.picasso.Picasso;

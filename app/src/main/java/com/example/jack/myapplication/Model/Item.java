@@ -13,7 +13,7 @@ public class Item implements Parcelable {
     private String Pid;  //小类ID
     private String Iid;  //商品ID
     private String image;  //图片路径
-    private String company; //公司
+    private String company = "无"; //公司
     private double price;
     private String size; //规格
     private String bar_code; //条形码
@@ -154,6 +154,10 @@ public class Item implements Parcelable {
         this(name, pid, iid, image, company, price, size, "233", 0, 10);
     }
 
+    public Item(String name, String image, double price) {
+        this(name,"","",image,"无",price,"未知","","",0,10,false,"未知");
+    }
+
     public Item (InternetItem internetItem){
         this.name = internetItem.getName();
         this.Pid = "";
@@ -235,15 +239,4 @@ public class Item implements Parcelable {
         this.storage = in.readInt();
     }
 
-    public static final Parcelable.Creator<Item> CREATOR = new Parcelable.Creator<Item>() {
-        @Override
-        public Item createFromParcel(Parcel source) {
-            return new Item(source);
-        }
-
-        @Override
-        public Item[] newArray(int size) {
-            return new Item[size];
-        }
-    };
 }

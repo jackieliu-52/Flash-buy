@@ -639,16 +639,17 @@ public class MainActivity extends AppCompatActivity  {
                         Fragment_item.item = new Item(internetItem);  //获得一个Item
                         //首先实例化fragment
                         Fragment_item fragment_item = new Fragment_item();
-
-                        //没有网络不能跳转
                         switchContent(mContent,fragment_item);
                     }
                     else {
+                        //没有网络不能跳转
                         EventBus.getDefault().post(new MessageEvent("查询商品失败，请检查网络"));
                     }
 
 
                 } catch (Exception e) {
+                    //没有网络不能跳转
+                    EventBus.getDefault().post(new MessageEvent("查询商品失败，请检查网络"));
                     e.printStackTrace();
                     Log.i("result","Exception:"+ e.toString() );
                 }
@@ -787,16 +788,16 @@ public class MainActivity extends AppCompatActivity  {
      */
     private void testMode(){
         cart = new ArrayList<>();
-//        //因为这里有个bug，所以我这里处理的时候先加了一个Item
-//        Item item1 = new Item();
-//        item1.setName("");
-//        item1.setImage("");
-//        item1.setPrice(0);
-//        LineItem lineItem = new LineItem();
-//        lineItem.setItem(item1);
-//        lineItem.setNum(1);
-//        //这里有一个小bug,第一个东西不能显示出来
-//        cart.add(lineItem);
+        //因为这里有个bug，所以我这里处理的时候先加了一个Item
+        Item item1 = new Item();
+        item1.setName("");
+        item1.setImage("");
+        item1.setPrice(0);
+        LineItem lineItem = new LineItem();
+        lineItem.setItem(item1);
+        lineItem.setNum(1);
+        //这里有一个小bug,第一个东西不能显示出来
+        cart.add(lineItem);
 
         Item item2 = new Item();
         item2.setName("233");
@@ -902,6 +903,11 @@ public class MainActivity extends AppCompatActivity  {
             case "fragment_sz":
                 fragment_sanzhuang = Fragment_sanzhuang.GetInstance();
                 switchContent(mContent,fragment_sanzhuang);
+                break;
+            case "fragment_item":
+                //首先实例化fragment
+                Fragment_item fragment_item = new Fragment_item();
+                switchContent(mContent,fragment_item);
                 break;
             default:
                 Log.e("getList()","cann't find fragment" + listEvent.message);
