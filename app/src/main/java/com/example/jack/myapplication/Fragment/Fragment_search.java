@@ -42,7 +42,7 @@ public class Fragment_search extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        View view =inflater.inflate(R.layout.fragment_account, container, false);
+        View view =inflater.inflate(R.layout.fragment_search, container, false);
 
         mListView = (MaterialListView) view.findViewById(R.id.material_search);
 

@@ -14,7 +14,7 @@
 
         />
     <TextView
-        android:textSize="22dp"
+        android:textSize="18sp"
         android:id="@+id/tv_good_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,7 +22,7 @@
         android:text="@string/good_name"/>
      <TextView
          android:id="@+id/tv_num"
-         android:textSize="22dp"
+         android:textSize="18sp"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:text="   ×  1"/>

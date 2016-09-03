@@ -10,7 +10,6 @@
             android:background="@color/realwhite"
             android:layout_width="match_parent"
             android:layout_height="120dp"
-            android:layout_centerVertical="true"
             android:scrollbars="none" />
         <View
             android:layout_width="match_parent"

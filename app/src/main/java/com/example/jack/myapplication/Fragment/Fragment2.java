@@ -121,19 +121,19 @@ public class Fragment2 extends android.support.v4.app.Fragment{
     private void init() {
         num = 0;
         for(Jiaju item : items){
-            String image = item.getImage();
-            if(image.equals("")) {
-                int resId = Util.stringToId(mContext,"yibao");
-                image = Uri.parse("android.resource://" + getContext().getPackageName()
-                        + "/" + resId).toString();
-            }
+//            String image = item.getImage();
+//            if(image.equals("")) {
+//                int resId = Util.stringToId(mContext,"good");
+//                image = Uri.parse("android.resource://" + getContext().getPackageName()
+//                        + "/" + resId).toString();
+//            }
             final CardProvider provider = new Card.Builder(mContext)
                     .setTag(item)
                     .withProvider(new CardProvider())
                     .setLayout(R.layout.material_image_with_des)
                     .setTitle(item.getName())
                     .setDescription(item.getDescription())
-                    .setDrawable(image)
+                    .setDrawable("http://img.home.jc001.cn/baike/s/54/8e/548e550f160ba0bd488b4568.jpg")
                     ;
             Card card = provider.endConfig().build();
             mListAdapter.add(card);

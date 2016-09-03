@@ -17,6 +17,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import java.util.List;
 
 /**
+ * 每一个商品的适配器
  * Created by Jack on 2016/8/11.
  */
 public class ItemAdapter extends ArrayAdapter<LineItem> {

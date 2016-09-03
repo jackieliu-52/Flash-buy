@@ -25,6 +25,9 @@ import com.facebook.drawee.view.SimpleDraweeView;
 
 import org.greenrobot.eventbus.EventBus;
 
+/**
+ * 促销商品的Adapter
+ */
 public class StaggeredHomeAdapter extends
         RecyclerView.Adapter<StaggeredHomeAdapter.MyViewHolder>
 {
@@ -144,12 +147,12 @@ public class StaggeredHomeAdapter extends
 
 
         public void bindView(Item item){
-            int resId = Util.stringToId(mContext,item.getImage());
-            Uri uri = new Uri.Builder()
-                    .scheme(UriUtil.LOCAL_RESOURCE_SCHEME) // "res"
-                    .path(String.valueOf(resId))
-                    .build();
-            draweeView.setImageURI(uri);
+//            int resId = Util.stringToId(mContext,item.getImage());
+//            Uri uri = new Uri.Builder()
+//                    .scheme(UriUtil.LOCAL_RESOURCE_SCHEME) // "res"
+//                    .path(String.valueOf(resId))
+//                    .build();
+            draweeView.setImageURI(item.getImage());
             //是否喜欢该商品
             ib_star.setImageResource(item.isStar() ? R.mipmap.ic_heart_red : R.mipmap.ic_heart_outline_grey);
 

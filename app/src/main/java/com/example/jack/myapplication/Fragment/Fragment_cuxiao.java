@@ -113,11 +113,11 @@ public class Fragment_cuxiao extends android.support.v4.app.Fragment   {
         //再向服务器请求信息,这个请求应该异步操作
 
         //现在自己简单做一下本地化的促销信息,yibao,laoganma,you,pijiu,shuihu
-        Item item1 = new Item("怡宝","01","0101","yibao","怡宝",3.00,"1.555L");
-        Item item2 = new Item("老干妈","02","0202","laoganma","老干妈",9.00,"一瓶");
-        Item item3 = new Item("纸面巾","03","0303","you","心相印",4.00,"DT3200");
-        Item item4 = new Item("啤酒","03","0303","pijiu","心相印",4.00,"DT3200");
-        Item item5 = new Item("水壶","03","0303","shuihu","心相印",4.00,"DT3200");
+        Item item1 = new Item("怡宝","01","0101","http://image.99114.com/2013/7/26/2a21a2a6045e4ef990dfb909650522ad.jpg","怡宝",3.00,"1.555L");
+        Item item2 = new Item("老干妈","02","0202","http://image.99114.com/2013/7/26/2a21a2a6045e4ef990dfb909650522ad.jpg","老干妈",9.00,"一瓶");
+        Item item3 = new Item("纸面巾","03","0303","http://image.99114.com/2013/7/26/2a21a2a6045e4ef990dfb909650522ad.jpg","心相印",4.00,"DT3200");
+        Item item4 = new Item("啤酒","03","0303","http://image.99114.com/2013/7/26/2a21a2a6045e4ef990dfb909650522ad.jpg","心相印",4.00,"DT3200");
+        Item item5 = new Item("水壶","03","0303","http://image.99114.com/2013/7/26/2a21a2a6045e4ef990dfb909650522ad.jpg","心相印",4.00,"DT3200");
         item1.setStar(true); //设置为喜欢
         item1.setDiscount(3);
         mItems.add(item1);

@@ -456,8 +456,8 @@ public class MainActivity extends AppCompatActivity  {
         if(from instanceof Fragment_item && to instanceof Fragment_item){
             //不加入栈中
             mContent = to;
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().setCustomAnimations(
-                    android.R.anim.fade_in, android.R.anim.fade_out);
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out);
             transaction.replace(R.id.fragment_container,to,to.toString()).commit();
             return;
         }
@@ -467,17 +467,6 @@ public class MainActivity extends AppCompatActivity  {
             mContent = to;
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().setCustomAnimations(
                     android.R.anim.fade_in, android.R.anim.fade_out);
-            /*
-            if(from.toString().equals("f1")){
-                //关闭f1
-                transaction.remove(from);
-                if(!to.isAdded())
-                    transaction.add(R.id.fragment_container, to,to.toString()).commit();
-                else
-                    transaction.show(to).commit();
-                return;
-            }
-*/
             if (!to.isAdded()) {    // 先判断是否被add过
                 transaction.hide(from).add(R.id.fragment_container, to,to.toString()).commitAllowingStateLoss(); // 隐藏当前的fragment，add下一个到Activity中
             } else {
@@ -857,12 +846,19 @@ public class MainActivity extends AppCompatActivity  {
         switch (listEvent.message){
             //cardView历史订单
             case "init":
+                User.orders = new ArrayList<>();
                 Item item1 = new Item();
-                item1.setPrice(10);
+                item1.setName("小熊酸奶机");
+                item1.setImage("http://obsyvbwp3.bkt.clouddn.com/161.JPG");
+                item1.setPrice(149);
                 Item item2 = new Item();
-                item2.setPrice(12);
+                item2.setName("九阳智能电压力锅");
+                item2.setImage("http://obsyvbwp3.bkt.clouddn.com/162.JPG");
+                item2.setPrice(199);
                 Item item3 = new Item();
                 item3.setPrice(33);
+                item3.setName("雀巢速溶咖啡");
+                item3.setImage("http://obsyvbwp3.bkt.clouddn.com/171.JPG");
 
                 ArrayList<LineItem> lineItems = new ArrayList<>();
                 LineItem lineItem1 = new LineItem();
