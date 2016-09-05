@@ -1,0 +1,102 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+
+        <include layout="@layout/activity_toolbar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="50dp"
+        >
+        <TextView
+            android:id="@+id/order_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/grey"
+            android:text="订单号：2333333"
+            android:textSize="14sp"
+            android:layout_gravity="center_vertical" />
+        <View
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            />
+        <TextView
+            android:id="@+id/order_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="完成"
+            android:gravity="end"
+            android:textSize="14sp"
+            android:textColor="@color/pink"
+            android:background="@null"
+            android:layout_gravity="center_vertical"
+            />
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#E6E8FA" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="50dp"
+        >
+        <TextView
+            android:id="@+id/order_money"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/grey"
+            android:text="总金额：233"
+            android:textSize="14sp"
+            android:layout_gravity="center_vertical" />
+        <View
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="优惠了2.33元"
+            android:gravity="end"
+            android:textSize="14sp"
+            android:textColor="@color/pink"
+            android:background="@null"
+            android:layout_gravity="center_vertical"
+            />
+    </LinearLayout>
+
+    <com.dexafree.materialList.view.MaterialListView
+        android:layout_width="fill_parent"
+        android:layout_height="320dp"
+        android:id="@+id/order_list"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:elevation="8dp"
+        android:paddingBottom="4dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="8dp">
+        <TextView
+            android:id="@+id/content_request_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="#ffbf12"
+            android:padding="10dp"
+            android:text="结账"
+            android:gravity="center_horizontal"
+            android:textAlignment="center"
+            android:textColor="#a9a9a9"
+            android:textSize="20sp" />
+
+        </LinearLayout>
+</LinearLayout>

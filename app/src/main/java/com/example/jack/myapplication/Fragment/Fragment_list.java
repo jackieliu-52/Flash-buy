@@ -2,6 +2,7 @@ package com.example.jack.myapplication.Fragment;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -24,6 +25,7 @@ import com.example.jack.myapplication.Adapter.StaggeredHomeAdapter;
 import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.Model.Order;
 import com.example.jack.myapplication.Model.User;
+import com.example.jack.myapplication.OrderActivity;
 import com.example.jack.myapplication.R;
 import com.example.jack.myapplication.Util.Event.MessageEvent;
 import com.example.jack.myapplication.View.Card.MyCardProvider;
@@ -47,7 +49,7 @@ public class Fragment_list extends android.support.v4.app.Fragment {
     private MaterialListView mListView;
     private Toastor toastor= null;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private Order mOrder;
+    private Order mOrder;   //当前被点击的Order
 
     @Override
     public void onAttach(Context context){
@@ -91,13 +93,19 @@ public class Fragment_list extends android.support.v4.app.Fragment {
             @Override
             public void onItemClick(@NonNull Card card, int position) {
                 Order order = (Order)card.getTag();
-                toastor.showSingletonToast("单机" + card.getTag());
+                mOrder = order;
+                //跳转到订单详情
+                Intent intent = new Intent(getActivity(), OrderActivity.class);
+                intent.putExtra("order", order);
+                startActivity(intent);
+              //  toastor.showSingletonToast("单机" + card.getTag());
             }
 
             @Override
             public void onItemLongClick(@NonNull Card card, int position) {
                 Order order = (Order)card.getTag();
                 mOrder = order;
+
                 //只有已经支付的订单才可以打印发票
                 boolean isSold = false;
                 isSold = order.getStatus() == 1;

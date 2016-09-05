@@ -54,6 +54,7 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
     List<Item> mItems2;
     List<Item> mItems3;
     List<Item> mItems4;
+
     @Override
     public void onAttach(Context context){
         super.onAttach(context);
@@ -210,6 +211,9 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
 
     }
 
+    /**
+     * 加入测试数据
+     */
     private void test(){
         mItems = new ArrayList<>();
         mItems1 = new ArrayList<>();

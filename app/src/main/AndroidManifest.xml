@@ -74,6 +74,10 @@
         <activity android:name=".CommentActivity"
             android:label="Comments"
             android:theme="@style/CustomTheme.TransparentActivity" />
+
+        <activity android:name=".OrderActivity"
+                  android:label="订单详情"
+                  android:theme="@style/CustomTheme" />
     </application>
 
 </manifest>

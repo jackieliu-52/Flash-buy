@@ -253,6 +253,11 @@ public class MainActivity extends AppCompatActivity  {
                 User.orders.add(order);
                 lv_cart.setAdapter(null);
                 cart = new ArrayList<>();
+
+                //跳转到订单详情进行支付
+                Intent intent = new Intent(MainActivity.this, OrderActivity.class);
+                intent.putExtra("order", order);
+                startActivity(intent);
             }
         });
 

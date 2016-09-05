@@ -17,6 +17,8 @@ public class Order implements Parcelable {
     private String sm_name; //超市名称
     private double payment; //支付总额
     private int status; //订单状态,0表示未支付，1表示支付
+    private ArrayList<String> EPCArray;
+
 
     public Order(ArrayList<LineItem> lineItems, String orderId, String userId, String orderDate, String pay_way, String sm_name, double payment, int status) {
         this.lineItems = lineItems;
@@ -27,6 +29,14 @@ public class Order implements Parcelable {
         this.sm_name = sm_name;
         this.payment = payment;
         this.status = status;
+    }
+
+    public ArrayList<String> getEPCArray() {
+        return EPCArray;
+    }
+
+    public void setEPCArray(ArrayList<String> EPCArray) {
+        this.EPCArray = EPCArray;
     }
 
     public int getStatus() {
@@ -85,6 +95,10 @@ public class Order implements Parcelable {
         this.sm_name = sm_name;
     }
 
+    /**
+     * 这里不是普通的get方法，这是不好的写法，要改
+     * @return
+     */
     public double getPayment() {
         payment = 0;
         for(LineItem lineItem: lineItems){
@@ -113,9 +127,7 @@ public class Order implements Parcelable {
         dest.writeString(this.sm_name);
         dest.writeDouble(this.payment);
         dest.writeInt(this.status);
-    }
-
-    public Order() {
+        dest.writeStringList(this.EPCArray);
     }
 
     protected Order(Parcel in) {
@@ -127,6 +139,7 @@ public class Order implements Parcelable {
         this.sm_name = in.readString();
         this.payment = in.readDouble();
         this.status = in.readInt();
+        this.EPCArray = in.createStringArrayList();
     }
 
     public static final Parcelable.Creator<Order> CREATOR = new Parcelable.Creator<Order>() {

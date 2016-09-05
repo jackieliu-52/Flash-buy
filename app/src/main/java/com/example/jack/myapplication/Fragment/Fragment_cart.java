@@ -46,7 +46,7 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
     MaterialListView mListView;
     private MaterialListAdapter mListAdapter;
 
-    public static int first = 1;   //是否是第一次进入
+    public static int first = 1;   //是否是第一次进入,
     static boolean isMutiList = false;  //是否是多重列表
     //悬浮窗口，不需要权限
     private FloatBallMenu menu;
@@ -63,6 +63,7 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
 
         mListView = (MaterialListView) view.findViewById(R.id.material_cart_list);
@@ -82,9 +83,26 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
         mFloatBall.setLayoutGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
         mFloatBall.show();
 
+
         //新建一个菜单
         setHasOptionsMenu(true);
+        //如果不是第一次进入，那么保存用户的习惯，比如说商品排列方式
+        if(first != 1){
+            if(!isMutiList){
+                //变成单排列表
+                isMutiList = true;
+                //设置两列
+                mListView.setLayoutManager(new StaggeredGridLayoutManager(2,
+                        StaggeredGridLayoutManager.VERTICAL));
+            }else {
+                isMutiList = false;
+                //设置为单列
+                mListView.setLayoutManager(new StaggeredGridLayoutManager(1,
+                        StaggeredGridLayoutManager.VERTICAL));
+            }
+        }
 
+        first++;
         return view;
     }
 
@@ -93,12 +111,12 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
         for(LineItem lineItem: MainActivity.cart){
             Item item = lineItem.getItem();
             //因为加了一个LineItem，所以有点bug要处理
-            if(item.getImage().equals(""))
+            if(item.getName().equals(""))
                 continue;
 
             String descri;
             if(item.getSize().equals("") || item.getSize().equals("未知"))
-                descri = "";
+                descri = "未知";
             else
                 descri = item.getSize();
 
@@ -141,16 +159,19 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
             public void onRefresh() {
                 // TODO Auto-generated method stub
                 EventBus.getDefault().post(new MessageEvent("刷新购物车"));
-                //获取信息，然后再刷新UI
-                String temp = "http://155o554j78.iok.la:49817/";
-                String args = "Flash-buy/cart?cartNumber=9&userId=9";
+                if(!MainActivity.TESTMODE) {
+                    //获取信息，然后再刷新UI
+                    String temp = "http://155o554j78.iok.la:49817/";
+                    String args = "Flash-buy/cart?cartNumber=9&userId=9";
 
-                temp += args;
-                EventBus.getDefault().post(new InternetEvent(temp, Constant.REQUEST_Cart));
+                    temp += args;
+                    EventBus.getDefault().post(new InternetEvent(temp, Constant.REQUEST_Cart));
 
-                //先清空所有
-                mListView.getAdapter().clearAll();
-                init();
+                    //先清空所有
+                    mListView.getAdapter().clearAll();
+                    init();
+                }
+
 
                 //最后再把刷新取消
                 new Handler().post(new Runnable() {
@@ -212,7 +233,7 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
         if (isVisibleToUser) {
             //相当于Fragment的onResume
             Log.i(TAG,"可见");
-            first++;
+
 
         } else {
             //相当于Fragment的onPause
