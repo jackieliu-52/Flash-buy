@@ -11,6 +11,7 @@ import com.example.jack.myapplication.Fragment.BaseFragment;
 import com.example.jack.myapplication.Fragment.Fragment_item;
 import com.example.jack.myapplication.Fragment.Fragment_plan;
 import com.example.jack.myapplication.Model.Item;
+import com.example.jack.myapplication.Model.TwoTuple;
 import com.example.jack.myapplication.R;
 import com.example.jack.myapplication.Util.Event.ListEvent;
 import com.example.jack.myapplication.Util.Event.MessageEvent;
@@ -71,7 +72,7 @@ public class Fragment_lazyLoad extends BaseFragment  {
 
             @Override
             public void onItemPlantoBuy(View view, int position) {
-                Fragment_plan.planItems.add(mItems.get(position));  //加入要购买的商品中
+                Fragment_plan.planItems.add(new TwoTuple(false,mItems.get(position)));  //加入要购买的商品中
                 EventBus.getDefault().post(new MessageEvent( mItems.get(position).getName() +"已加入了购物车"));
             }
         });

@@ -232,6 +232,9 @@ public class Fragment_account extends Fragment implements refreshPic {
     }
 
 
+    /**
+     * 看一下是否缓存在本地
+     */
     private void checkImage(){
         if(MainActivity.aCache.getAsString("avatar") != null){
             picPath = MainActivity.aCache.getAsString("avatar");

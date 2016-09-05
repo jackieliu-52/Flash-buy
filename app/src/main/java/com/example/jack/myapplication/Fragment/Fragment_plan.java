@@ -1,25 +1,45 @@
 package com.example.jack.myapplication.Fragment;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.jack.myapplication.Adapter.PlanTopAdapter;
 import com.example.jack.myapplication.Fragment.FragmentPlan.Fragment_lazyLoad;
+import com.example.jack.myapplication.MainActivity;
 import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.Model.TwoTuple;
 import com.example.jack.myapplication.R;
 import com.example.jack.myapplication.Util.Event.MessageEvent;
+import com.example.jack.myapplication.View.Recyclerview.CommonRecycleView;
+import com.example.jack.myapplication.View.Recyclerview.CommonRecyclerAdapter;
+import com.example.jack.myapplication.View.Recyclerview.CommonRecyclerViewHolder;
+import com.example.jack.myapplication.View.Recyclerview.DividerItemDecoration;
+import com.example.jack.myapplication.View.Recyclerview.HeaderAndFooterAdapter;
+import com.example.jack.myapplication.View.Recyclerview.RecyclerItemClickListener;
+import com.example.jack.myapplication.View.SmoothCheckBox;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -30,7 +50,7 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.lang.reflect.Array;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,12 +62,21 @@ import java.util.List;
  */
 public class Fragment_plan extends android.support.v4.app.Fragment {
 
-    public static List<Item> planItems = new ArrayList<>(); //计划要购买的商品
+    public static List<TwoTuple<Boolean,Item>> planItems = new ArrayList<>(); //计划要购买的商品
 
     Context mContext;
-    RecyclerView mRecyclerView;
+
+    ViewGroup mPlanContentShop;   //商店
+    RecyclerView mRecyclerView;   //四个常用分类的RecyclerView
     List<TwoTuple<String,String>> tops;
     PlanTopAdapter mAdapter;
+
+    ViewGroup mPlanContentBuy;   //选购的商品
+    private CommonRecycleView mCommonRecycleView;
+    CommonRecyclerAdapter commonRecyclerAdapter; //所需要购买商品
+    private boolean mShown;   //是否在展示选购的商品,默认初始化为false
+    private boolean mInAnimation;  //是否在动画中,同上
+    TextView headerView;    //头部和尾部
 
     List<Item> mItems;
     List<Item> mItems1;
@@ -65,8 +94,76 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_plan, container, false);
-        initTop();
+        mPlanContentShop = (ViewGroup) view.findViewById(R.id.plan_content_shop);
+        mPlanContentBuy = (ViewGroup) view.findViewById(R.id.plan_content_buy);
+        mCommonRecycleView = (CommonRecycleView) view.findViewById(R.id.plan_list);
 
+        mCommonRecycleView.setLayoutManager(new LinearLayoutManager(mContext));
+        commonRecyclerAdapter = new CommonRecyclerAdapter<TwoTuple<Boolean,Item>>(mContext, R.layout.plan_items, planItems) {
+
+            @Override
+            public void convert(final CommonRecyclerViewHolder holder,  TwoTuple<Boolean,Item> o) {
+                //holder.setText(R.id.scb, o);
+                Item item = o.second;
+                holder.setText(R.id.tv_item_name, item.getName());
+                holder.setText(R.id.tv_item_date, item.getPid());   //区域,考虑使用EPC字段
+                SmoothCheckBox scb = (SmoothCheckBox) holder.getView(R.id.scb);
+                scb.setChecked(o.first);
+                scb.setOnCheckedChangeListener(new SmoothCheckBox.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(SmoothCheckBox checkBox, boolean isChecked) {
+                        int pos = holder.getLayoutPosition();  //获得下标
+                        //由于加入了一个头部和尾部,所以这个position相对来说会有点问题，这里做一点处理
+                        pos = pos - 1;
+                        planItems.get(pos).first = isChecked;
+                        holder.getView(R.id.v_color).setVisibility(View.VISIBLE);
+                        Drawable color = getResources().getDrawable(R.color.bg_Gray);
+                        holder.getView(R.id.v_color).setBackground(color);
+                    }
+                });
+
+
+//                View temp = holder.getView(R.id.v_color);
+//                Drawable color = getResources().getDrawable(R.color.bg_Gray);
+//                temp.setBackground(color);
+//                temp.setVisibility(View.INVISIBLE);
+            }
+        };
+        //设置点击函数
+        mCommonRecycleView.addOnItemTouchListener(
+                new RecyclerItemClickListener(mContext, mCommonRecycleView ,new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        // do whatever
+                        //由于加入了一个头部和尾部,所以这个position相对来说会有点问题，这里做一点处理
+                        position = position - 1;
+                        planItems.get(position).first = !planItems.get(position).first;
+                        SmoothCheckBox checkBox = (SmoothCheckBox) view.findViewById(R.id.scb);
+                        checkBox.setChecked(planItems.get(position).first, true);//播放动画
+                    }
+
+                    @Override
+                    public void onLongItemClick(View view, int position) {
+                        // do nothing
+                    }
+                })
+        );
+
+        HeaderAndFooterAdapter headerAndFooterAdapter = new HeaderAndFooterAdapter(commonRecyclerAdapter);
+
+        headerView = new TextView(mContext);
+
+        headerView.setTextColor(Color.RED);
+
+        headerAndFooterAdapter.addHeaderView(headerView);
+        headerAndFooterAdapter.addFootView(headerView);
+
+        mCommonRecycleView.setAdapter(headerAndFooterAdapter);
+        mCommonRecycleView.addItemDecoration(new DividerItemDecoration(mContext,LinearLayoutManager.VERTICAL));
+
+
+//-------------------------------------------------------分割线-----------------------------------------------------------------
+        initTop();
         mRecyclerView = (RecyclerView) view.findViewById(R.id.plan_recyclerview);
         //设置布局管理器
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(mContext);
@@ -77,7 +174,7 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
         initClickEvent();
         mRecyclerView.setAdapter(mAdapter);
 
-
+        //-------------------------------------------------------分割线-----------------------------------------------------------------
         //获得viewpager和指示器
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.viewpager_plan);
         SmartTabLayout viewPagerTab = (SmartTabLayout) view.findViewById(R.id.viewpager_tab_plan);
@@ -119,9 +216,124 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
         return view;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.menu_plan, menu);
+
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //handle the click on the back arrow click
+        switch (item.getItemId()) {
+            case R.id.go_shopping:
+                showDialog();
 
 
+                return true;
+            case  R.id.buy:
+                headerView.setText("共挑选了 "+ planItems.size() +" 件商品");  //需要刷新
+                setContentVisible();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
+    /**
+     * 这是兼容的 AlertDialog
+     */
+    private void showDialog() {
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(mContext);
+        builder.setTitle("开始购物");
+        builder.setMessage("您是否要开始购物?");
+        builder.setNegativeButton("取消", null);
+        builder.setPositiveButton("确定", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                commonRecyclerAdapter.clearAll();  //删除所有数据
+                planItems = new ArrayList<>();  //清空数据
+                ((MainActivity)getActivity()).mNeedPageChanged.pageChanged(1);  //切换Fragment
+                //与此同时，应该通知map的Fragment准备好地图
+
+            }
+        });
+        builder.show();
+    }
+
+
+    /**
+     * 切换界面的函数
+     */
+    private void setContentVisible(){
+        if (!mInAnimation)
+        {
+            if (mShown)
+            {
+                Animation menuOutAnim = AnimationUtils.loadAnimation(mContext, R.anim.menu_out);
+                menuOutAnim.setAnimationListener(new Animation.AnimationListener()
+                {
+                    @Override
+                    public void onAnimationStart(Animation animation)
+                    {
+                        mInAnimation = true;
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation)
+                    {
+                        mInAnimation = false;
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation)
+                    {
+
+                    }
+                });
+                mPlanContentBuy.setVisibility(View.GONE);
+                mPlanContentBuy.setAnimation(menuOutAnim);
+
+                mPlanContentShop.setVisibility(View.VISIBLE);
+                mShown = false;
+            }
+            else
+            {
+                Animation menuInAnim = AnimationUtils.loadAnimation(mContext, R.anim.menu_in);
+                menuInAnim.setAnimationListener(new Animation.AnimationListener()
+                {
+                    @Override
+                    public void onAnimationStart(Animation animation)
+                    {
+                        mInAnimation = true;
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation)
+                    {
+                        mInAnimation = false;
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation)
+                    {
+
+                    }
+                });
+                mPlanContentBuy.setVisibility(View.VISIBLE);
+                mPlanContentBuy.setAnimation(menuInAnim);
+
+                mPlanContentShop.setVisibility(View.GONE);
+                mShown = true;
+            }
+        }
+    }
+
+    /**
+     * 初始化顶部的Recycler
+     */
     private void initTop(){
         tops = new ArrayList<>();
         TwoTuple<String,String> top = new TwoTuple<>("http://obsyvbwp3.bkt.clouddn.com/food.png","生鲜蔬菜");

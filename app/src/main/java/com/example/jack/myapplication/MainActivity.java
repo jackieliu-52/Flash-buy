@@ -48,6 +48,7 @@ import com.example.jack.myapplication.Util.Event.ImageEvent;
 import com.example.jack.myapplication.Util.Event.InternetEvent;
 import com.example.jack.myapplication.Util.Event.ListEvent;
 import com.example.jack.myapplication.Util.Event.MessageEvent;
+import com.example.jack.myapplication.Util.Interface.NeedPageChanged;
 import com.example.jack.myapplication.Util.Interface.refreshPic;
 import com.example.jack.myapplication.Util.InternetUtil;
 import com.example.jack.myapplication.Util.Util;
@@ -135,7 +136,8 @@ public class MainActivity extends AppCompatActivity  {
     public static final int DRAWER_LOGOUT = 5;
     public static final int DRAWER_SETTING = 6;
 
-    private refreshPic mRefreshPic;
+    private refreshPic mRefreshPic;  //刷新图片的接口，让fragment立刻刷新图片
+    public NeedPageChanged mNeedPageChanged;  //改变Fragment_buy的接口
     @Override
     protected void onStart(){
         super.onStart();
@@ -386,6 +388,7 @@ public class MainActivity extends AppCompatActivity  {
                                     if(!(getSupportActionBar().isShowing()) )
                                         getSupportActionBar().show();
                                     fragment_buy = Fragment_buy.GetInstance();
+                                    mNeedPageChanged = fragment_buy;
                                     switchContent(mContent,fragment_buy);
                                     new SnackBar.Builder(MainActivity.this)
                                             .withMessage("fragment_buy")
@@ -487,6 +490,7 @@ public class MainActivity extends AppCompatActivity  {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_main, menu);
 
+        //搜索功能
         final MenuItem item = menu.findItem(R.id.ab_search);
         mSearchView = (SearchView) MenuItemCompat.getActionView(item);
 

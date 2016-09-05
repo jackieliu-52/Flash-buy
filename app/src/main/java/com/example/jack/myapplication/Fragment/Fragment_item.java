@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.example.jack.myapplication.CommentActivity;
 import com.example.jack.myapplication.Model.Item;
+import com.example.jack.myapplication.Model.TwoTuple;
 import com.example.jack.myapplication.R;
 import com.example.jack.myapplication.ScanActivity;
 import com.example.jack.myapplication.Util.Event.MessageEvent;
@@ -131,7 +132,7 @@ public class Fragment_item extends Fragment {
 
 
     public void clickAdd(){
-        Fragment_plan.planItems.add(item);
+        Fragment_plan.planItems.add(new TwoTuple(false,item));
         EventBus.getDefault().post(new MessageEvent(item.getName() + "已加入计划购买清单"));
     }
 

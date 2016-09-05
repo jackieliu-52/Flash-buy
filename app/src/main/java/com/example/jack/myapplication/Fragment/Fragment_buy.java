@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.jack.myapplication.R;
+import com.example.jack.myapplication.Util.Interface.NeedPageChanged;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -22,10 +23,13 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 /**
  * 用户在购买的时候主要用到的三个Fragment
  */
-public class Fragment_buy extends android.support.v4.app.Fragment {
+public class Fragment_buy extends android.support.v4.app.Fragment implements NeedPageChanged {
 
     private final String TAG = "Fragment_buy";
     public static final String ARGUMENT = "argument";
+
+    private ViewPager viewPager;
+    private SmartTabLayout viewPagerTab;
     private Context context = this.getActivity();
     /**
      * 单例对象实例
@@ -56,8 +60,8 @@ public class Fragment_buy extends android.support.v4.app.Fragment {
         tab.addView(LayoutInflater.from(context).inflate(R.layout.demo_custom_tab_icons1, tab, false));
 
         //获得viewpager和指示器
-        ViewPager viewPager = (ViewPager) view.findViewById(R.id.viewpager);
-        SmartTabLayout viewPagerTab = (SmartTabLayout) view.findViewById(R.id.viewpagertab);
+        viewPager = (ViewPager) view.findViewById(R.id.viewpager);
+        viewPagerTab = (SmartTabLayout) view.findViewById(R.id.viewpagertab);
 
         //为指示器增加图标
         Log.i("setupTab", setupTab(viewPagerTab) + "");
@@ -121,5 +125,10 @@ public class Fragment_buy extends android.support.v4.app.Fragment {
     @Override
     public String toString(){
         return "fragment_buy";
+    }
+
+    //往前跳转到指定的pager
+    public void pageChanged(int page){
+        viewPager.setCurrentItem(viewPager.getCurrentItem() + page, true);
     }
 }

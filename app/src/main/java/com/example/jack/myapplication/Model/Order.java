@@ -17,7 +17,7 @@ public class Order implements Parcelable {
     private String sm_name; //超市名称
     private double payment; //支付总额
     private int status; //订单状态,0表示未支付，1表示支付
-    private ArrayList<String> EPCArray;
+    private ArrayList<String> EPCArray;    //EPC码的列表
 
 
     public Order(ArrayList<LineItem> lineItems, String orderId, String userId, String orderDate, String pay_way, String sm_name, double payment, int status) {
