@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.example.jack.myapplication.Model.BulkItem;
 import com.example.jack.myapplication.Model.LineItem;
 import com.example.jack.myapplication.R;
 import com.example.jack.myapplication.Util.Util;
@@ -55,7 +56,12 @@ public class ItemAdapter extends ArrayAdapter<LineItem> {
         Uri temp =  Uri.parse(item.getItem().getImage());
         viewHolder.simpleDraweeView.setImageURI(temp);
         viewHolder.tv_good_name.setText(item.getItem().getName());
-        viewHolder.tv_num.setText("   ×  "+item.getNum());
+        if(item.isBulk){
+            viewHolder.tv_num.setText("   ×  " + ((BulkItem)item.getItem()).getWeight() +"kg");
+        }
+        else{
+            viewHolder.tv_num.setText("   ×  " + item.getNum());
+        }
         viewHolder.item_1price.setText("单价："+item.getItem().realPrice());
         viewHolder.item_all_price.setText("总价："+item.getUnitPrice());
         return view;

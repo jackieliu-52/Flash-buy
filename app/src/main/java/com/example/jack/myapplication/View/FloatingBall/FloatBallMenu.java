@@ -51,6 +51,7 @@ public class FloatBallMenu implements IMenu {
         tvLeftGift = new TextView(parent.getContext());
         tvLeftGift.setId(getId());
         tvLeftGift.setText("散装商品");
+        //可以添加接口 外部设置方法
         tvLeftGift.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,6 +80,7 @@ public class FloatBallMenu implements IMenu {
         tvLeftCenter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                EventBus.getDefault().post(new ListEvent("fragment_buy"));
                 toast(context, "购物车");
                 hideMenu();
             }
@@ -131,6 +133,7 @@ public class FloatBallMenu implements IMenu {
         tvRightGift.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                EventBus.getDefault().post(new ListEvent("fragment_buy"));
                 toast(context, "购物车");
                 hideMenu();
             }

@@ -31,6 +31,8 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    //DrawableTextView
+    compile 'cn.timeface.widget:drawabletextview:1.0.0'
     //dialogs
     compile 'com.afollestad.material-dialogs:core:0.9.0.1'
     //circleView

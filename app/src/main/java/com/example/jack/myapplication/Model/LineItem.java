@@ -15,6 +15,13 @@ public class LineItem implements Parcelable {
     //新增
     public boolean isBulk = false; //是否是散装商品
 
+    public LineItem() {
+    }
+
+    public LineItem(BulkItem item) {
+        isBulk = true;
+        this.item = item;
+    }
     public Item getItem() {
         return item;
     }
@@ -47,9 +54,16 @@ public class LineItem implements Parcelable {
         this.num = num;
     }
 
+    /**
+     * 这不是普通的get方法
+     * @return
+     */
     public double getUnitPrice() {
-        //总价计算
-        unitPrice = item.realPrice() * num;
+        if(isBulk){
+            unitPrice = ((BulkItem)item).getSum();
+        }else {
+            unitPrice = item.realPrice() * num;
+        }
         return unitPrice;
     }
 
@@ -71,8 +85,7 @@ public class LineItem implements Parcelable {
         dest.writeDouble(this.unitPrice);
     }
 
-    public LineItem() {
-    }
+
 
     protected LineItem(Parcel in) {
         this.item = in.readParcelable(Item.class.getClassLoader());

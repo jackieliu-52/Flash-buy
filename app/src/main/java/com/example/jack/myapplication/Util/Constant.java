@@ -54,4 +54,8 @@ public interface Constant {
      * 修改过敏源
      */
     public static final int POST_Aller = 0X700;
+    /**
+     *
+     */
+    public static final int REQUEST_Bulk = 0X800;
 }

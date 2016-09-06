@@ -1,23 +1,27 @@
 package com.example.jack.myapplication.Fragment;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.example.jack.myapplication.MainActivity;
 import com.example.jack.myapplication.Model.BulkItem;
 import com.example.jack.myapplication.R;
-import com.example.jack.myapplication.Util.Util;
 import com.jawnnypoo.physicslayout.Physics;
 import com.jawnnypoo.physicslayout.PhysicsFrameLayout;
+import com.jawnnypoo.physicslayout.PhysicsLinearLayout;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
+import cn.timeface.widget.drawabletextview.DrawableTextView;
 
 /**
  * 散装商品页面
@@ -29,7 +33,7 @@ public class Fragment_sanzhuang extends Fragment {
     private Context mContext;
     //散装商品的数量
     int num;
-    public static ArrayList<BulkItem> items = new ArrayList<>();
+
     @Override
     public void onStart(){
         super.onStart();
@@ -82,7 +86,8 @@ public class Fragment_sanzhuang extends Fragment {
                 //经过试验测量得出
                 if( lo[1] < 650){
                     physicsLayout.removeView(releasedView);
-                    items.remove(releasedView.getId()); //根据下标删除这个对象
+                    MainActivity.bulkItems.remove(releasedView.getId()); //根据下标删除这个对象
+                    Log.i(TAG,releasedView.getId() + "被删除了！");
                     num = physicsLayout.getChildCount();
                 }
             }
@@ -91,46 +96,39 @@ public class Fragment_sanzhuang extends Fragment {
     }
 
     private void init(){
-        BulkItem item = new BulkItem();
-        item.setName("青菜");
-        item.setPrice(2.33);
-        item.setWeight(1);
-        item.setImage("1");
-        item.setAttr1("闭光存储");
-        //5天以前生产
-        item.setProduceTime(Util.getBefoceTime(5));
-        //获得到期时间
-        item.jisuan();
-
-        BulkItem item1 = new BulkItem();
-        item1.setName("花生");
-        item1.setPrice(5.00);
-        item1.setWeight(2.33);
-        item1.setImage("3");
-        item1.setAttr1("冷藏");
-        item1.setShelfTime(10);
-        //19天前生产
-        item1.setProduceTime(Util.getBefoceTime(19));
-        item1.jisuan();
-
-        items.add(item);
-        items.add(item1);
+        for(BulkItem bulkItem : MainActivity.bulkItems){
+            LinearLayout physicsLinearLayout = new LinearLayout(mContext);
+            physicsLinearLayout.setId(num);              //设置ID，方便后面删除
+            physicsLinearLayout.setOrientation(LinearLayout.VERTICAL);
+            //设置LinearLayout属性(宽和高)
+            LinearLayout.LayoutParams layoutParams=new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            //将以上的属性赋给LinearLayout
+            physicsLinearLayout.setLayoutParams(layoutParams);
 
 
-        for(int i = 0;i < 2; i++){
-            BulkItem bulkItem = items.get(i);
-            ImageView imageView = new ImageView(mContext);
             LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(
                     getResources().getDimensionPixelSize(R.dimen.square_size),
                     getResources().getDimensionPixelSize(R.dimen.square_size));
+
+            TextView textView = new TextView(mContext);
+            textView.setText(bulkItem.getName());
+            textView.setTextSize(14);
+            textView.setLayoutParams(llp);
+
+            ImageView imageView = new ImageView(mContext);
+
             imageView.setLayoutParams(llp);
-            imageView.setId(num);
+
+
             Picasso.with(mContext)
-                    .load("http://lorempixel.com/200/200/cats/" + bulkItem.getImage())
+                    .load(bulkItem.getImage())
                     .placeholder(R.drawable.ic_launcher)
                     .into(imageView);
 
-            physicsLayout.addView(imageView);
+            physicsLinearLayout.addView(imageView);
+            physicsLinearLayout.addView(textView);
+
+            physicsLayout.addView(physicsLinearLayout);
             num = physicsLayout.getChildCount();
         }
 

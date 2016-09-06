@@ -15,7 +15,10 @@ import java.net.URL;
 public class InternetUtil {
     public static String root = "http://155o554j78.iok.la:49817/Flash-buy/";
     public static String args1 = "cart?cartNumber=9&userId=9";
+    public static String args2 = "bulk?cartNumber=9&userId=9";
+
     public static String cartUrl = root + args1;
+    public static String bulkUrl = root + args2;
 
     public static String searchUrl =  root + "search?name=";
     /**

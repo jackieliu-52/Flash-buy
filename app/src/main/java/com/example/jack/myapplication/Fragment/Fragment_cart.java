@@ -22,6 +22,7 @@ import com.dexafree.materialList.card.action.TextViewAction;
 import com.dexafree.materialList.view.MaterialListAdapter;
 import com.dexafree.materialList.view.MaterialListView;
 import com.example.jack.myapplication.MainActivity;
+import com.example.jack.myapplication.Model.BulkItem;
 import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.Model.LineItem;
 import com.example.jack.myapplication.R;
@@ -29,6 +30,7 @@ import com.example.jack.myapplication.ScanActivity;
 import com.example.jack.myapplication.Util.Constant;
 import com.example.jack.myapplication.Util.Event.InternetEvent;
 import com.example.jack.myapplication.Util.Event.MessageEvent;
+import com.example.jack.myapplication.Util.InternetUtil;
 import com.example.jack.myapplication.View.FloatingBall.FloatBall;
 import com.example.jack.myapplication.View.FloatingBall.FloatBallMenu;
 import com.squareup.picasso.RequestCreator;
@@ -46,11 +48,11 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
     MaterialListView mListView;
     private MaterialListAdapter mListAdapter;
 
-    public static int first = 1;   //是否是第一次进入,
+    public static int first = 1;   //是否是第一次进入,保存用户操作状态使用
     static boolean isMutiList = false;  //是否是多重列表
     //悬浮窗口，不需要权限
     private FloatBallMenu menu;
-    private FloatBall.SingleIcon singleIcon;
+    private FloatBall.SingleIcon singleIcon;   //图标
     private FloatBall mFloatBall;
 
     SwipeRefreshLayout sr_swipeMaterialListView;
@@ -88,18 +90,7 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
         setHasOptionsMenu(true);
         //如果不是第一次进入，那么保存用户的习惯，比如说商品排列方式
         if(first != 1){
-            if(!isMutiList){
-                //变成单排列表
-                isMutiList = true;
-                //设置两列
-                mListView.setLayoutManager(new StaggeredGridLayoutManager(2,
-                        StaggeredGridLayoutManager.VERTICAL));
-            }else {
-                isMutiList = false;
-                //设置为单列
-                mListView.setLayoutManager(new StaggeredGridLayoutManager(1,
-                        StaggeredGridLayoutManager.VERTICAL));
-            }
+            getActivity().invalidateOptionsMenu(); //重新绘制menu
         }
 
         first++;
@@ -110,6 +101,8 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
     private void init() {
         for(LineItem lineItem: MainActivity.cart){
             Item item = lineItem.getItem();
+            String num;
+
             //因为加了一个LineItem，所以有点bug要处理
             if(item.getName().equals(""))
                 continue;
@@ -120,6 +113,12 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
             else
                 descri = item.getSize();
 
+            if (lineItem.isBulk){
+                num = ((BulkItem)lineItem.getItem()).getWeight() +"kg";
+                descri = ((BulkItem)lineItem.getItem()).getProduceTime() + "生产";
+            } else{
+                num = lineItem.getNum() + "";
+            }
             final CardProvider provider = new Card.Builder(mContext)
                     .setTag(item)
                     .withProvider(new CardProvider<>())
@@ -136,11 +135,11 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
                         }
                     })
                     .addAction(R.id.right_text_button, new TextViewAction(mContext)
-                            .setText("×  " + lineItem.getNum())
+                            .setText("×  " + num)
                             .setTextResourceColor(R.color.black_button)
                     )
                     .addAction(R.id.left_text_button, new TextViewAction(mContext)
-                            .setText(item.realPrice()+"元")
+                            .setText(item.realPrice()+" 元")
 
                             .setTextResourceColor(R.color.orange_button)
                     );
@@ -161,12 +160,8 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
                 EventBus.getDefault().post(new MessageEvent("刷新购物车"));
                 if(!MainActivity.TESTMODE) {
                     //获取信息，然后再刷新UI
-                    String temp = "http://155o554j78.iok.la:49817/";
-                    String args = "Flash-buy/cart?cartNumber=9&userId=9";
-
-                    temp += args;
-                    EventBus.getDefault().post(new InternetEvent(temp, Constant.REQUEST_Cart));
-
+                    EventBus.getDefault().post(new InternetEvent(InternetUtil.cartUrl, Constant.REQUEST_Cart));
+                    EventBus.getDefault().post(new InternetEvent(InternetUtil.bulkUrl,Constant.REQUEST_Bulk));
                     //先清空所有
                     mListView.getAdapter().clearAll();
                     init();
@@ -196,24 +191,38 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
         inflater.inflate(R.menu.menu_cart, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        if(!isMutiList){
+            mListView.setLayoutManager(new StaggeredGridLayoutManager(1,
+                    StaggeredGridLayoutManager.VERTICAL));
+            menu.findItem(R.id.diff_mode).setIcon(R.drawable.ic_view_module_white_24dp);
+        }else {
+            mListView.setLayoutManager(new StaggeredGridLayoutManager(2,
+                    StaggeredGridLayoutManager.VERTICAL));
+            menu.findItem(R.id.diff_mode).setIcon(R.drawable.ic_view_stream_black_24dp);
+        }
+        super.onPrepareOptionsMenu(menu);
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         //handle the click on the back arrow click
         switch (item.getItemId()) {
             case R.id.diff_mode:
                 if(!isMutiList){
-                    //变成单排列表
                     isMutiList = true;
                     //设置两列
                     mListView.setLayoutManager(new StaggeredGridLayoutManager(2,
                             StaggeredGridLayoutManager.VERTICAL));
-                    item.setIcon(R.drawable.ic_view_module_white_24dp);
+                    item.setIcon(R.drawable.ic_view_stream_black_24dp);
                 }else {
                     isMutiList = false;
                     //设置为单列
                     mListView.setLayoutManager(new StaggeredGridLayoutManager(1,
                             StaggeredGridLayoutManager.VERTICAL));
-                    item.setIcon(R.drawable.ic_view_stream_black_24dp);
+                    item.setIcon(R.drawable.ic_view_module_white_24dp);
+
                 }
 
                 return true;

@@ -244,11 +244,9 @@ public  class Util {
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH) > before? c.get(Calendar.DAY_OF_MONTH) - before:1;
-        int hour = c.get(Calendar.HOUR_OF_DAY);
-        int minute = c.get(Calendar.MINUTE);
-        int second = c.get(Calendar.SECOND);
 
-        return year+"/"+month+"/"+day+"/"+hour+"/"+minute+"/"+second;
+
+        return year+"/"+month+"/"+day+"/";
     }
     /**
      * 获取今天是星期几

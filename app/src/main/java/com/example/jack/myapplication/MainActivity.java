@@ -37,6 +37,7 @@ import com.example.jack.myapplication.Fragment.Fragment_sanzhuang;
 import com.example.jack.myapplication.Fragment.Fragment_search;
 import com.example.jack.myapplication.Fragment.Fragment_spend;
 import com.example.jack.myapplication.Model.Aller_father;
+import com.example.jack.myapplication.Model.BulkItem;
 import com.example.jack.myapplication.Model.InternetItem;
 import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.Model.LineItem;
@@ -90,6 +91,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 import me.nereo.multi_image_selector.MultiImageSelectorActivity;
@@ -101,10 +103,10 @@ import me.next.slidebottompanel.SlideBottomPanel;
 public class MainActivity extends AppCompatActivity  {
     public static ACache aCache;
     public static boolean TESTMODE = false;  //默认不开启测试模式
-    private static final int PROFILE_SETTING = 1;
     public static User user = new User(); //当前用户
+
     SearchView mSearchView;
-    private String mSearchText;
+    private String mSearchText;  //搜索的字段
     //save our header or result
     private AccountHeader headerResult = null;
     private Drawer result = null;
@@ -117,11 +119,12 @@ public class MainActivity extends AppCompatActivity  {
     //底部窗口
     private SlideBottomPanel sbv;
     private ListView lv_cart;
-    public static ArrayList<LineItem> cart;
+    public static ArrayList<LineItem> cart;   //当前购物车
+    public static List<BulkItem> bulkItems;  //当前所有散装商品
     private TextView tv_total_cost;
 
     //Fragments
-    private Stack<Fragment> fragments = null;   //作为一个fragments的栈
+    private Stack<Fragment> fragments = null;   //作为一个fragments的栈，来管理fragment的回退
     private Fragment mContent = null; //当前显示的Fragment
     private Fragment1 f1 = null;
     private Fragment2 f2 = null;
@@ -137,7 +140,7 @@ public class MainActivity extends AppCompatActivity  {
     public static final int DRAWER_SETTING = 6;
 
     private refreshPic mRefreshPic;  //刷新图片的接口，让fragment立刻刷新图片
-    public NeedPageChanged mNeedPageChanged;  //改变Fragment_buy的接口
+    public NeedPageChanged mNeedPageChanged;  //改变Fragment_buy中viewpager的接口
     @Override
     protected void onStart(){
         super.onStart();
@@ -165,6 +168,7 @@ public class MainActivity extends AppCompatActivity  {
 
 
         EventBus.getDefault().post(new InternetEvent(InternetUtil.cartUrl,Constant.REQUEST_Cart));
+        EventBus.getDefault().post(new InternetEvent(InternetUtil.bulkUrl,Constant.REQUEST_Bulk));
 
         //设置默认fragment
         if (savedInstanceState == null) {
@@ -655,6 +659,10 @@ public class MainActivity extends AppCompatActivity  {
             case Constant.REQUEST_Cart:
                 initCart(internetEvent.message); //初始化购物车
                 break;
+            case Constant.REQUEST_Bulk:
+                EventBus.getDefault().post("刷新散装食品！");
+                initBulk(internetEvent.message);  //初始化散装商品
+                break;
             case Constant.REQUEST_Search:
                 if(getSearchInfo(internetEvent.message)) {
                     //成功
@@ -676,7 +684,9 @@ public class MainActivity extends AppCompatActivity  {
                     //设置没有成功
                     EventBus.getDefault().post(new MessageEvent("设置过敏源失败，请检查网络"));
                 }
+                break;
             default:
+                Log.e("getInfo()","getInfo()" + internetEvent.type);
                 break;
         }
     }
@@ -711,7 +721,61 @@ public class MainActivity extends AppCompatActivity  {
         }
     }
 
+    /**
+     * 向服务器请求散装商品
+     * @param url
+     */
+    private void initBulk(String url){
+        String json;
+        try {
+            URL url1 = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) url1
+                    .openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            //网页返回的状态码
+            int code = connection.getResponseCode();
+            if(code == 200) {
+                InputStream is = connection.getInputStream();
+                json = Util.readStream(is);
+                //避免Unicode转义
+                Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+                //将json转换为一个Bulk对象的数组
+                bulkItems = Util.fromJsonArray(json,BulkItem.class);
 
+                //把散装商品添加入cart
+                for(BulkItem i:bulkItems){
+                    cart.add(new LineItem(i));
+                }
+
+                double total_price = 0;
+                for(LineItem lineItem:cart){
+                    total_price += lineItem.getUnitPrice();
+                }
+                final double total = total_price;
+
+                final ItemAdapter adapter = new ItemAdapter(this,R.layout.list_item,cart);
+
+                //在主线程中去更新UI
+                this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        lv_cart.setAdapter(adapter);
+
+                        tv_total_cost.setText("总价 ：" + total + "元");
+                    }
+                });
+            }
+            else {
+                EventBus.getDefault().post(new MessageEvent("刷新散装商品失败，请检查网络"));
+            }
+
+        }
+        catch (Exception e) {
+            EventBus.getDefault().post(new MessageEvent("刷新散装商品失败，请检查网络"));
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 向服务器请求购物车信息
@@ -752,7 +816,12 @@ public class MainActivity extends AppCompatActivity  {
                 //将剩下的加入购物车
                 cart.addAll(order.getLineItems());
 
+                double total_price = 0;
+                for(LineItem lineItem:cart){
+                    total_price += lineItem.getUnitPrice();
+                }
 
+                final double total = total_price;
 
                 final ItemAdapter adapter = new ItemAdapter(this,R.layout.list_item,cart);
 
@@ -761,21 +830,18 @@ public class MainActivity extends AppCompatActivity  {
                     @Override
                     public void run() {
                         lv_cart.setAdapter(adapter);
-                        double total_price = 0;
-                        for(LineItem lineItem:cart){
-                            total_price += lineItem.getUnitPrice();
-                        }
-                        tv_total_cost.setText(total_price + "元");
+
+                        tv_total_cost.setText("总价 ：" + total + "元");
                     }
                 });
             }
             else {
-                EventBus.getDefault().post(new MessageEvent("刷新失败，请检查网络"));
+                EventBus.getDefault().post(new MessageEvent("刷新购物车失败，请检查网络"));
             }
 
         }
         catch (Exception e) {
-            EventBus.getDefault().post(new MessageEvent("刷新失败，请检查网络"));
+            EventBus.getDefault().post(new MessageEvent("刷新购物车失败，请检查网络"));
             e.printStackTrace();
         }
 
@@ -832,6 +898,38 @@ public class MainActivity extends AppCompatActivity  {
 
         //自己定义一些历史订单
         EventBus.getDefault().post(new ListEvent("init"));
+        bulkItems = new ArrayList<>();
+        //自定义散装商品
+        BulkItem bulkitem = new BulkItem();
+        bulkitem.setName("青菜");
+        bulkitem.setImage("http://obsyvbwp3.bkt.clouddn.com/liquid.png");
+        bulkitem.setPrice(2.33);
+        bulkitem.setWeight(1);
+        bulkitem.setAttr1("闭光存储");
+        //5天以前生产
+        bulkitem.setProduceTime(Util.getBefoceTime(5));
+        //获得到期时间
+        bulkitem.jisuan();
+
+        BulkItem bulkitem1 = new BulkItem();
+        bulkitem1.setName("花生");
+        bulkitem1.setImage("http://obsyvbwp3.bkt.clouddn.com/liquid.png");
+        bulkitem1.setPrice(5.00);
+        bulkitem1.setWeight(2.33);
+        bulkitem1.setAttr1("冷藏");
+        bulkitem1.setShelfTime(10);
+        //19天前生产
+        bulkitem1.setProduceTime(Util.getBefoceTime(19));
+        bulkitem1.jisuan();
+
+        bulkItems.add(bulkitem);
+        bulkItems.add(bulkitem1);
+
+        //把散装商品添加入cart
+        for(BulkItem i:bulkItems){
+            cart.add(new LineItem(i));
+        }
+
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -908,6 +1006,10 @@ public class MainActivity extends AppCompatActivity  {
             case "fragment_sz":
                 fragment_sanzhuang = Fragment_sanzhuang.GetInstance();
                 switchContent(mContent,fragment_sanzhuang);
+                break;
+            case "fragment_buy":
+                fragment_buy = Fragment_buy.GetInstance();
+                switchContent(mContent,fragment_buy);
                 break;
             case "fragment_item":
                 //首先实例化fragment

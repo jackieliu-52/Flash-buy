@@ -77,7 +77,7 @@ public class BulkItem extends Item {
         for(int i= 0;i< 3;i++)
             endTime += temp[i];
         //得到总价
-        sum = realPrice() * weight;
+        sum = getSum();
     }
 
     public double getWeight() {
@@ -129,7 +129,7 @@ public class BulkItem extends Item {
     }
 
     public double getSum() {
-        return sum;
+        return realPrice() * weight;
     }
 
     public void setSum(double sum) {
