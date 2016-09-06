@@ -73,18 +73,9 @@
 
     <com.dexafree.materialList.view.MaterialListView
         android:layout_width="fill_parent"
-        android:layout_height="320dp"
+        android:layout_height="400dp"
         android:id="@+id/order_list"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#ffffff"
-        android:elevation="8dp"
-        android:paddingBottom="4dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:paddingTop="8dp">
         <TextView
             android:id="@+id/content_request_btn"
             android:layout_width="match_parent"
@@ -93,10 +84,10 @@
             android:background="#ffbf12"
             android:padding="10dp"
             android:text="结账"
-            android:gravity="center_horizontal"
             android:textAlignment="center"
             android:textColor="#a9a9a9"
-            android:textSize="20sp" />
-
-        </LinearLayout>
+            android:textSize="20sp"
+            android:layout_gravity="bottom"
+            android:gravity="center_horizontal"
+            android:textStyle="bold"/>
 </LinearLayout>

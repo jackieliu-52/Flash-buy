@@ -74,7 +74,7 @@ public class OrderActivity extends AppCompatActivity {
     private void init(){
         if(mOrder.getOrderId() != null)
              mOrderId.setText("订单号：" + mOrder.getOrderId());
-        mOrderStatus.setText(mOrder.getStatus() == 1? "未完成":"完成");
+        mOrderStatus.setText(mOrder.getStatus() == 1? "完成":"未完成");
         mOrderMoney.setText("总金额："+ mOrder.getPayment()+"元");
 
         mOrderList.setItemAnimator(new SlideInLeftAnimator());

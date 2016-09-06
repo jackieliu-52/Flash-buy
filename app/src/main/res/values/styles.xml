@@ -51,5 +51,13 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    <!-- -->
+    <style name="PlanTextStyle">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:textColorHighlight">@color/pink_pressed</item>
+
+    </style>
 
 </resources>

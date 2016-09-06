@@ -26,6 +26,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.example.jack.myapplication.Adapter.PlanTopAdapter;
 import com.example.jack.myapplication.Fragment.FragmentPlan.Fragment_lazyLoad;
 import com.example.jack.myapplication.MainActivity;
@@ -52,7 +54,6 @@ import org.greenrobot.eventbus.EventBus;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -63,6 +64,7 @@ import java.util.List;
 public class Fragment_plan extends android.support.v4.app.Fragment {
 
     public static List<TwoTuple<Boolean,Item>> planItems = new ArrayList<>(); //计划要购买的商品
+    public static List<Integer> chosedIndex = new ArrayList<>();  //被选择的下标
 
     Context mContext;
 
@@ -74,9 +76,12 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
     ViewGroup mPlanContentBuy;   //选购的商品
     private CommonRecycleView mCommonRecycleView;
     CommonRecyclerAdapter commonRecyclerAdapter; //所需要购买商品
+    HeaderAndFooterAdapter headerAndFooterAdapter; //添加了头部和尾部的adapter
     private boolean mShown;   //是否在展示选购的商品,默认初始化为false
     private boolean mInAnimation;  //是否在动画中,同上
     TextView headerView;    //头部和尾部
+    boolean mIsEditStatus; //是否是编辑模式
+
 
     List<Item> mItems;
     List<Item> mItems1;
@@ -99,36 +104,7 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
         mCommonRecycleView = (CommonRecycleView) view.findViewById(R.id.plan_list);
 
         mCommonRecycleView.setLayoutManager(new LinearLayoutManager(mContext));
-        commonRecyclerAdapter = new CommonRecyclerAdapter<TwoTuple<Boolean,Item>>(mContext, R.layout.plan_items, planItems) {
-
-            @Override
-            public void convert(final CommonRecyclerViewHolder holder,  TwoTuple<Boolean,Item> o) {
-                //holder.setText(R.id.scb, o);
-                Item item = o.second;
-                holder.setText(R.id.tv_item_name, item.getName());
-                holder.setText(R.id.tv_item_date, item.getPid());   //区域,考虑使用EPC字段
-                SmoothCheckBox scb = (SmoothCheckBox) holder.getView(R.id.scb);
-                scb.setChecked(o.first);
-                scb.setOnCheckedChangeListener(new SmoothCheckBox.OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(SmoothCheckBox checkBox, boolean isChecked) {
-                        int pos = holder.getLayoutPosition();  //获得下标
-                        //由于加入了一个头部和尾部,所以这个position相对来说会有点问题，这里做一点处理
-                        pos = pos - 1;
-                        planItems.get(pos).first = isChecked;
-                        holder.getView(R.id.v_color).setVisibility(View.VISIBLE);
-                        Drawable color = getResources().getDrawable(R.color.bg_Gray);
-                        holder.getView(R.id.v_color).setBackground(color);
-                    }
-                });
-
-
-//                View temp = holder.getView(R.id.v_color);
-//                Drawable color = getResources().getDrawable(R.color.bg_Gray);
-//                temp.setBackground(color);
-//                temp.setVisibility(View.INVISIBLE);
-            }
-        };
+        commonRecyclerAdapter = getAdapter();
         //设置点击函数
         mCommonRecycleView.addOnItemTouchListener(
                 new RecyclerItemClickListener(mContext, mCommonRecycleView ,new RecyclerItemClickListener.OnItemClickListener() {
@@ -149,7 +125,7 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
                 })
         );
 
-        HeaderAndFooterAdapter headerAndFooterAdapter = new HeaderAndFooterAdapter(commonRecyclerAdapter);
+        headerAndFooterAdapter = new HeaderAndFooterAdapter(commonRecyclerAdapter);
 
         headerView = new TextView(mContext);
 
@@ -225,21 +201,92 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
     }
 
     @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        if (mIsEditStatus) {
+            menu.findItem(R.id.delete).setVisible(true);
+        } else {
+            menu.findItem(R.id.delete).setVisible(false);
+        }
+        if (mShown){
+            menu.findItem(R.id.go_shopping).setVisible(true);
+        }else {
+            menu.findItem(R.id.delete).setVisible(false);
+            menu.findItem(R.id.go_shopping).setVisible(false);
+        }
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         //handle the click on the back arrow click
         switch (item.getItemId()) {
             case R.id.go_shopping:
                 showDialog();
-
-
                 return true;
             case  R.id.buy:
                 headerView.setText("共挑选了 "+ planItems.size() +" 件商品");  //需要刷新
                 setContentVisible();
+                getActivity().invalidateOptionsMenu(); //重新绘制menu
+                return true;
+            case R.id.delete:
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    /**
+     * 获得顾客预购商品的Adapter
+     * @return
+     */
+    private CommonRecyclerAdapter<TwoTuple<Boolean,Item>> getAdapter(){
+        return new CommonRecyclerAdapter<TwoTuple<Boolean,Item>>(mContext, R.layout.plan_items, planItems) {
+
+            @Override
+            public void convert(final CommonRecyclerViewHolder holder,  TwoTuple<Boolean,Item> o) {
+                //holder.setText(R.id.scb, o);
+                Item item = o.second;
+                holder.setText(R.id.tv_item_name, item.getName());
+                holder.setText(R.id.tv_item_date, item.getPid());   //区域,考虑使用EPC字段
+                SmoothCheckBox scb = (SmoothCheckBox) holder.getView(R.id.scb);
+                scb.setChecked(o.first);
+                scb.setOnCheckedChangeListener(new SmoothCheckBox.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(SmoothCheckBox checkBox, boolean isChecked) {
+                        int pos = holder.getLayoutPosition();  //获得下标
+                        //由于加入了一个头部和尾部,所以这个position相对来说会有点问题，这里做一点处理
+                        pos = pos - 1;
+                        if (isChecked) {
+                            if (!mIsEditStatus) {
+                                mIsEditStatus = true;  //已编辑
+                                getActivity().invalidateOptionsMenu(); //需要重新绘制menu
+                            }
+                            if (!chosedIndex.contains(new Integer(pos)))
+                                chosedIndex.add(new Integer(pos));
+                        }else {
+                            if (chosedIndex.contains(new Integer(pos)))
+                                chosedIndex.remove(new Integer(pos));
+                            if (chosedIndex.size() == 0) {
+                                mIsEditStatus = false; //不可编辑
+                                getActivity().invalidateOptionsMenu(); //需要重新绘制menu
+                            }
+                        }
+
+                        planItems.get(pos).first = isChecked;
+                        holder.getView(R.id.v_color).setVisibility(View.VISIBLE);
+                        Drawable color = getResources().getDrawable(R.color.bg_Gray);
+                        holder.getView(R.id.v_color).setBackground(color);
+                    }
+                });
+
+
+//                View temp = holder.getView(R.id.v_color);
+//                Drawable color = getResources().getDrawable(R.color.bg_Gray);
+//                temp.setBackground(color);
+//                temp.setVisibility(View.INVISIBLE);
+            }
+        };
     }
 
     /**
@@ -255,6 +302,8 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 commonRecyclerAdapter.clearAll();  //删除所有数据
                 planItems = new ArrayList<>();  //清空数据
+                headerAndFooterAdapter.notifyDataSetChanged();
+
                 ((MainActivity)getActivity()).mNeedPageChanged.pageChanged(1);  //切换Fragment
                 //与此同时，应该通知map的Fragment准备好地图
 
@@ -352,15 +401,118 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
             public void onItemClick(View view, int position) {
                 //首先确认是哪个
                 TwoTuple<String,String> temp = tops.get(position);
+                CommonRecyclerAdapter<TwoTuple<Boolean,Item>> adapter;
+                final List<TwoTuple<Boolean,Item>> items = new ArrayList<>();
                 switch (temp.second){
                     case "生鲜蔬菜":
-                        EventBus.getDefault().post(new MessageEvent("生鲜蔬菜"));
+                        for(Item i: mItems1){
+                            items.add(new TwoTuple<>(false,i));
+                        }
+                        adapter = getAnotherAdapter(items);
+                        new MaterialDialog.Builder(mContext)
+                                .title("生鲜蔬菜")
+                                .adapter(adapter, null)
+                                .positiveText("加入购物车")
+                                .onAny(new MaterialDialog.SingleButtonCallback() {
+                                    @Override
+                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                        if(which == DialogAction.POSITIVE){
+                                            //被选中的物品加入购物车
+                                            for(TwoTuple<Boolean,Item> o: items){
+                                                if(o.first) {
+                                                    Item copyOne = o.second;
+                                                    planItems.add(new TwoTuple<>(false,copyOne));   //加入购物车
+                                                }
+                                            }
+                                            items.clear();  //清空整个列表
+                                        }
+                                    }
+                                })
+                                .show();
                         break;
                     case "酒水饮料":
+                        for(Item i: mItems2){
+                            items.add(new TwoTuple<>(false,i));
+                        }
+                        adapter = getAnotherAdapter(items);
+                        new MaterialDialog.Builder(mContext)
+                                .title("酒水饮料")
+                                .adapter(adapter, null)
+                                .positiveText("加入购物车")
+                                .onAny(new MaterialDialog.SingleButtonCallback() {
+                                    @Override
+                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                        if(which == DialogAction.POSITIVE){
+                                            //被选中的物品加入购物车
+                                            for(TwoTuple<Boolean,Item> o: items){
+                                                if(o.first) {
+                                                    Item copyOne = o.second;
+                                                    planItems.add(new TwoTuple<>(false,copyOne));   //加入购物车
+                                                }
+                                            }
+                                            items.clear();  //清空整个列表
+                                        }
+                                    }
+                                })
+                                .show();
                         break;
                     case "粮油副食":
+                        for(Item i: mItems3){
+                            items.add(new TwoTuple<>(false,i));
+                        }
+                        adapter = getAnotherAdapter(items);
+                        new MaterialDialog.Builder(mContext)
+                                .title("粮油副食")
+                                .adapter(adapter, null)
+                                .positiveText("加入购物车")
+                                .onAny(new MaterialDialog.SingleButtonCallback() {
+                                    @Override
+                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                        if(which == DialogAction.POSITIVE){
+                                            //被选中的物品加入购物车
+                                            for(TwoTuple<Boolean,Item> o: items){
+                                                if(o.first) {
+                                                    Item copyOne = o.second;
+                                                    planItems.add(new TwoTuple<>(false,copyOne));   //加入购物车
+                                                }
+                                            }
+                                            items.clear();  //清空整个列表
+                                        }
+                                    }
+                                })
+                                .show();
                         break;
                     case "美容洗护":
+                        for(Item i: mItems4){
+                            items.add(new TwoTuple<>(false,i));
+                        }
+                        adapter = getAnotherAdapter(items);
+                        new MaterialDialog.Builder(mContext)
+                                .title("美容洗护")
+                                .adapter(adapter, null)
+                                .positiveText("加入购物车")
+                                .onAny(new MaterialDialog.SingleButtonCallback() {
+                                    @Override
+                                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+
+                                        if(which.name().equals("POSITIVE")){
+                                            String sum = "";
+                                            //被选中的物品加入购物车
+                                            for(TwoTuple<Boolean,Item> o: items){
+                                                if(o.first) {
+                                                    Item copyOne = o.second;
+                                                    sum += copyOne.getName() + "    ";
+                                                    planItems.add(new TwoTuple<>(false,copyOne));   //加入购物车
+                                                }
+                                            }
+                                            items.clear();  //清空整个列表
+
+                                            EventBus.getDefault()
+                                                    .post(new MessageEvent("你点击了" + sum));
+                                        }//
+                                    }
+                                })
+                                .show();
                         break;
                     default:
                         Log.e("Fragment_plan",temp.second);
@@ -371,6 +523,51 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
 
 
         });
+    }
+
+    /**
+     * 根据不同的数组获取上方四个常购商品的Adapter
+     * @param items
+     * @return
+     */
+    private CommonRecyclerAdapter getAnotherAdapter(final List<TwoTuple<Boolean,Item>> items){
+        return new CommonRecyclerAdapter<TwoTuple<Boolean, Item>>(mContext,R.layout.plan_items,items) {
+            @Override
+            public void convert(final CommonRecyclerViewHolder holder, TwoTuple<Boolean, Item> o) {
+                Item item = o.second;
+                ((TextView)holder.getView(R.id.tv_item_name)).setTextAppearance(mContext,R.style.PlanTextStyle);
+                holder.setText(R.id.tv_item_name, item.getName());
+                final SmoothCheckBox scb = (SmoothCheckBox) holder.getView(R.id.scb);
+
+                holder.setOnClickListener(R.id.tv_item_name, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int pos = holder.getLayoutPosition();  //获得下标
+                        items.get(pos).first = !items.get(pos).first;
+                        scb.setChecked(items.get(pos).first, true);//播放动画
+                    }
+                });
+
+                holder.getView(R.id.v_color).setVisibility(View.GONE);  //去除
+                holder.getView(R.id.tv_item_date).setVisibility(View.GONE);  //去除
+
+                scb.setChecked(o.first);
+                scb.setOnCheckedChangeListener(new SmoothCheckBox.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(SmoothCheckBox checkBox, boolean isChecked) {
+                        int pos = holder.getLayoutPosition();  //获得下标
+                        items.get(pos).first = isChecked;
+                        //提升一个视觉的差异
+                        if(isChecked) {
+                            holder.getView(R.id.v_color).setVisibility(View.INVISIBLE);
+                        }
+                        else {
+                            holder.getView(R.id.v_color).setVisibility(View.GONE);
+                        }
+                    }
+                });
+            }
+        };
     }
 
     private void setupTab(SmartTabLayout layout){

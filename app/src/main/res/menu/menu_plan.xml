@@ -8,12 +8,18 @@
         android:title="goShopping"
         android:icon="@drawable/ic_go_shopping_24dp"
         app:showAsAction="always"/>
-
+    <item
+        android:id="@+id/delete"
+        android:orderInCategory="90"
+        android:title="buy"
+        android:icon="@drawable/ic_action_name"
+        app:showAsAction="always"/>
     <item
         android:id="@+id/buy"
         android:orderInCategory="90"
         android:title="buy"
         android:icon="@mipmap/ic_shopping_cart_black_24dp"
         app:showAsAction="always"/>
+
 
 </menu>
