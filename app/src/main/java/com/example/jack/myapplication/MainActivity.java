@@ -24,6 +24,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.avos.avoscloud.AVUser;
 import com.example.jack.myapplication.Adapter.ItemAdapter;
@@ -120,11 +121,11 @@ public class MainActivity extends AppCompatActivity  {
     private SlideBottomPanel sbv;
     private ListView lv_cart;
     public static ArrayList<LineItem> cart;   //当前购物车
-    public static List<BulkItem> bulkItems;  //当前所有散装商品
+    public static List<BulkItem> bulkItems = new ArrayList<>();  //当前所有散装商品
     private TextView tv_total_cost;
 
     //Fragments
-    private Stack<Fragment> fragments = null;   //作为一个fragments的栈，来管理fragment的回退
+    private Stack<Fragment> fragments = null;   //作为一个f ragments的栈，来管理fragment的回退
     private Fragment mContent = null; //当前显示的Fragment
     private Fragment1 f1 = null;
     private Fragment2 f2 = null;
@@ -141,6 +142,8 @@ public class MainActivity extends AppCompatActivity  {
 
     private refreshPic mRefreshPic;  //刷新图片的接口，让fragment立刻刷新图片
     public NeedPageChanged mNeedPageChanged;  //改变Fragment_buy中viewpager的接口
+
+    private Toast toast;
     @Override
     protected void onStart(){
         super.onStart();
@@ -153,6 +156,8 @@ public class MainActivity extends AppCompatActivity  {
         LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
         EventBus.getDefault().register(this);
         aCache = ACache.get(this); //获得缓存实例
+        toast = Toast.makeText(getApplicationContext(), "确定退出？", Toast.LENGTH_SHORT);
+
         super.onCreate(savedInstanceState);
 
         getUser();
@@ -291,7 +296,7 @@ public class MainActivity extends AppCompatActivity  {
         menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.floating_button);
         menuMultipleActions.addButton(actionC);
         final FloatingActionButton cart = (FloatingActionButton) findViewById(R.id.cart);
-        cart.setIcon(R.mipmap.ic_shopping_cart_black_24dp);
+        cart.setIcon(R.drawable.ic_shopping_cart_white_24px);
         cart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -594,8 +599,15 @@ public class MainActivity extends AppCompatActivity  {
         }
         Log.i("finish","1");
 
-        super.onBackPressed();
+        quitToast();
 
+    }
+    private void quitToast() {
+        if(null == toast.getView().getParent()){
+            toast.show();
+        }else{
+            this.finish();
+        }
     }
 
     /**

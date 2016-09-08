@@ -49,6 +49,7 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
+import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -249,6 +250,14 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
                 Item item = o.second;
                 holder.setText(R.id.tv_item_name, item.getName());
                 holder.setText(R.id.tv_item_date, item.getPid());   //区域,考虑使用EPC字段
+
+                //加载图片
+                Picasso.with(mContext)
+                        .load(item.getImage())
+                        .placeholder(R.drawable.ic_launcher)
+                        .into(((ImageView) holder.getView(R.id.ci_image)));
+
+
                 SmoothCheckBox scb = (SmoothCheckBox) holder.getView(R.id.scb);
                 scb.setChecked(o.first);
                 scb.setOnCheckedChangeListener(new SmoothCheckBox.OnCheckedChangeListener() {
@@ -385,10 +394,10 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
      */
     private void initTop(){
         tops = new ArrayList<>();
-        TwoTuple<String,String> top = new TwoTuple<>("http://obsyvbwp3.bkt.clouddn.com/food.png","生鲜蔬菜");
-        TwoTuple<String,String> top1 = new TwoTuple<>("http://obsyvbwp3.bkt.clouddn.com/milk.png","酒水饮料");
-        TwoTuple<String,String> top2 = new TwoTuple<>("http://obsyvbwp3.bkt.clouddn.com/oil.png","粮油副食");
-        TwoTuple<String,String> top3 = new TwoTuple<>("http://obsyvbwp3.bkt.clouddn.com/liquid.png","美容洗护");
+        TwoTuple<String,String> top = new TwoTuple<>("http://obsyvbwp3.bkt.clouddn.com/fruit_strawberry.JPG","生鲜蔬菜");
+        TwoTuple<String,String> top1 = new TwoTuple<>("http://obsyvbwp3.bkt.clouddn.com/drink_RIO.JPG","酒水饮料");
+        TwoTuple<String,String> top2 = new TwoTuple<>("http://obsyvbwp3.bkt.clouddn.com/head_shoulder.JPG","粮油副食");
+        TwoTuple<String,String> top3 = new TwoTuple<>("http://obsyvbwp3.bkt.clouddn.com/oil.JPG","美容洗护");
         tops.add(top);
         tops.add(top1);
         tops.add(top2);
@@ -413,6 +422,8 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
                                 .title("生鲜蔬菜")
                                 .adapter(adapter, null)
                                 .positiveText("加入购物车")
+                                .negativeText("取消")
+                                .negativeColorRes(R.color.orange_button)
                                 .onAny(new MaterialDialog.SingleButtonCallback() {
                                     @Override
                                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
@@ -537,6 +548,13 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
                 Item item = o.second;
                 ((TextView)holder.getView(R.id.tv_item_name)).setTextAppearance(mContext,R.style.PlanTextStyle);
                 holder.setText(R.id.tv_item_name, item.getName());
+
+                //加载图片
+                Picasso.with(mContext)
+                        .load(item.getImage())
+                        .placeholder(R.drawable.ic_launcher)
+                        .into(((ImageView) holder.getView(R.id.ci_image)));
+
                 final SmoothCheckBox scb = (SmoothCheckBox) holder.getView(R.id.scb);
 
                 holder.setOnClickListener(R.id.tv_item_name, new View.OnClickListener() {

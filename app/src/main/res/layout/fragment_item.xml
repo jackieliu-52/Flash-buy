@@ -131,33 +131,32 @@
     <RelativeLayout
         android:layout_below="@id/sv"
         android:layout_alignParentBottom="true"
-        android:background="@color/divider_color"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:paddingBottom="3dp">
         <ImageButton
-            android:layout_alignParentBottom="true"
             android:id="@+id/item_comment"
-            android:background="@color/divider_color"
-            android:src="@mipmap/ic_comment_outline_grey"
+            android:background="#00000000"
+            android:src="@drawable/ic_vector_drawable_comment"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
            />
         <ImageButton
             android:layout_centerInParent="true"
-            android:background="@color/divider_color"
+            android:background="#00000000"
             android:id="@+id/item_scan"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/ic_crop_free_black_24dp"
+            android:src="@drawable/ic_vector_drawable_scan_"
             />
         <ImageButton
             android:layout_alignParentRight="true"
-            android:background="@color/divider_color"
+            android:background="#00000000"
             android:id="@+id/item_add"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/ic_add_shopping_cart_black_24dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_vector_drawable_add_shoppingcart"
             />
     </RelativeLayout>
 </RelativeLayout>

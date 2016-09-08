@@ -113,7 +113,7 @@ public class Fragment_sanzhuang extends Fragment {
             TextView textView = new TextView(mContext);
             textView.setText(bulkItem.getName());
             textView.setTextSize(14);
-            textView.setLayoutParams(llp);
+            textView.setLayoutParams(layoutParams);
 
             ImageView imageView = new ImageView(mContext);
 

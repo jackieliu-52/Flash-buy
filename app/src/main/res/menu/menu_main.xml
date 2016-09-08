@@ -14,7 +14,7 @@
         android:id="@+id/scan"
         android:orderInCategory="90"
         android:title="scan"
-        android:icon="@mipmap/ic_fullscreen_black_24dp"
+        android:icon="@drawable/ic_vector_drawable_scan"
         app:showAsAction="always"/>
 
 
