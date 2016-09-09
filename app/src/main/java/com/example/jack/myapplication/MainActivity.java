@@ -60,6 +60,7 @@ import com.github.mrengineer13.snackbar.SnackBar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.litesuits.common.assist.Toastor;
+import com.litesuits.common.utils.ClipboardUtil;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -105,6 +106,7 @@ public class MainActivity extends AppCompatActivity  {
     public static ACache aCache;
     public static boolean TESTMODE = false;  //默认不开启测试模式
     public static User user = new User(); //当前用户
+    private Context mContext;
 
     SearchView mSearchView;
     private String mSearchText;  //搜索的字段
@@ -156,6 +158,7 @@ public class MainActivity extends AppCompatActivity  {
         LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
         EventBus.getDefault().register(this);
         aCache = ACache.get(this); //获得缓存实例
+        mContext = this;
         toast = Toast.makeText(getApplicationContext(), "确定退出？", Toast.LENGTH_SHORT);
 
         super.onCreate(savedInstanceState);
@@ -506,6 +509,7 @@ public class MainActivity extends AppCompatActivity  {
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                ClipboardUtil.getLatestText(mContext);  //得到剪贴板内容，询问是否要搜索
                 doSearch(query);
                 return true;
             }

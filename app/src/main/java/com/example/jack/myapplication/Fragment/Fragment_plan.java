@@ -396,8 +396,8 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
         tops = new ArrayList<>();
         TwoTuple<String,String> top = new TwoTuple<>("http://obsyvbwp3.bkt.clouddn.com/fruit_strawberry.JPG","生鲜蔬菜");
         TwoTuple<String,String> top1 = new TwoTuple<>("http://obsyvbwp3.bkt.clouddn.com/drink_RIO.JPG","酒水饮料");
-        TwoTuple<String,String> top2 = new TwoTuple<>("http://obsyvbwp3.bkt.clouddn.com/head_shoulder.JPG","粮油副食");
-        TwoTuple<String,String> top3 = new TwoTuple<>("http://obsyvbwp3.bkt.clouddn.com/oil.JPG","美容洗护");
+        TwoTuple<String,String> top2 = new TwoTuple<>("http://obsyvbwp3.bkt.clouddn.com/oil.JPG","粮油副食");
+        TwoTuple<String,String> top3 = new TwoTuple<>("http://obsyvbwp3.bkt.clouddn.com/head_shoulder.JPG","美容洗护");
         tops.add(top);
         tops.add(top1);
         tops.add(top2);
@@ -450,6 +450,8 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
                                 .title("酒水饮料")
                                 .adapter(adapter, null)
                                 .positiveText("加入购物车")
+                                .negativeText("取消")
+                                .negativeColorRes(R.color.orange_button)
                                 .onAny(new MaterialDialog.SingleButtonCallback() {
                                     @Override
                                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
@@ -476,6 +478,8 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
                                 .title("粮油副食")
                                 .adapter(adapter, null)
                                 .positiveText("加入购物车")
+                                .negativeText("取消")
+                                .negativeColorRes(R.color.orange_button)
                                 .onAny(new MaterialDialog.SingleButtonCallback() {
                                     @Override
                                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
@@ -502,6 +506,8 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
                                 .title("美容洗护")
                                 .adapter(adapter, null)
                                 .positiveText("加入购物车")
+                                .negativeText("取消")
+                                .negativeColorRes(R.color.orange_button)
                                 .onAny(new MaterialDialog.SingleButtonCallback() {
                                     @Override
                                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {

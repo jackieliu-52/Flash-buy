@@ -12,6 +12,7 @@ import android.widget.ImageView;
 
 import com.example.jack.myapplication.R;
 import com.example.jack.myapplication.Util.Interface.NeedPageChanged;
+import com.example.jack.myapplication.View.NoScrollViewPager;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.iconics.IconicsDrawable;
@@ -28,7 +29,7 @@ public class Fragment_buy extends android.support.v4.app.Fragment implements Nee
     private final String TAG = "Fragment_buy";
     public static final String ARGUMENT = "argument";
 
-    private ViewPager viewPager;
+    private NoScrollViewPager viewPager;
     private SmartTabLayout viewPagerTab;
     private Context context = this.getActivity();
     /**
@@ -60,7 +61,7 @@ public class Fragment_buy extends android.support.v4.app.Fragment implements Nee
         tab.addView(LayoutInflater.from(context).inflate(R.layout.demo_custom_tab_icons1, tab, false));
 
         //获得viewpager和指示器
-        viewPager = (ViewPager) view.findViewById(R.id.viewpager);
+        viewPager = (NoScrollViewPager) view.findViewById(R.id.viewpager);
         viewPagerTab = (SmartTabLayout) view.findViewById(R.id.viewpagertab);
 
         //为指示器增加图标

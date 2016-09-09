@@ -205,6 +205,7 @@ public class FloatBall extends ViewGroup {
     private void setFloatImage(boolean enable) {
         if (singleIcon != null) {
             ivFloatBall.setImageResource(singleIcon.bitmap);
+
             ivFloatBall.setAlpha(enable ? singleIcon.enable : singleIcon.normal);
         } else if (doubleIcon != null) {
             ivFloatBall.setImageResource(enable ? doubleIcon.enable : doubleIcon.normal);

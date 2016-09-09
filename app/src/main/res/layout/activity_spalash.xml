@@ -17,10 +17,11 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <TextView
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/splash_logo" />
+            android:src="@drawable/splash_logo"
+            android:background="#00000000"/>
 
         <TextView
             android:id="@+id/tv_author"
