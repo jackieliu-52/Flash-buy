@@ -310,8 +310,11 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 commonRecyclerAdapter.clearAll();  //删除所有数据
-                planItems = new ArrayList<>();  //清空数据
-                headerAndFooterAdapter.notifyDataSetChanged();
+                for(TwoTuple<Boolean,Item> temp : planItems){
+                    Fragment_buy.planItems.add(temp.second);
+                }
+                planItems = new ArrayList<>(); //清空数据
+                headerAndFooterAdapter.notifyDataSetChanged();  //通知数据有所更新
 
                 ((MainActivity)getActivity()).mNeedPageChanged.pageChanged(1);  //切换Fragment
                 //与此同时，应该通知map的Fragment准备好地图

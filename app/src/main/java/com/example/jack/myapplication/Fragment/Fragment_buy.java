@@ -10,7 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.jack.myapplication.Model.Item;
+import com.example.jack.myapplication.Model.TwoTuple;
 import com.example.jack.myapplication.R;
+import com.example.jack.myapplication.Util.Event.PlanBuyEvent;
 import com.example.jack.myapplication.Util.Interface.NeedPageChanged;
 import com.example.jack.myapplication.View.NoScrollViewPager;
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
@@ -20,6 +23,11 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItem;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 用户在购买的时候主要用到的三个Fragment
@@ -31,7 +39,10 @@ public class Fragment_buy extends android.support.v4.app.Fragment implements Nee
 
     private NoScrollViewPager viewPager;
     private SmartTabLayout viewPagerTab;
-    private Context context = this.getActivity();
+    private Context context;
+
+    public static List<Item> planItems = new ArrayList<>(); //已经决定决定计划要购买的商品
+
     /**
      * 单例对象实例
      */
@@ -131,5 +142,6 @@ public class Fragment_buy extends android.support.v4.app.Fragment implements Nee
     //往前跳转到指定的pager
     public void pageChanged(int page){
         viewPager.setCurrentItem(viewPager.getCurrentItem() + page, true);
+        EventBus.getDefault().post(new PlanBuyEvent("initMap"));
     }
 }
