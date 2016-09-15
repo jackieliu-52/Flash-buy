@@ -27,11 +27,17 @@ public class ConnectActivity extends AppCompatActivity {
     private ImageView foundDevice;
     private RippleBackground rippleBackground;
     private ConnectTask mConnectTask = null;
+    String text;
 
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         setContentView(R.layout.activity_connect);
+        if(icicle != null){
+            text = icicle.getString("1");
+        }
+        String[] temp = text.split(":");
+        text = temp[2];
         mContext = this;
         foundDevice=(ImageView)findViewById(R.id.foundDevice);
         rippleBackground = (RippleBackground)findViewById(R.id.content);
@@ -59,7 +65,7 @@ public class ConnectActivity extends AppCompatActivity {
         //post数据给服务器
         @Override
         protected Boolean doInBackground(Void... params) {
-            return InternetUtil.postStr("cartNumber:1;uuid:2",InternetUtil.args3);   //发送给服务器
+            return InternetUtil.postStr(" ",InternetUtil.args3 + text +"&userId=9&password=9");   //发送给服务器
         }
 
         @Override

@@ -40,6 +40,7 @@ public class Fragment_cuxiao extends android.support.v4.app.Fragment   {
     private static ArrayList<Item> mItems = new ArrayList<>();  //保存促销的数据
     private StaggeredHomeAdapter mStaggeredHomeAdapter;
 
+
     @Override
     public void onAttach(Context context){
         Log.i("TAG","onAttach + Context");

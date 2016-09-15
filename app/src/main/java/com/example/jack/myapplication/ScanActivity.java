@@ -129,12 +129,16 @@ public class ScanActivity extends Activity implements ScanListener, View.OnClick
         //rawResult.getText()就是扫描结果，条形码就是一串数字
         tv_scan_result.setText("结果："+rawResult.getText());
         if(rawResult.getText().contains("cartNumber")){
-            startActivity(new Intent(ScanActivity.this, ConnectActivity.class));
+            Intent intent = new Intent(ScanActivity.this, ConnectActivity.class);
+            Bundle bundle1 = new Bundle();
+            bundle1.putString("1",rawResult.getText());
+            intent.putExtras(bundle1);
+            startActivity(intent);
         }
         else {
             EventBus.getDefault().post(new InternetEvent(rawResult.getText(), Constant.REQUEST_INTERNET_BAR));
         }
-        finish();
+        finish(); //关闭
     }
 
     @Override

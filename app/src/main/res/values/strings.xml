@@ -38,5 +38,8 @@
         <item>女</item>
     </string-array>
 
-
+    <!-- 结账按钮的结果 -->
+    <string name="Complete">完成</string>
+    <string name="Error">错误</string>
+    <string name="Upload">提交订单</string>
 </resources>

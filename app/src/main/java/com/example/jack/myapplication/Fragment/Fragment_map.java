@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 
+import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.Model.Round;
 import com.example.jack.myapplication.Model.iBeaconView;
 import com.example.jack.myapplication.R;
@@ -64,6 +65,7 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
     final private String TAG = "Fragment_map";
     private Context mContext;
 
+
     private static final SKYRegion ALL_SEEKCY_BEACONS_REGION = new SKYRegion("rid_all", null, null, null, null);
     private SKYBeaconManager skyBeaconManager;
 
@@ -104,6 +106,19 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
     private TimerTask mTimerTask; //测试
 
 
+    public static List<Integer> nums = new ArrayList<>();  //各个区域的数量
+    BitmapLayer bitmapLayer1;
+    BitmapLayer bitmapLayer2;
+    BitmapLayer bitmapLayer3;
+    Bitmap bmp1;
+    Bitmap bmp2;
+    Bitmap bmp3;
+
+    static {
+        for(int i =0;i < 3;i++){
+            nums.add(0);
+        }
+    }
     @Override
     public void onAttach(Context context){
         super.onAttach(context);
@@ -135,6 +150,7 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
         setButtonListen();
         loadMap();
 
+        loadMapDetails();
         //震动测试
   //    VibrateUtil.vibrate(mContext,1000);
 
@@ -149,7 +165,7 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
         Bitmap bitmap = null;
 
         try {
-            bitmap = BitmapFactory.decodeStream(mContext.getAssets().open("test.png"));
+            bitmap = BitmapFactory.decodeStream(mContext.getAssets().open("map.png"));
         } catch (IOException e) {
             e.printStackTrace();
             Log.e(TAG,"get map error[picture]");
@@ -207,6 +223,26 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
         marksName = TestData.getMarksName();
 
         MapUtils.init(nodes.size(), nodesContract.size());
+    }
+
+    /**
+     * 预购商品
+     */
+    private void loadMapDetails(){
+        bmp3 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n0);
+        bmp1 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n0);
+        bmp2 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n0);
+        bitmapLayer1 = new BitmapLayer(mapView, bmp1);
+        bitmapLayer1.setLocation(new PointF(485,477));
+        bitmapLayer2 = new BitmapLayer(mapView, bmp2);
+        bitmapLayer2.setLocation(new PointF(175,552));
+        bitmapLayer3 = new BitmapLayer(mapView, bmp3);
+        bitmapLayer3.setLocation(new PointF(175,250));
+
+        mapView.addLayer(bitmapLayer1);
+        mapView.addLayer(bitmapLayer2);
+        mapView.addLayer(bitmapLayer3);
+        mapView.refresh();   //draw地图
     }
 
     /**
@@ -279,6 +315,8 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
         timerTask = new TimerTask() {
             @Override
             public void run() {
+                //首先看看还有那些商品没有被购买
+                setMapDetail();
                //这里面进行定位操作
                 double d1 = distances.get(0);
                 double d2 = distances.get(1);
@@ -462,9 +500,11 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
                     sensorManager.registerListener(this, sensorManager.getDefaultSensor
                             (Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_NORMAL);
 
-                    mapView.refresh();   //draw地图
 
                     startTimer();  //开始定位
+
+                    setMapDetail();
+                    mapView.refresh();   //draw地图
                     break; //跳出循环
                 }
             }
@@ -491,6 +531,73 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
         }
     }
 
+    /**
+     * 设置预购商品
+     */
+    private void setMapDetail(){
+        //遍历
+        for(Item item:Fragment_buy.planItems){
+            switch (item.getPid()){
+                case "01":
+                    nums.set(0,nums.get(0) + 1);
+                    break;
+                case "06":
+                    nums.set(1,nums.get(1) + 1);
+                    break;
+                case "09":
+                    nums.set(2,nums.get(2) + 1);
+                    break;
+            }
+        }
+        switch (nums.get(0)){
+            case 1:
+                bmp1 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n1);
+                break;
+            case 2:
+                bmp1 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n2);
+                break;
+            case 3:
+                bmp1 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n3);
+                break;
+            case 4:
+                bmp1 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n4);
+                break;
+            default:
+                bmp1 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n0);
+        }
+        switch (nums.get(1)){
+            case 1:
+                bmp2 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n1);
+                break;
+            case 2:
+                bmp2 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n2);
+                break;
+            case 3:
+                bmp2 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n3);
+                break;
+            case 4:
+                bmp2 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n4);
+                break;
+            default:
+                bmp2 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n0);
+        }
+        switch (nums.get(2)){
+            case 1:
+                bmp3 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n1);
+                break;
+            case 2:
+                bmp3 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n2);
+                break;
+            case 3:
+                bmp3 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n3);
+                break;
+            case 4:
+                bmp3 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n4);
+                break;
+            default:
+                bmp3 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n0);
+        }
+    }
 
 
     @Override

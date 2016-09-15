@@ -14,10 +14,10 @@ import java.net.URL;
  */
 public class InternetUtil {
 //    public static String root = "http://155o554j78.iok.la:49817/Flash-buy/";
-    public static String root = "http://192.168.1.1:443/Flash-Buy/";   //局域网测试
+    public static String root = "http://192.168.191.1:443/Flash-Buy/";   //局域网测试
     public static String args1 = "Cart/Data?cartNumber=9&userId=9";
     public static String args2 = "bulk?cartNumber=9&userId=9";
-    public static String args3 = "Cart/Login?uuid=9&userId=9&password=9";
+    public static String args3 = "Cart/Login?uuid=";
 
     public static String cartUrl = root + args1;
     public static String bulkUrl = root + args2;
@@ -98,8 +98,6 @@ public class InternetUtil {
 
             int response = httpURLConnection.getResponseCode();            //获得服务器的响应码
             if(response == HttpURLConnection.HTTP_OK) {
-                InputStream is = httpURLConnection.getInputStream();
-                String result = Util.readStream(is);
                 return true;
             }else{
                 return false;

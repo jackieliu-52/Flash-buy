@@ -1,8 +1,9 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
 
         <include layout="@layout/activity_toolbar"/>
@@ -73,10 +74,10 @@
 
     <com.dexafree.materialList.view.MaterialListView
         android:layout_width="fill_parent"
-        android:layout_height="400dp"
+        android:layout_height="300dp"
         android:id="@+id/order_list"/>
 
-        <TextView
+        <com.dd.CircularProgressButton
             android:id="@+id/content_request_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -89,5 +90,11 @@
             android:textSize="20sp"
             android:layout_gravity="bottom"
             android:gravity="center_horizontal"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            app:cpb_textComplete="@string/Complete"
+            app:cpb_textError="@string/Error"
+            app:cpb_textIdle="@string/Upload"
+            app:cpb_iconComplete="@drawable/ic_action_accept"
+            app:cpb_iconError="@drawable/ic_action_cancel"
+            app:cpb_selectorComplete="@drawable/complete_state_selector"/>
 </LinearLayout>

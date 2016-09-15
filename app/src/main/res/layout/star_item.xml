@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:fresco="http://schemas.android.com/apk/res-auto"
+              android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="72dp"
+                android:paddingLeft="12dp"
+                android:paddingRight="16dp">
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/list_item_image"
+        android:layout_width="102dp"
+        android:layout_height="52dp"
+        fresco:placeholderImage="@drawable/good"
+        fresco:roundAsCircle="true"
+
+        />
+    <TextView
+        android:layout_centerInParent="true"
+        android:textSize="20sp"
+        android:textStyle="bold|italic"
+        android:id="@+id/tv_gd_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/good_name"/>
+
+
+    <TextView
+        android:layout_alignParentRight="true"
+        android:paddingTop="20dp"
+        android:id="@+id/add_2_cart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="加入购物车"/>
+
+</RelativeLayout>

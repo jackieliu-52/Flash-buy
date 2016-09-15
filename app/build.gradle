@@ -41,6 +41,9 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    //结账的按钮
+    compile 'com.github.dmytrodanylyk.circular-progress-button:library:1.1.3'
+
     //连接手机的库
     compile 'com.skyfishjy.ripplebackground:library:1.0.1'
 

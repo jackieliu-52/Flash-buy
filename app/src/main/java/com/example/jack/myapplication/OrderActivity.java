@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dd.CircularProgressButton;
 import com.dexafree.materialList.card.Card;
 import com.dexafree.materialList.card.CardProvider;
 import com.dexafree.materialList.card.action.TextViewAction;
@@ -18,7 +19,10 @@ import com.dexafree.materialList.view.MaterialListView;
 import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.Model.LineItem;
 import com.example.jack.myapplication.Model.Order;
+import com.example.jack.myapplication.Util.Event.MessageEvent;
 import com.squareup.picasso.RequestCreator;
+
+import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,7 +41,8 @@ public class OrderActivity extends AppCompatActivity {
     @BindView(R.id.order_list)
     MaterialListView mOrderList;
     @BindView(R.id.content_request_btn)
-    TextView mContentRequestBtn;
+    CircularProgressButton mContentRequestBtn;
+
     private Toolbar toolbar;
 
     private Context mContext;
@@ -57,44 +62,51 @@ public class OrderActivity extends AppCompatActivity {
         //set the back arrow in the toolbar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        if(getIntent().getParcelableExtra("order")!=null){
+        if (getIntent().getParcelableExtra("order") != null) {
             mOrder = getIntent().getParcelableExtra("order");
         }
         init();
 
 
+        mContentRequestBtn.setIndeterminateProgressMode(true);
         mContentRequestBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(mContext,"233",Toast.LENGTH_SHORT).show();
+                if(mContentRequestBtn.getProgress() == 0){
+                    mContentRequestBtn.setProgress(100);   //支付完成
+                    EventBus.getDefault().post(new MessageEvent("支付成功！"));
+                }else{
+                    mContentRequestBtn.setProgress(-1);   //支付失败
+                    EventBus.getDefault().post(new MessageEvent("支付成功！"));
+                }
             }
         });
     }
 
-    private void init(){
-        if(mOrder.getOrderId() != null)
-             mOrderId.setText("订单号：" + mOrder.getOrderId());
-        mOrderStatus.setText(mOrder.getStatus() == 1? "完成":"未完成");
-        mOrderMoney.setText("总金额："+ mOrder.getPayment()+"元");
+    private void init() {
+        if (mOrder.getOrderId() != null)
+            mOrderId.setText("订单号：" + mOrder.getOrderId());
+        mOrderStatus.setText(mOrder.getStatus() == 1 ? "完成" : "未完成");
+        mOrderMoney.setText("总金额：" + mOrder.getPayment() + "元");
 
         mOrderList.setItemAnimator(new SlideInLeftAnimator());
         mOrderList.getItemAnimator().setAddDuration(300);
         mOrderList.getItemAnimator().setRemoveDuration(300);
 
-        for(LineItem lineItem : mOrder.getLineItems()){
+        for (LineItem lineItem : mOrder.getLineItems()) {
             fillList(lineItem);
         }
     }
 
-    private void fillList(LineItem lineItem){
+    private void fillList(LineItem lineItem) {
         Item item = lineItem.getItem();
 
         //因为加了一个LineItem，所以有点bug要处理
-        if(item.getName().equals(""))
+        if (item.getName().equals(""))
             return;
 
         String descri;
-        if(item.getSize().equals("") || item.getSize().equals("未知"))
+        if (item.getSize().equals("") || item.getSize().equals("未知"))
             descri = "未知";
         else
             descri = item.getSize();
@@ -119,7 +131,7 @@ public class OrderActivity extends AppCompatActivity {
                         .setTextResourceColor(R.color.black_button)
                 )
                 .addAction(R.id.left_text_button, new TextViewAction(this)
-                        .setText(item.realPrice()+"元")
+                        .setText(item.realPrice() + "元")
 
                         .setTextResourceColor(R.color.orange_button)
                 );

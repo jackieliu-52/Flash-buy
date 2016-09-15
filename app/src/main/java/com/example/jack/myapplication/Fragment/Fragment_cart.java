@@ -90,7 +90,7 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
         menu = new FloatBallMenu();
         singleIcon = new FloatBall.SingleIcon(R.drawable.shop_basket, 1f, 0.3f);
         mFloatBall = new FloatBall.Builder(mContext.getApplicationContext()).menu(menu).icon(singleIcon).width(100).height(100).build();
-        mFloatBall.setLayoutGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
+        mFloatBall.setLayoutGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL | Gravity.TOP);
         mFloatBall.show();
 
 

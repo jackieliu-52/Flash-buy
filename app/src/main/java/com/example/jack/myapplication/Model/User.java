@@ -23,11 +23,42 @@ public class User {
     private boolean sendMail = true; //是否发送账单，默认为true
     private boolean allergic = true; //是否启动过敏源提醒，默认开启
     private ArrayList<String>  sources = new ArrayList<>();    //过敏源列表
-    private ArrayList<Item> starItems = new ArrayList<>(); //收藏的商品
+    public static ArrayList<Item> starItems = new ArrayList<>(); //收藏的商品
     private boolean isLike = true; //是否打开猜你喜欢
     private ArrayList<Item> like = new ArrayList<>(); //猜你喜欢的商品
 
+    static {
+        Item item3 = new Item();
+        item3.setName("Aji泰氏风味榴莲饼");
+        item3.setPrice(15.9);
+        item3.setImage("http://obsyvbwp3.bkt.clouddn.com/136.JPG");
+        item3.setIid("1360");
+        item3.setPid("13");
+        item3.setSource("中国");
+        item3.setSize("200g");
 
+        Item item4 = new Item();
+        item4.setName("统一老坛酸菜牛肉面");
+        item4.setPrice(12.5);
+        item4.setImage("http://obsyvbwp3.bkt.clouddn.com/137.JPG");
+        item4.setIid("1370");
+        item4.setPid("13");
+        item4.setSource("中国");
+        item4.setSize("121g*5");
+
+        Item item5 = new Item();
+        item5.setName("香楠玫瑰鲜花饼");
+        item5.setPrice(3.9);
+        item5.setImage("http://obsyvbwp3.bkt.clouddn.com/1380.JPG");
+        item5.setIid("1380");
+        item5.setPid("13");
+        item5.setSource("中国");
+        item5.setSize("60g");
+
+        starItems.add(item3);
+        starItems.add(item4);
+        starItems.add(item5);
+    }
     public double getSpend() {
         return spend;
     }

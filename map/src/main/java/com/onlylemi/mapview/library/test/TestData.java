@@ -277,7 +277,7 @@ public final class TestData {
     public static List<String> getMarksName() {
         List<String> marksName = new ArrayList<>();
         for (int i = 0; i < getMarks().size(); i++) {
-            marksName.add("Shop " + (i + 1));
+            marksName.add("区域 " + (i + 1));
         }
         return marksName;
     }

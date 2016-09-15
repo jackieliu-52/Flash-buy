@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -26,8 +27,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.avos.avoscloud.AVUser;
 import com.example.jack.myapplication.Adapter.ItemAdapter;
+import com.example.jack.myapplication.Adapter.StarItemAdapter;
 import com.example.jack.myapplication.Fragment.Fragment1;
 import com.example.jack.myapplication.Fragment.Fragment2;
 import com.example.jack.myapplication.Fragment.Fragment_account;
@@ -43,6 +47,7 @@ import com.example.jack.myapplication.Model.InternetItem;
 import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.Model.LineItem;
 import com.example.jack.myapplication.Model.Order;
+import com.example.jack.myapplication.Model.TwoTuple;
 import com.example.jack.myapplication.Model.User;
 import com.example.jack.myapplication.Util.Cache.ACache;
 import com.example.jack.myapplication.Util.Constant;
@@ -261,17 +266,47 @@ public class MainActivity extends AppCompatActivity  {
                         .withDuration((short)2000)
                         .show();
 
+                //支付前要进行判断，是否还有东西没有买
+                boolean flag = false;
+                if(Fragment_buy.planItems.size() == 0)
+                    flag = true;
+                if(!flag){
+                    new MaterialDialog.Builder(mContext)
+                            .title("温馨提醒")
+                            .content("您的预购清单中还有商品没有购买，是否要支付")
+                            .positiveText("是")
+                            .negativeText("否")
+                            .onAny(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                    if (which == DialogAction.POSITIVE) {
+                                        //生成新的订单，清空购物车，跳转支付                                                                                                                         页面
+                                        Order order = new Order(cart,"订单号",user.getId(), Util.getCurrentDate(),"alipay","家润多",0,0);
+                                        User.orders.add(order);
+                                        lv_cart.setAdapter(null);
+                                        cart = new ArrayList<>();
 
-                //生成新的订单，清空购物车，跳转支付页面
-                Order order = new Order(cart,"订单号",user.getId(), Util.getCurrentDate(),"alipay","家润多",0,0);
-                User.orders.add(order);
-                lv_cart.setAdapter(null);
-                cart = new ArrayList<>();
+                                        //跳转到订单详情进行支付
+                                        Intent intent = new Intent(MainActivity.this, OrderActivity.class);
+                                        intent.putExtra("order", order);
+                                        startActivity(intent);
+                                    }
+                                }
+                            })
+                            .show();
+                } else{
+                    //生成新的订单，清空购物车，跳转支付页面
+                    Order order = new Order(cart,"订单号",user.getId(), Util.getCurrentDate(),"alipay","家润多",0,0);
+                    User.orders.add(order);
+                    lv_cart.setAdapter(null);
+                    cart = new ArrayList<>();
 
-                //跳转到订单详情进行支付
-                Intent intent = new Intent(MainActivity.this, OrderActivity.class);
-                intent.putExtra("order", order);
-                startActivity(intent);
+                    //跳转到订单详情进行支付
+                    Intent intent = new Intent(MainActivity.this, OrderActivity.class);
+                    intent.putExtra("order", order);
+                    startActivity(intent);
+                }
+
             }
         });
 
@@ -286,7 +321,17 @@ public class MainActivity extends AppCompatActivity  {
         star.setColorNormalResId(R.color.menu_pink);
         star.setColorPressedResId(R.color.menu_pink_pressed);
         star.setIcon(R.mipmap.ic_fab_star);
-
+        star.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //关闭Menu
+                menuMultipleActions.collapse();
+                //打开收藏的商品
+                lv_cart.setAdapter(null);
+                getStarItems();
+                sbv.displayPanel();    //打开下面的面板
+            }
+        });
         //Menu选项
         menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.floating_button);
         final FloatingActionButton cart = (FloatingActionButton) findViewById(R.id.cart);
@@ -307,6 +352,13 @@ public class MainActivity extends AppCompatActivity  {
         });
     }
 
+    /**
+     * 得到Star的商品
+     */
+    private void getStarItems(){
+        StarItemAdapter starItemAdapter = new StarItemAdapter(mContext,R.layout.star_item,User.starItems);
+        lv_cart.setAdapter(starItemAdapter);
+    }
 
     private void CreateDrawer(Bundle savedInstanceState){
         // Handle Toolbar
@@ -832,6 +884,11 @@ public class MainActivity extends AppCompatActivity  {
 
                 double total_price = 0;
                 for(LineItem lineItem:cart){
+                    for(Item tempItem:Fragment_buy.planItems){
+                        if(lineItem.getItem().getName().equals(tempItem.getName())){
+                            Fragment_buy.planItems.remove(tempItem); //移除预购商品
+                        }
+                    }
                     total_price += lineItem.getUnitPrice();
                 }
 

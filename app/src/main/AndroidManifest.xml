@@ -72,7 +72,8 @@
 
         <activity android:name=".ScanActivity"
             android:label="Scan"
-            android:theme="@android:style/Theme.Light.NoTitleBar" />
+            android:theme="@android:style/Theme.Light.NoTitleBar"
+                  android:launchMode="singleTask"/>
 
         <activity android:name=".WebActivity"
             android:label="智能家居"

@@ -42,7 +42,7 @@ public class Fragment_buy extends android.support.v4.app.Fragment implements Nee
     private Context context;
 
     public static List<Item> planItems = new ArrayList<>(); //已经决定决定计划要购买的商品
-
+    public static boolean isShopping = false; //是否处于购物状态中？
     /**
      * 单例对象实例
      */
@@ -143,5 +143,6 @@ public class Fragment_buy extends android.support.v4.app.Fragment implements Nee
     public void pageChanged(int page){
         viewPager.setCurrentItem(viewPager.getCurrentItem() + page, true);
         EventBus.getDefault().post(new PlanBuyEvent("initMap"));
+        isShopping = true;
     }
 }
