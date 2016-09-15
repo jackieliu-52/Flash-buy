@@ -283,21 +283,12 @@ public class MainActivity extends AppCompatActivity  {
 
         final FloatingActionButton star = (FloatingActionButton) findViewById(R.id.star);
 
-        star.setColorNormalResId(R.color.pink);
-        star.setColorPressedResId(R.color.pink_pressed);
+        star.setColorNormalResId(R.color.menu_pink);
+        star.setColorPressedResId(R.color.menu_pink_pressed);
         star.setIcon(R.mipmap.ic_fab_star);
-        FloatingActionButton actionC = new FloatingActionButton(getBaseContext());
 
-        actionC.setTitle("Hide/Show Action above");
-        actionC.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                star.setVisibility(star.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
-            }
-        });
         //Menu选项
         menuMultipleActions = (FloatingActionsMenu) findViewById(R.id.floating_button);
-        menuMultipleActions.addButton(actionC);
         final FloatingActionButton cart = (FloatingActionButton) findViewById(R.id.cart);
         cart.setIcon(R.drawable.ic_shopping_cart_white_24px);
         cart.setOnClickListener(new View.OnClickListener() {
@@ -721,10 +712,12 @@ public class MainActivity extends AppCompatActivity  {
                 InputStream is = connection.getInputStream();
                 String json = Util.readStream(is);
                 //把json转换成一个 Item数组，应该用Fragment_search的一个static变量保存结果
-                if(!json.equals(""))
-                    Fragment_search.items = Util.fromJsonArray(json,Item.class);
-                else
-                    Fragment_search.items = new ArrayList<>();
+                if(json != null) {
+                    if (!json.equals(""))
+                        Fragment_search.items = Util.fromJsonArray(json, Item.class);
+                    else
+                        Fragment_search.items = new ArrayList<>();
+                }
                 return true;
             }
             else {
@@ -756,13 +749,18 @@ public class MainActivity extends AppCompatActivity  {
                 json = Util.readStream(is);
                 //避免Unicode转义
                 Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-                //将json转换为一个Bulk对象的数组
-                bulkItems = Util.fromJsonArray(json,BulkItem.class);
+                if(json != null) {
+                    //将json转换为一个Bulk对象的数组
+                    if(!json.equals("")) {
+                        bulkItems = Util.fromJsonArray(json, BulkItem.class);
+                        //把散装商品添加入cart
+                        for(BulkItem i:bulkItems){
+                            cart.add(new LineItem(i));
+                        }
 
-                //把散装商品添加入cart
-                for(BulkItem i:bulkItems){
-                    cart.add(new LineItem(i));
+                    }
                 }
+
 
                 double total_price = 0;
                 for(LineItem lineItem:cart){

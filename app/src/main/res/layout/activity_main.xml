@@ -39,9 +39,9 @@
         android:layout_margin="16dp"
         android:layout_gravity="end|bottom"
 
-        fab:fab_addButtonColorNormal="@color/white"
-        fab:fab_addButtonColorPressed="@color/white_pressed"
-        fab:fab_addButtonPlusIconColor="@color/half_black"
+        fab:fab_addButtonColorNormal="@color/pink"
+        fab:fab_addButtonColorPressed="@color/pink_pressed"
+        fab:fab_addButtonPlusIconColor="@color/realwhite"
         fab:borderWidth="0dp"
         fab:layout_behavior="com.example.jack.myapplication.Behavior.MyBehavior">
 

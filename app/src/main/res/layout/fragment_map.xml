@@ -7,6 +7,14 @@
         android:id="@+id/mapview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-
+    <Button
+        android:id="@+id/bt_test"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="打印"
+        android:textColor="@color/pink"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true"
+        android:visibility="invisible"/>
 
 </RelativeLayout>

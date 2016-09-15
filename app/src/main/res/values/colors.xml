@@ -15,6 +15,8 @@
     <color name="half_black">#808080</color>
     <color name="white">#fafafa</color>
     <color name="white_pressed">#f1f1f1</color>
+    <color name="menu_pink">#F8BBD0</color>
+    <color name="menu_pink_pressed">#FADDF0</color>
     <color name="pink">#e91e63</color>
     <color name="pink_pressed">#ec407a</color>
     <color name="blue_semi_transparent">#805677fc</color>
@@ -45,4 +47,9 @@
     <color name="scan_bg">#7f000000</color>
     <color name="realwhite">#FFFFFF</color>
 
+    <!-- 散装商品提醒色 -->
+    <color name="ji">#87CEFA</color>
+    <color name="buji">#3CB371</color>
+    <color name="guoqi">#DC143C</color>
+    <color name="kuaiguoqi">#FFC0CB</color>
 </resources>

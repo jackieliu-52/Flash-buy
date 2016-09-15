@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * beacon定位工具类
  */
-public class Location {
+public class LocationTest {
     public static String TAG = "Location";
 
     /**

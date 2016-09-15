@@ -90,6 +90,8 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
     List<Item> mItems3;
     List<Item> mItems4;
 
+    List<Item> mTest;   //视频的所有Item
+
     @Override
     public void onAttach(Context context){
         super.onAttach(context);
@@ -417,7 +419,7 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
                 final List<TwoTuple<Boolean,Item>> items = new ArrayList<>();
                 switch (temp.second){
                     case "生鲜蔬菜":
-                        for(Item i: mItems1){
+                        for(Item i: mTest){
                             items.add(new TwoTuple<>(false,i));
                         }
                         adapter = getAnotherAdapter(items);
@@ -656,6 +658,8 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
         mItems2 = new ArrayList<>();
         mItems3 = new ArrayList<>();
         mItems4 = new ArrayList<>();
+
+        mTest = new ArrayList<>();
 
         Item item = new Item();
         item.setName("安慕希酸奶");
@@ -991,5 +995,47 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
 
         mItems4.add(item32);
         mItems4.add(item31);
+
+        Item test = new Item();
+        test.setName("怡宝矿泉水");
+        test.setPrice(2.0);
+        test.setImage("http://obsyvbwp3.bkt.clouddn.com/yibao.jpg");
+        test.setIid("1186");
+        test.setPid("01");
+        test.setSource("中国");
+        test.setSize("555ml");
+
+        Item test1 = new Item();
+        test1.setName("出前一丁");
+        test1.setPrice(22.5);
+        test1.setImage("http://obsyvbwp3.bkt.clouddn.com/chuqianyiding.jpg");
+        test1.setIid("980");
+        test1.setPid("09");
+        test1.setSource("中国");
+        test1.setSize("100克*5");
+
+        Item test2 = new Item();
+        test2.setName("绿箭清新口香糖");
+        test2.setPrice(8.9);
+        test2.setImage("http://obsyvbwp3.bkt.clouddn.com/lvjian.jpg");
+        test2.setIid("980");
+        test2.setPid("06");
+        test2.setSource("中国");
+        test2.setSize("80g");
+
+        Item test3 = new Item();
+        test3.setName("养乐多");
+        test3.setPrice(11);
+        test3.setImage("http://obsyvbwp3.bkt.clouddn.com/yangleduo.jpg");
+        test3.setIid("121");
+        test3.setPid("01");
+        test3.setSource("中国");
+        test3.setSize("80g");
+
+
+        mTest.add(test);
+        mTest.add(test1);
+        mTest.add(test2);
+        mTest.add(test3);
     }
 }

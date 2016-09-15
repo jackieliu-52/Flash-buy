@@ -10,32 +10,41 @@ import java.util.ArrayList;
  */
 public class Order implements Parcelable {
     private ArrayList<LineItem> lineItems; //所有的LineItems
-    private String orderId;
-    private String userId;
-    private String orderDate;
+    private String order_Id;
+    private String user_Id;
+    private String order_date;
     private String pay_way; //支付方式
-    private String sm_name; //超市名称
+    private String supermarket_name; //超市名称
     private double payment; //支付总额
     private int status; //订单状态,0表示未支付，1表示支付
-    private ArrayList<String> EPCArray;    //EPC码的列表
+    private int cartNum;  //购物车编号
+    private String EPCArray;    //EPC码的列表
 
 
     public Order(ArrayList<LineItem> lineItems, String orderId, String userId, String orderDate, String pay_way, String sm_name, double payment, int status) {
         this.lineItems = lineItems;
-        this.orderId = orderId;
-        this.userId = userId;
-        this.orderDate = orderDate;
+        this.order_Id = orderId;
+        this.user_Id = userId;
+        this.order_date = orderDate;
         this.pay_way = pay_way;
-        this.sm_name = sm_name;
+        this.supermarket_name = sm_name;
         this.payment = payment;
         this.status = status;
     }
 
-    public ArrayList<String> getEPCArray() {
+    public int getCartNum() {
+        return cartNum;
+    }
+
+    public void setCartNum(int cartNum) {
+        this.cartNum = cartNum;
+    }
+
+    public String getEPCArray() {
         return EPCArray;
     }
 
-    public void setEPCArray(ArrayList<String> EPCArray) {
+    public void setEPCArray(String EPCArray) {
         this.EPCArray = EPCArray;
     }
 
@@ -56,27 +65,27 @@ public class Order implements Parcelable {
     }
 
     public String getOrderId() {
-        return orderId;
+        return order_Id;
     }
 
     public void setOrderId(String orderId) {
-        this.orderId = orderId;
+        this.order_Id = orderId;
     }
 
     public String getUserId() {
-        return userId;
+        return user_Id;
     }
 
     public void setUserId(String userId) {
-        this.userId = userId;
+        this.user_Id = userId;
     }
 
     public String getOrderDate() {
-        return orderDate;
+        return order_date;
     }
 
     public void setOrderDate(String orderDate) {
-        this.orderDate = orderDate;
+        this.order_date = orderDate;
     }
 
     public String getPay_way() {
@@ -88,11 +97,11 @@ public class Order implements Parcelable {
     }
 
     public String getSm_name() {
-        return sm_name;
+        return supermarket_name;
     }
 
     public void setSm_name(String sm_name) {
-        this.sm_name = sm_name;
+        this.supermarket_name = sm_name;
     }
 
     /**
@@ -120,29 +129,31 @@ public class Order implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeTypedList(this.lineItems);
-        dest.writeString(this.orderId);
-        dest.writeString(this.userId);
-        dest.writeString(this.orderDate);
+        dest.writeString(this.order_Id);
+        dest.writeString(this.user_Id);
+        dest.writeString(this.order_date);
         dest.writeString(this.pay_way);
-        dest.writeString(this.sm_name);
+        dest.writeString(this.supermarket_name);
         dest.writeDouble(this.payment);
         dest.writeInt(this.status);
-        dest.writeStringList(this.EPCArray);
+        dest.writeInt(this.cartNum);
+        dest.writeString(this.EPCArray);
     }
 
     protected Order(Parcel in) {
         this.lineItems = in.createTypedArrayList(LineItem.CREATOR);
-        this.orderId = in.readString();
-        this.userId = in.readString();
-        this.orderDate = in.readString();
+        this.order_Id = in.readString();
+        this.user_Id = in.readString();
+        this.order_date = in.readString();
         this.pay_way = in.readString();
-        this.sm_name = in.readString();
+        this.supermarket_name = in.readString();
         this.payment = in.readDouble();
         this.status = in.readInt();
-        this.EPCArray = in.createStringArrayList();
+        this.cartNum = in.readInt();
+        this.EPCArray = in.readString();
     }
 
-    public static final Parcelable.Creator<Order> CREATOR = new Parcelable.Creator<Order>() {
+    public static final Creator<Order> CREATOR = new Creator<Order>() {
         @Override
         public Order createFromParcel(Parcel source) {
             return new Order(source);

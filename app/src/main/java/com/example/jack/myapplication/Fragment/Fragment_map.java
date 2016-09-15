@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PointF;
+import android.graphics.RectF;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -13,18 +14,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.Button;
+
 
 import com.example.jack.myapplication.Model.Round;
 import com.example.jack.myapplication.Model.iBeaconView;
 import com.example.jack.myapplication.R;
 import com.example.jack.myapplication.Util.Event.MessageEvent;
 import com.example.jack.myapplication.Util.Event.PlanBuyEvent;
-import com.example.jack.myapplication.Util.Location;
-import com.litesuits.common.utils.ClipboardUtil;
-import com.litesuits.common.utils.DisplayUtil;
-import com.litesuits.common.utils.NotificationUtil;
-import com.litesuits.common.utils.VibrateUtil;
+import com.example.jack.myapplication.Util.Location.NonLinearLeastSquaresSolver;
+import com.example.jack.myapplication.Util.Location.TrilaterationFunction;
 import com.onlylemi.mapview.library.MapView;
 import com.onlylemi.mapview.library.MapViewListener;
 import com.onlylemi.mapview.library.layer.BitmapLayer;
@@ -39,11 +38,16 @@ import com.skybeacon.sdk.locate.SKYBeacon;
 import com.skybeacon.sdk.locate.SKYBeaconManager;
 import com.skybeacon.sdk.locate.SKYRegion;
 
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
+import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer.Optimum;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -88,6 +92,17 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
     private boolean openSensor = true; //是否打开传感器,默认打开
     private SensorManager sensorManager; //传感器
 
+    //圆心和距离
+    double[][] positions;
+    double[] dts;
+    RectF mRectF,mRectF1,mRectF2,mRectF3,mRectF4; //四个矩形，用于防止判定定位在货架上
+
+    //测试
+    private Button mButton; //打印指纹
+    private int times;  //打印次数
+    private boolean test; //测试
+    private TimerTask mTimerTask; //测试
+
 
     @Override
     public void onAttach(Context context){
@@ -116,6 +131,8 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
         initMapDatas(); //初始化地图数据
 
         mapView = (MapView) view.findViewById(R.id.mapview);
+        mButton = (Button) view.findViewById(R.id.bt_test);
+        setButtonListen();
         loadMap();
 
         //震动测试
@@ -165,11 +182,11 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
                     }
                 });
 
-                //绘制beacon
-                Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-                BitmapLayer bitmapLayer = new BitmapLayer(mapView, bmp);
-                bitmapLayer.setLocation(beacons.get(0).location);
-                mapView.addLayer(bitmapLayer);
+//                //绘制beacon
+//                Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+//                BitmapLayer bitmapLayer = new BitmapLayer(mapView, bmp);
+//                bitmapLayer.setLocation(beacons.get(0).location);
+//                mapView.addLayer(bitmapLayer);
 
                 mapView.refresh();   //draw地图
             }
@@ -201,6 +218,7 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
         for(int i = 0 ;i < 3;i++){
             distances.add(MAX);
         }
+        positions = new double[][] { {524,326}, {122,471},{108,192}}; //三个beacon的位置
         iBeaconView iBeaconView1 = new iBeaconView();
         iBeaconView1.location = new PointF(524,326);
         iBeaconView iBeaconView2 = new iBeaconView();
@@ -214,6 +232,12 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
         mRounds.add(new Round(iBeaconView1.location.x,iBeaconView1.location.y,(float)MAX.doubleValue()));
         mRounds.add(new Round(iBeaconView2.location.x,iBeaconView2.location.y,(float)MAX.doubleValue()));
         mRounds.add(new Round(iBeaconView3.location.x,iBeaconView3.location.y,(float)MAX.doubleValue()));
+
+        mRectF = new RectF(0,0,750,760);    //整体
+        mRectF1 = new RectF(120,0,175,600);  //左1
+        mRectF2 = new RectF(176,0,230,600);  //左2
+        mRectF3 = new RectF(430,50,485,650);  //右1
+        mRectF4 = new RectF(486,50,540,650); //右2
 
         SKYBeaconManager.getInstance().init(mContext);
         SKYBeaconManager.getInstance().setCacheTimeMillisecond(3000);
@@ -259,37 +283,54 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
                 double d1 = distances.get(0);
                 double d2 = distances.get(1);
                 double d3 = distances.get(2);
-                Log.i("Location","d1: " + d1 + "米  d2:  " + d2 + "米  d3:  " + d3);
+                dts = new double[] {d1 * 100,d2 * 100,d3 * 100};  //距离
+                //Log.i("Location","d1: " + d1 + "米  d2:  " + d2 + "米  d3:  " + d3);
                 boolean flag;
                 flag = ((d1 != MAX) && (d2 != MAX) && (d3 != MAX));
                 if(flag){
                     //开始定位
                     Log.i(TAG,"开始定位");
-                    //beacon布置高度大概是3.5米，考虑到人的身高，所以大概是2.5米
-                    //但是由于距离精读不够准确所以降低到1.8m
-                    if(d1 <= 1.8){
-                        location = beacons.get(0).location;
-                        locationLayer.setCurrentPosition(location);
-                        mapView.refresh();           //刷新
-                        return;
+                    //beacon布置高度大概是3.5米，考虑到人的身高，所以大概是2.5米左右
+
+
+                    //使用非线性最小二乘法获得定位结果
+                    NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, dts), new LevenbergMarquardtOptimizer());
+                    Optimum optimum = solver.solve();
+
+                    // 获得定位点
+                    double[] centroid = optimum.getPoint().toArray();
+
+
+                    if(centroid != null) {
+                        Log.i(TAG,"sucess");
+                        if(!mRectF.contains((float)centroid[0],(float)centroid[1])){
+                            //如果定位结果超出地图的范围，那么不绘制
+                            return;
+                        }
+                        location = new PointF((float) centroid[0],(float) centroid[1]);
+
+                        //如果定位在货架上
+                        if(mRectF1.contains((float)centroid[0],(float)centroid[1])){
+                            //如果在第一个矩形中
+                            location = new PointF(55,299);
+                        }
+                        if(mRectF2.contains((float)centroid[0],(float)centroid[1])){
+                            //如果在第一个矩形中
+                            location = new PointF(270,300);
+                        }
+                        if(mRectF3.contains((float)centroid[0],(float)centroid[1])){
+                            //如果在第一个矩形中
+                            location = new PointF(400,300);
+                        }
+                        if(mRectF4.contains((float)centroid[0],(float)centroid[1])){
+                            //如果在第一个矩形中
+                            location = new PointF(640,300);
+                        }
+                    } else{
+                        Log.i(TAG,"error 233");
                     }
-                    if(d2 <= 1.8){
-                        location = beacons.get(1).location;
-                        locationLayer.setCurrentPosition(location);
-                        mapView.refresh();           //刷新
-                        return;
-                    }
-                    if(d3 <= 1.8){
-                        location = beacons.get(2).location;
-                        locationLayer.setCurrentPosition(location);
-                        mapView.refresh();           //刷新
-                        return;
-                    }
-                    mRounds.get(0).setR((float)Math.sqrt(Math.pow(d1,2) -Math.pow(2.5,2)));
-                    mRounds.get(1).setR((float)Math.sqrt(Math.pow(d2,2) -Math.pow(2.5,2)));
-                    mRounds.get(2).setR((float)Math.sqrt(Math.pow(d3,2) -Math.pow(2.5,2)));
-                    //获得定位信息
-                    location = Location.tcl(mRounds.get(0),mRounds.get(1),mRounds.get(2));
+
+                    //如果有定位信息，就进行定位
                     if(location != null) {
                         locationLayer.setCurrentPosition(location);
                         mapView.refresh();           //刷新
@@ -350,27 +391,35 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
                     beacon.isMultiIDs = false;
                     beacon.detailInfo = ((SKYBeacon) beaconList.get(i)).getProximityUUID() + "\r\nMajor: " + String.valueOf(((SKYBeacon) beaconList.get(i)).getMajor()) + "\tMinir: "
                             + String.valueOf(((SKYBeacon) beaconList.get(i)).getMinor()) + "\r\n";
-                    beacon.detailInfo += "version: " + String.valueOf(((SKYBeacon) beaconList.get(i)).getHardwareVersion()) + "."
-                            + String.valueOf(((SKYBeacon) beaconList.get(i)).getFirmwareVersionMajor()) + "." + String.valueOf(((SKYBeacon) beaconList.get(i)).getFirmwareVersionMinor());
+                    beacon.uuid = ((SKYBeacon) beaconList.get(i)).getMinor();
                     //获得距离
                     double distance = ((SKYBeacon) beaconList.get(i)).getDistance();
+
+
                     //因为这里只有三个beacon，所以可以直接处理序号问题
                     //但是这里需要处理一下没有检测到的情况，也就是说distance为-1.0米的情况
-                    switch (((SKYBeacon) beaconList.get(i)).getMinor()){
+                    switch (beacon.uuid){
                         case 1:
-                            if(distance != -1.0)
-                                distances.set(0,distance);
+                            if(distance != -1.0) {
+                                beacons.set(0,beacon);
+                                distances.set(0, distance);
+                            }
                             break;
                         case 2:
-                            if(distance != -1.0)
-                                distances.set(1,distance);
+                            if(distance != -1.0) {
+                                distances.set(1, distance);
+                                beacons.set(1,beacon);
+                            }
                             break;
                         case 3:
-                            if(distance != -1.0)
-                                distances.set(2,distance);
+                            if(distance != -1.0) {
+                                beacons.set(2,beacon);
+                                distances.set(2, distance);
+                            }
                             break;
                     }
-                }
+                }//for
+
             }
             // 多id beacons扫描结果处理，我们不适用
             @Override
@@ -414,7 +463,8 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
                             (Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_NORMAL);
 
                     mapView.refresh();   //draw地图
-                    startTimer();  //开始计时器
+
+                    startTimer();  //开始定位
                     break; //跳出循环
                 }
             }
@@ -442,9 +492,129 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
     }
 
 
+
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+
+    /**
+     * 测试获得指印
+     */
+    private void setButtonListen(){
+        test = false;
+        times = 1;
+        timer = new Timer();
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final List<Integer> rssis1 = new ArrayList<>();
+                final List<Double> dis1 = new ArrayList<>();
+                final List<Integer> rssis2 = new ArrayList<>();
+                final List<Double> dis2 = new ArrayList<>();
+                final List<Integer> rssis3 = new ArrayList<>();
+                final List<Double> dis3 = new ArrayList<>();
+
+
+                mTimerTask = new TimerTask() {
+                    @Override
+                    public void run() {
+
+                        printFingerprint(rssis1,rssis2,rssis3,dis1,dis2,dis3);
+
+
+                        //50的倍数
+                        if(times % 50 == 0){
+                            int rsum1 = 0;
+                            double dsum1 = 0;
+                            int rsum2 = 0;
+                            double dsum2 = 0;
+                            int rsum3 = 0;
+                            double dsum3 = 0;
+                            for(int i = 0; i< rssis1.size();i++){
+                                rsum1 += rssis1.get(i);
+                            }
+                            for(int i = 0; i< dis1.size();i++){
+                                dsum1 += dis1.get(i);
+                            }
+                            Log.i("rssi","1 avg:"+ (rsum1 * 1.0) / (rssis1.size() * 1.0) );
+                            Log.i("dis","1 avg:"+ dsum1 / dis1.size());
+
+
+                            for(int i = 0; i< rssis2.size();i++){
+                                rsum2 += rssis2.get(i);
+                            }
+                            for(int i = 0; i< dis2.size();i++){
+                                dsum2 += dis2.get(i);
+                            }
+                            Log.i("rssi","2 avg:"+ (rsum2 * 1.0) / (rssis2.size() * 1.0));
+                            Log.i("dis","2 avg:"+ dsum2 / dis2.size());
+
+
+                            for(int i = 0; i< rssis3.size();i++){
+                                rsum3 += rssis3.get(i);
+                            }
+                            for(int i = 0; i< dis3.size();i++){
+                                dsum3 += dis3.get(i);
+                            }
+                            Log.i("rssi","3 avg:"+ (rsum3 * 1.0) / (rssis3.size() * 1.0));
+                            Log.i("dis","3 avg:"+ dsum3 / dis3.size());
+
+                            //同时应该要清空List
+                            rssis1.clear();
+                            rssis2.clear();
+                            rssis3.clear();
+                            dis1.clear();
+                            dis2.clear();
+                            dis3.clear();
+                            if(mTimerTask != null) {
+                                mTimerTask.cancel();
+                            }
+                            EventBus.getDefault().post(new MessageEvent("success!"));
+
+
+
+                        }//if == 50
+                        times++;
+                    }
+                };
+
+                timer.schedule(mTimerTask, 0, 500);  //0.5s进行指纹打印
+
+            }
+        });
+    }
+
+    /**
+     * 打印指印
+     */
+    public void printFingerprint(List l1,List l2,List l3,List d1,List d2,List d3){
+        //打印第几次了，预计每个位置打印50次取平均值
+      //  Toast.makeText(mContext,"第" + times +"次打印",Toast.LENGTH_SHORT).show();
+        for(int i = 0; i < 3 ; i++){
+            iBeaconView beacon = beacons.get(i);
+            double distance = distances.get(i);
+            if(beacon.rssi != -1) {
+                // Log.i("DEBUGLOCATION"+times, beacon.uuid + "||" +beacon.rssi + "||" + distance);
+
+                switch (beacon.uuid){
+                    case 1:
+                        l1.add(beacon.rssi);
+                        d1.add(distance);
+                        break;
+                    case 2:
+                        l2.add(beacon.rssi);
+                        d2.add(distance);
+                        break;
+                    case 3:
+                        l3.add(beacon.rssi);
+                        d3.add(distance);
+                        break;
+                }
+
+            }
+
+        }//for
     }
 
 }

@@ -20,6 +20,9 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        //支持多重dex
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -27,12 +30,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    //忽略方法数量超过64k
+    dexOptions {
+        javaMaxHeapSize "4g"
+        jumboMode = true
+    }
 }
 
 
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    //连接手机的库
+    compile 'com.skyfishjy.ripplebackground:library:1.0.1'
+
     //DrawableTextView
     compile 'cn.timeface.widget:drawabletextview:1.0.0'
     //dialogs
@@ -106,4 +117,5 @@ dependencies {
     compile project(':map')
     //地图模块
     compile files('src/main/libs/SKYBeaconSDK.jar')
+    compile files('src/main/libs/commons-math3-3.6.1.jar')
 }

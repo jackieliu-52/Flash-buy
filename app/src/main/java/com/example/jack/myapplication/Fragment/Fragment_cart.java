@@ -37,6 +37,9 @@ import com.squareup.picasso.RequestCreator;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
 /**
@@ -56,6 +59,11 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
     private FloatBall mFloatBall;
 
     SwipeRefreshLayout sr_swipeMaterialListView;
+
+
+    private Timer timer = null;
+    private TimerTask timerTask = null;
+
     @Override
     public void onAttach(Context context){
         super.onAttach(context);
@@ -81,7 +89,7 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
 
         menu = new FloatBallMenu();
         singleIcon = new FloatBall.SingleIcon(R.drawable.shop_basket, 1f, 0.3f);
-        mFloatBall = new FloatBall.Builder(mContext.getApplicationContext()).menu(menu).icon(singleIcon).width(200).height(300).build();
+        mFloatBall = new FloatBall.Builder(mContext.getApplicationContext()).menu(menu).icon(singleIcon).width(100).height(100).build();
         mFloatBall.setLayoutGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL);
         mFloatBall.show();
 
@@ -162,10 +170,11 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
                     //获取信息，然后再刷新UI
                     EventBus.getDefault().post(new InternetEvent(InternetUtil.cartUrl, Constant.REQUEST_Cart));
                     EventBus.getDefault().post(new InternetEvent(InternetUtil.bulkUrl,Constant.REQUEST_Bulk));
-                    //先清空所有
-                    mListView.getAdapter().clearAll();
-                    init();
                 }
+
+                //先清空所有
+                mListView.getAdapter().clearAll();
+                init();
 
 
                 //最后再把刷新取消
@@ -242,11 +251,41 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
         if (isVisibleToUser) {
             //相当于Fragment的onResume
             Log.i(TAG,"可见");
-
-
+            startTimer();
         } else {
             //相当于Fragment的onPause
             Log.i(TAG,"不可见");
+            stopTimer();
+        }
+    }
+
+    private void startTimer() {
+        stopTimer();
+        timer = new Timer();
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                if(!MainActivity.TESTMODE) {
+                    //获取信息，然后再刷新UI
+                    EventBus.getDefault().post(new InternetEvent(InternetUtil.cartUrl, Constant.REQUEST_Cart));
+                    EventBus.getDefault().post(new InternetEvent(InternetUtil.bulkUrl,Constant.REQUEST_Bulk));
+                }
+                //先清空所有
+                mListView.getAdapter().clearAll();
+                init();
+            }
+        };
+        timer.schedule(timerTask,5000); //5s刷新一次
+    }
+
+    private void stopTimer() {
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+        if (timerTask != null) {
+            timerTask.cancel();
+            timerTask = null;
         }
     }
 }

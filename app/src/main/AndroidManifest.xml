@@ -89,6 +89,12 @@
                   android:label="订单详情"
                   android:theme="@style/CustomTheme" />
 
+        <activity
+            android:name=".ConnectActivity"
+            android:label="手机连接"
+            android:theme="@style/CustomTheme"
+            />
+
         <meta-data
             android:name="SEEKCY_SDK_KEY"
             android:value="lkf13nwlkNDSN03k3kJKDFJALNK399kk" />

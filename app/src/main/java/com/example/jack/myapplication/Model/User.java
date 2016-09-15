@@ -27,6 +27,7 @@ public class User {
     private boolean isLike = true; //是否打开猜你喜欢
     private ArrayList<Item> like = new ArrayList<>(); //猜你喜欢的商品
 
+
     public double getSpend() {
         return spend;
     }

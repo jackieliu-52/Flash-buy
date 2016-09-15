@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.example.jack.myapplication.MainActivity;
 import com.example.jack.myapplication.Model.BulkItem;
+import com.example.jack.myapplication.Model.LineItem;
 import com.example.jack.myapplication.R;
 import com.jawnnypoo.physicslayout.Physics;
 import com.jawnnypoo.physicslayout.PhysicsFrameLayout;
@@ -87,6 +88,17 @@ public class Fragment_sanzhuang extends Fragment {
                 if( lo[1] < 650){
                     physicsLayout.removeView(releasedView);
                     MainActivity.bulkItems.remove(releasedView.getId()); //根据下标删除这个对象
+
+                    //先把散装商品全部剔除
+                    for(LineItem i:MainActivity.cart){
+                        if(i.isBulk)
+                            MainActivity.cart.remove(i);
+                    }
+
+                    //把散装商品添加入cart
+                    for(BulkItem i:MainActivity.bulkItems){
+                        MainActivity.cart.add(new LineItem(i));
+                    }
                     Log.i(TAG,releasedView.getId() + "被删除了！");
                     num = physicsLayout.getChildCount();
                 }

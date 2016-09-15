@@ -20,7 +20,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate(){
         super.onCreate();
-        LeakCanary.install(this);
+        LeakCanary.install(this);           //检测一下内存泄露
        // Fresco.initialize(this);
         AVOSCloud.initialize(this,"FjLwORtACC64HFAKWNvA4Nh7-gzGzoHsz","5LTRklNRhPEbAFLh8SayIpaW");
 
