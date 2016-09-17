@@ -71,14 +71,14 @@ public class Fragment2 extends android.support.v4.app.Fragment{
 
     static {
         Jiaju item = new Jiaju("智能冰箱","您可以随时了解您家中冰箱的状态","http://192.168.191.2:8081/","");
-        Jiaju item1 = new Jiaju("智能笔筒","家中是不是需要购置文具呢","http://www.baidu.com","");
+        Jiaju item1 = new Jiaju("智能笔筒","家中是不是需要购置文具呢","https://www.baidu.com/s?wd=%E5%BD%A9%E8%89%B2%E9%93%85%E7%AC%94&tn=87048150_dg&ie=utf8","");
         items.add(item);
         items.add(item1);
 
         //自定义散装商品
         BulkItem bulkitem = new BulkItem();
         bulkitem.setName("青菜");
-        bulkitem.setImage("http://obsyvbwp3.bkt.clouddn.com/liquid.png");
+        bulkitem.setImage("http://pic16.nipic.com/20110819/5177679_115922663110_2.jpg");
         bulkitem.setPrice(2.33);
         bulkitem.setWeight(1);
         bulkitem.setAttr1("闭光存储");
@@ -89,7 +89,7 @@ public class Fragment2 extends android.support.v4.app.Fragment{
 
         BulkItem bulkitem1 = new BulkItem();
         bulkitem1.setName("花生");
-        bulkitem1.setImage("http://obsyvbwp3.bkt.clouddn.com/liquid.png");
+        bulkitem1.setImage("http://img2.imgtn.bdimg.com/it/u=1379469998,3665416882&fm=206&gp=0.jpg");
         bulkitem1.setPrice(5.00);
         bulkitem1.setWeight(2.33);
         bulkitem1.setAttr1("冷藏");
@@ -98,6 +98,17 @@ public class Fragment2 extends android.support.v4.app.Fragment{
         bulkitem1.setProduceTime(Util.getBefoceTime(19));
         bulkitem1.jisuan();
 
+
+        BulkItem bulkitem2 = new BulkItem();
+        bulkitem2.setName("茄子");
+        bulkitem2.setImage("http://img0.imgtn.bdimg.com/it/u=4134673929,997845235&fm=21&gp=0.jpg");
+        bulkitem2.setPrice(5.00);
+        bulkitem2.setWeight(2.33);
+        bulkitem2.setAttr1("冷藏");
+        bulkitem2.setShelfTime(10);
+        //19天前生产
+        bulkitem1.setProduceTime(Util.getBefoceTime(9));
+        bulkitem1.jisuan();
         myItems.add(new TwoTuple<>(false,bulkitem));
         myItems.add(new TwoTuple<>(false,bulkitem1));
     }
@@ -227,20 +238,22 @@ public class Fragment2 extends android.support.v4.app.Fragment{
      */
     private void init() {
         num = 0;
-        for(Jiaju item : items){
+        for(int i = 0; i < 2; i++){
 //            String image = item.getImage();
 //            if(image.equals("")) {
 //                int resId = Util.stringToId(mContext,"good");
 //                image = Uri.parse("android.resource://" + getContext().getPackageName()
 //                        + "/" + resId).toString();
 //            }
+            Jiaju item = items.get(i);
+            String url = i == 0 ? "http://img.home.jc001.cn/baike/s/54/8e/548e550f160ba0bd488b4568.jpg":"http://od4my62zm.bkt.clouddn.com/image/jpg/bitong.jpg";
             final CardProvider provider = new Card.Builder(mContext)
                     .setTag(item)
                     .withProvider(new CardProvider())
                     .setLayout(R.layout.material_image_with_des)
                     .setTitle(item.getName())
                     .setDescription(item.getDescription())
-                    .setDrawable("http://img.home.jc001.cn/baike/s/54/8e/548e550f160ba0bd488b4568.jpg")
+                    .setDrawable(url)
                     ;
             Card card = provider.endConfig().build();
             mListAdapter.add(card);

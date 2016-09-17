@@ -17,7 +17,9 @@ import com.example.jack.myapplication.Adapter.StaggeredHomeAdapter;
 import com.example.jack.myapplication.CommentActivity;
 import com.example.jack.myapplication.MainActivity;
 import com.example.jack.myapplication.Model.Item;
+import com.example.jack.myapplication.Model.User;
 import com.example.jack.myapplication.R;
+import com.example.jack.myapplication.Util.Event.ListEvent;
 import com.example.jack.myapplication.Util.Event.MessageEvent;
 import com.example.jack.myapplication.View.Recyclerview.FeedItemAnimator;
 import com.example.jack.myapplication.View.Recyclerview.SpacesItemDecoration;
@@ -114,11 +116,11 @@ public class Fragment_cuxiao extends android.support.v4.app.Fragment   {
         //再向服务器请求信息,这个请求应该异步操作
 
         //现在自己简单做一下本地化的促销信息,yibao,laoganma,you,pijiu,shuihu
-        Item item1 = new Item("怡宝","01","0101","http://obsyvbwp3.bkt.clouddn.com/133.JPG","怡宝",3.00,"1.555L");
-        Item item2 = new Item("老干妈","02","0202","http://obsyvbwp3.bkt.clouddn.com/134.JPG","老干妈",9.00,"一瓶");
-        Item item3 = new Item("纸面巾","03","0303","http://obsyvbwp3.bkt.clouddn.com/135.JPG","心相印",4.00,"DT3200");
-        Item item4 = new Item("啤酒","03","0303","http://obsyvbwp3.bkt.clouddn.com/136.JPG","心相印",4.00,"DT3200");
-        Item item5 = new Item("水壶","03","0303","http://obsyvbwp3.bkt.clouddn.com/137.JPG","心相印",4.00,"DT3200");
+        Item item1 = new Item("安慕希酸奶","01","0101","http://obsyvbwp3.bkt.clouddn.com/133.JPG","怡宝",59.4,"205g*12");
+        Item item2 = new Item("三只松鼠夏威夷果","02","0202","http://obsyvbwp3.bkt.clouddn.com/134.JPG","老干妈",9.00,"一瓶");
+        Item item3 = new Item("乐事无限薯片三连罐","03","0303","http://obsyvbwp3.bkt.clouddn.com/135.JPG","心相印",4.00,"DT3200");
+        Item item4 = new Item("Aji泰氏风味榴莲饼","03","0303","http://obsyvbwp3.bkt.clouddn.com/136.JPG","心相印",4.00,"DT3200");
+        Item item5 = new Item("统一老坛酸菜牛肉面","03","0303","http://obsyvbwp3.bkt.clouddn.com/137.JPG","心相印",4.00,"DT3200");
         item1.setStar(true); //设置为喜欢
         item1.setDiscount(3);
         mItems.add(item1);
@@ -137,17 +139,22 @@ public class Fragment_cuxiao extends android.support.v4.app.Fragment   {
             @Override
             public void onItemClick(View view, int position)
             {
-                Toast.makeText(mContext,
-                        position + " click", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(mContext,
+//                        position + " click", Toast.LENGTH_SHORT).show();
+                Fragment_item.item = mItems.get(position);
+                //这里应该通知Activity去改变UI，不能让这个Fragment获取其他Fragment的引用
+                EventBus.getDefault().post(new ListEvent("fragment_item"));
             }
 
             //收藏该商品
             @Override
             public void onItemLongClick(View view, int position)
             {
-                //收藏该商品
-                Toast.makeText(mContext,
-                        position + " long click", Toast.LENGTH_SHORT).show();
+//                //收藏该商品
+//                Toast.makeText(mContext,
+//                        position + " long click", Toast.LENGTH_SHORT).show();
+                User.starItems.add( mItems.get(position));
+
             }
 
             @Override
@@ -163,6 +170,7 @@ public class Fragment_cuxiao extends android.support.v4.app.Fragment   {
             @Override
             public void onLikeClick(View view,int pos){
                 //加入收藏夹
+                User.starItems.add( mItems.get(pos));
             }
 
         });

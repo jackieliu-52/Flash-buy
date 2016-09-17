@@ -64,7 +64,7 @@ public class Fragment_lazyLoad extends BaseFragment  {
             @Override
             public void onItemClick(View view, int position) {
                 //打开商品页面
-                EventBus.getDefault().post(new MessageEvent("您点击了" + mItems.get(position).getName()));
+                //EventBus.getDefault().post(new MessageEvent("您点击了" + mItems.get(position).getName()));
                 Fragment_item.item = mItems.get(position);
                 //这里应该通知Activity去改变UI，不能让这个Fragment获取其他Fragment的引用
                 EventBus.getDefault().post(new ListEvent("fragment_item"));

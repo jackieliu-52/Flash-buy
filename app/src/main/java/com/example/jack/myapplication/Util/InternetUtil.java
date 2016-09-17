@@ -18,6 +18,7 @@ public class InternetUtil {
     public static String args1 = "Cart/Data?cartNumber=9&userId=9";
     public static String args2 = "bulk?cartNumber=9&userId=9";
     public static String args3 = "Cart/Login?uuid=";
+    public static String args4 = "Cart/MapPoint?userId";
 
     public static String cartUrl = root + args1;
     public static String bulkUrl = root + args2;

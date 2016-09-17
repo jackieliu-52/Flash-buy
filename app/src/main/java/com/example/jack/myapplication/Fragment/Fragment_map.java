@@ -23,6 +23,7 @@ import com.example.jack.myapplication.Model.iBeaconView;
 import com.example.jack.myapplication.R;
 import com.example.jack.myapplication.Util.Event.MessageEvent;
 import com.example.jack.myapplication.Util.Event.PlanBuyEvent;
+import com.example.jack.myapplication.Util.InternetUtil;
 import com.example.jack.myapplication.Util.Location.NonLinearLeastSquaresSolver;
 import com.example.jack.myapplication.Util.Location.TrilaterationFunction;
 import com.onlylemi.mapview.library.MapView;
@@ -116,9 +117,10 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
 
     static {
         for(int i =0;i < 3;i++){
-            nums.add(0);
+            nums.add(Integer.valueOf(0));
         }
     }
+
     @Override
     public void onAttach(Context context){
         super.onAttach(context);
@@ -233,11 +235,11 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
         bmp1 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n0);
         bmp2 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n0);
         bitmapLayer1 = new BitmapLayer(mapView, bmp1);
-        bitmapLayer1.setLocation(new PointF(485,477));
+        bitmapLayer1.setLocation(new PointF(485,477));  //酒水饮料区域
         bitmapLayer2 = new BitmapLayer(mapView, bmp2);
-        bitmapLayer2.setLocation(new PointF(175,552));
+        bitmapLayer2.setLocation(new PointF(175,552));  //糖果零食区域
         bitmapLayer3 = new BitmapLayer(mapView, bmp3);
-        bitmapLayer3.setLocation(new PointF(175,250));
+        bitmapLayer3.setLocation(new PointF(175,250));  //生鲜水果区域
 
         mapView.addLayer(bitmapLayer1);
         mapView.addLayer(bitmapLayer2);
@@ -315,67 +317,69 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
         timerTask = new TimerTask() {
             @Override
             public void run() {
-                //首先看看还有那些商品没有被购买
-                setMapDetail();
-               //这里面进行定位操作
-                double d1 = distances.get(0);
-                double d2 = distances.get(1);
-                double d3 = distances.get(2);
-                dts = new double[] {d1 * 100,d2 * 100,d3 * 100};  //距离
-                //Log.i("Location","d1: " + d1 + "米  d2:  " + d2 + "米  d3:  " + d3);
-                boolean flag;
-                flag = ((d1 != MAX) && (d2 != MAX) && (d3 != MAX));
-                if(flag){
-                    //开始定位
-                    Log.i(TAG,"开始定位");
-                    //beacon布置高度大概是3.5米，考虑到人的身高，所以大概是2.5米左右
+                //如果可见才定位！
+                if (visible) {
+                    //首先看看还有那些商品没有被购买
+                    setMapDetail();
+                    //这里面进行定位操作
+                    double d1 = distances.get(0);
+                    double d2 = distances.get(1);
+                    double d3 = distances.get(2);
+                    dts = new double[]{d1 * 100, d2 * 100, d3 * 100};  //距离
+                    //Log.i("Location","d1: " + d1 + "米  d2:  " + d2 + "米  d3:  " + d3);
+                    boolean flag;
+                    flag = ((d1 != MAX) && (d2 != MAX) && (d3 != MAX));
+                    if (flag) {
+                        //开始定位
+                        Log.i(TAG, "开始定位");
+                        //使用非线性最小二乘法获得定位结果
+                        NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, dts), new LevenbergMarquardtOptimizer());
+                        Optimum optimum = solver.solve();
+
+                        // 获得定位点
+                        double[] centroid = optimum.getPoint().toArray();
 
 
-                    //使用非线性最小二乘法获得定位结果
-                    NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, dts), new LevenbergMarquardtOptimizer());
-                    Optimum optimum = solver.solve();
+                        if (centroid != null) {
+                            Log.i(TAG, "sucess");
+                            if (!mRectF.contains((float) centroid[0], (float) centroid[1])) {
+                                //如果定位结果超出地图的范围，那么不绘制
+                                return;
+                            }
+                            location = new PointF((float) centroid[0], (float) centroid[1]);
 
-                    // 获得定位点
-                    double[] centroid = optimum.getPoint().toArray();
-
-
-                    if(centroid != null) {
-                        Log.i(TAG,"sucess");
-                        if(!mRectF.contains((float)centroid[0],(float)centroid[1])){
-                            //如果定位结果超出地图的范围，那么不绘制
-                            return;
+                            //如果定位在货架上
+                            if (mRectF1.contains((float) centroid[0], (float) centroid[1])) {
+                                //如果在第一个矩形中
+                                location = new PointF(55, 299);
+                            }
+                            if (mRectF2.contains((float) centroid[0], (float) centroid[1])) {
+                                //如果在第2个矩形中
+                                location = new PointF(270, 300);
+                            }
+                            if (mRectF3.contains((float) centroid[0], (float) centroid[1])) {
+                                //如果在第3个矩形中
+                                location = new PointF(400, 300);
+                            }
+                            if (mRectF4.contains((float) centroid[0], (float) centroid[1])) {
+                                //如果在第4个矩形中
+                                location = new PointF(640, 300);
+                            }
+                        } else {
+                            Log.i(TAG, "error 233");
                         }
-                        location = new PointF((float) centroid[0],(float) centroid[1]);
 
-                        //如果定位在货架上
-                        if(mRectF1.contains((float)centroid[0],(float)centroid[1])){
-                            //如果在第一个矩形中
-                            location = new PointF(55,299);
+                        //如果有定位信息，就进行定位
+                        if (location != null) {
+                            InternetUtil.postStr("",InternetUtil.args4 + "=9&x="+location.x+"&y="+location.y);
+
+                            locationLayer.setCurrentPosition(location);
+                            mapView.refresh();           //刷新
                         }
-                        if(mRectF2.contains((float)centroid[0],(float)centroid[1])){
-                            //如果在第一个矩形中
-                            location = new PointF(270,300);
-                        }
-                        if(mRectF3.contains((float)centroid[0],(float)centroid[1])){
-                            //如果在第一个矩形中
-                            location = new PointF(400,300);
-                        }
-                        if(mRectF4.contains((float)centroid[0],(float)centroid[1])){
-                            //如果在第一个矩形中
-                            location = new PointF(640,300);
-                        }
-                    } else{
-                        Log.i(TAG,"error 233");
+                    } else {
+                        Log.i(TAG, "有ibeacon没有定位信息");
+                        EventBus.getDefault().post(new MessageEvent("定位失败！请检查蓝牙是否打开"));
                     }
-
-                    //如果有定位信息，就进行定位
-                    if(location != null) {
-                        locationLayer.setCurrentPosition(location);
-                        mapView.refresh();           //刷新
-                    }
-                } else{
-                    Log.i(TAG,"有ibeacon没有定位信息");
-                    EventBus.getDefault().post(new MessageEvent("定位失败！请检查蓝牙是否打开"));
                 }
             }
         };
@@ -485,9 +489,9 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
     public void plan(PlanBuyEvent planBuyEvent){
         if(planBuyEvent.message.equals("initMap")){
-            //阻塞直到加载完全
+            //阻塞直到地图加载完全
             while (true){
-                if(visible){
+                if(visible & mapView.isMapLoadFinish()){
 
                     //设置定位的点
                     locationLayer = new LocationLayer(mapView, new PointF(650, 760));  //起点
@@ -503,7 +507,11 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
 
                     startTimer();  //开始定位
 
-                    setMapDetail();
+                    setMapDetail();   //设置各个区域的数字
+
+                    //这里只进行一次路径规划
+                    pathPlanning();
+
                     mapView.refresh();   //draw地图
                     break; //跳出循环
                 }
@@ -535,17 +543,20 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
      * 设置预购商品
      */
     private void setMapDetail(){
+        nums.set(0,Integer.valueOf(0));
+        nums.set(1,Integer.valueOf(0));
+        nums.set(2,Integer.valueOf(0));
         //遍历
         for(Item item:Fragment_buy.planItems){
             switch (item.getPid()){
                 case "01":
-                    nums.set(0,nums.get(0) + 1);
+                    nums.set(0,Integer.valueOf(nums.get(0).intValue() + 1));
                     break;
                 case "06":
-                    nums.set(1,nums.get(1) + 1);
+                    nums.set(1,Integer.valueOf(nums.get(1).intValue() + 1));
                     break;
                 case "09":
-                    nums.set(2,nums.get(2) + 1);
+                    nums.set(2,Integer.valueOf(nums.get(2).intValue() + 1));
                     break;
             }
         }
@@ -597,6 +608,9 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
             default:
                 bmp3 =  BitmapFactory.decodeResource(getResources(), R.mipmap.n0);
         }
+        bitmapLayer1.setBitmap(bmp1);
+        bitmapLayer2.setBitmap(bmp2);
+        bitmapLayer3.setBitmap(bmp3);
     }
 
 
@@ -722,6 +736,47 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
             }
 
         }//for
+    }
+
+    /**
+     * 路径规划函数
+     */
+    private void pathPlanning(){
+        boolean flag1,flag2,flag3;
+        flag1 = flag2 = flag3 = false;
+        //这里判断可能要考虑锁的问题，因为在定时函数中，nums.get(0)被不断的初始化
+        //或许可以考虑用观察者模式来解决商品信息变更所导致的变化问题
+        if(nums.get(0) != 0){
+            flag1 = true;
+        }
+        if(nums.get(1) != 0){
+            flag2 = true;
+        }
+        if(nums.get(2) != 0){
+            flag3 = true;
+        }
+
+        List<PointF> list = new ArrayList<>();
+        list.add(marks.get(4));
+        list.add(marks.get(5));
+        if(flag1) {
+            list.add(marks.get(2));
+            MarkLayer.chosed.set(2,true);
+            list.add(marks.get(3));
+            MarkLayer.chosed.set(3,true);
+        }
+        if(flag2) {
+            list.add(marks.get(0));
+            MarkLayer.chosed.set(0,true);
+        }
+        if(flag3){
+            list.add(marks.get(1));
+            MarkLayer.chosed.set(1,true);
+        }
+        List<Integer> routeList = MapUtils.getBestPathBetweenPoints(list, nodes,
+                nodesContract);
+        routeLayer.setNodeList(nodes);
+        routeLayer.setRouteList(routeList);
     }
 
 }

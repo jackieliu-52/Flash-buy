@@ -2,13 +2,13 @@ package com.example.jack.myapplication.Fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.KeyEvent;
+
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,23 +16,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jack.myapplication.CommentActivity;
+import com.example.jack.myapplication.MainActivity;
 import com.example.jack.myapplication.Model.Item;
 import com.example.jack.myapplication.Model.TwoTuple;
 import com.example.jack.myapplication.R;
 import com.example.jack.myapplication.ScanActivity;
 import com.example.jack.myapplication.Util.Event.MessageEvent;
+import com.example.jack.myapplication.Util.Palette.Palette;
 import com.example.jack.myapplication.Util.Util;
-import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.github.mrengineer13.snackbar.SnackBar;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * 展示物品的页面
@@ -54,6 +53,9 @@ public class Fragment_item extends Fragment {
     private ImageButton ib_add;
     private ImageButton ib_comment;
     private ImageButton ib_scan;
+    private View mView;
+
+
 
     @Override
     public void onAttach(Context context){
@@ -70,14 +72,15 @@ public class Fragment_item extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.fragment_item, container, false);
+        mView = inflater.inflate(R.layout.fragment_item, container, false);
+
         Log.i(TAG,"onCreateView");
-        sd_good = (SimpleDraweeView) view.findViewById(R.id.sd_good);
-        tv_name = (TextView) view.findViewById(R.id.tv_name);
-        iv_star = (ImageView) view.findViewById(R.id.iv_star);
-        tv_company = (TextView) view.findViewById(R.id.tv_company);
-        tv_source = (TextView) view.findViewById(R.id.tv_source);
-        tv_size = (TextView) view.findViewById(R.id.tv_size);
+        sd_good = (SimpleDraweeView) mView.findViewById(R.id.sd_good);
+        tv_name = (TextView) mView.findViewById(R.id.tv_name);
+        iv_star = (ImageView) mView.findViewById(R.id.iv_star);
+        tv_company = (TextView) mView.findViewById(R.id.tv_company);
+        tv_source = (TextView) mView.findViewById(R.id.tv_source);
+        tv_size = (TextView) mView.findViewById(R.id.tv_size);
 
         //刷新UI
         sd_good.setImageURI(item.getImage());
@@ -89,7 +92,7 @@ public class Fragment_item extends Fragment {
         //新建一个菜单
         setHasOptionsMenu(true);
 
-        ib_add = (ImageButton) view.findViewById(R.id.item_add);
+        ib_add = (ImageButton) mView.findViewById(R.id.item_add);
         ib_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,7 +100,7 @@ public class Fragment_item extends Fragment {
             }
         });
 
-        ib_comment=(ImageButton)view.findViewById(R.id.item_comment);
+        ib_comment=(ImageButton)mView.findViewById(R.id.item_comment);
         ib_comment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -105,7 +108,7 @@ public class Fragment_item extends Fragment {
             }
         });
 
-        ib_scan=(ImageButton)view.findViewById(R.id.item_scan);
+        ib_scan=(ImageButton)mView.findViewById(R.id.item_scan);
         ib_scan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -113,7 +116,9 @@ public class Fragment_item extends Fragment {
             }
         });
 
-        return view;
+
+
+        return mView;
     }
 
 
@@ -143,4 +148,7 @@ public class Fragment_item extends Fragment {
     public void clickComment(){
         startActivity(new Intent(getActivity(), CommentActivity.class));
     }
+
+
+
 }

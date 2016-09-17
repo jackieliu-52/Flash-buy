@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
@@ -58,6 +61,7 @@ import com.example.jack.myapplication.Util.Event.MessageEvent;
 import com.example.jack.myapplication.Util.Interface.NeedPageChanged;
 import com.example.jack.myapplication.Util.Interface.refreshPic;
 import com.example.jack.myapplication.Util.InternetUtil;
+import com.example.jack.myapplication.Util.Palette.Palette;
 import com.example.jack.myapplication.Util.Util;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
@@ -133,12 +137,13 @@ public class MainActivity extends AppCompatActivity  {
 
     //Fragments
     private Stack<Fragment> fragments = null;   //作为一个f ragments的栈，来管理fragment的回退
-    private Fragment mContent = null; //当前显示的Fragment
+    public Fragment mContent = null; //当前显示的Fragment
     private Fragment1 f1 = null;
     private Fragment2 f2 = null;
     private Fragment_account fragment_account = null;
     private Fragment_buy fragment_buy = null;
     private Fragment_sanzhuang fragment_sanzhuang = null;
+    private Fragment_item fragment_item = null;
 
     public static final int DRAWER_BUY = 1;
     public static final int DRAWER_SMART = 2;
@@ -151,6 +156,10 @@ public class MainActivity extends AppCompatActivity  {
     public NeedPageChanged mNeedPageChanged;  //改变Fragment_buy中viewpager的接口
 
     private Toast toast;
+
+    private PaletteTask mPaletteTask;
+    private Palette.Result mResult;  //结果
+
     @Override
     protected void onStart(){
         super.onStart();
@@ -285,7 +294,7 @@ public class MainActivity extends AppCompatActivity  {
                                         User.orders.add(order);
                                         lv_cart.setAdapter(null);
                                         cart = new ArrayList<>();
-
+                                        Fragment_buy.planItems = new ArrayList<>();
                                         //跳转到订单详情进行支付
                                         Intent intent = new Intent(MainActivity.this, OrderActivity.class);
                                         intent.putExtra("order", order);
@@ -300,7 +309,7 @@ public class MainActivity extends AppCompatActivity  {
                     User.orders.add(order);
                     lv_cart.setAdapter(null);
                     cart = new ArrayList<>();
-
+                    Fragment_buy.planItems = new ArrayList<>();
                     //跳转到订单详情进行支付
                     Intent intent = new Intent(MainActivity.this, OrderActivity.class);
                     intent.putExtra("order", order);
@@ -973,7 +982,7 @@ public class MainActivity extends AppCompatActivity  {
         //自定义散装商品
         BulkItem bulkitem = new BulkItem();
         bulkitem.setName("青菜");
-        bulkitem.setImage("http://obsyvbwp3.bkt.clouddn.com/liquid.png");
+        bulkitem.setImage("http://pic16.nipic.com/20110819/5177679_115922663110_2.jpg");
         bulkitem.setPrice(2.33);
         bulkitem.setWeight(1);
         bulkitem.setAttr1("闭光存储");
@@ -984,7 +993,7 @@ public class MainActivity extends AppCompatActivity  {
 
         BulkItem bulkitem1 = new BulkItem();
         bulkitem1.setName("花生");
-        bulkitem1.setImage("http://obsyvbwp3.bkt.clouddn.com/liquid.png");
+        bulkitem1.setImage("http://img2.imgtn.bdimg.com/it/u=1379469998,3665416882&fm=206&gp=0.jpg");
         bulkitem1.setPrice(5.00);
         bulkitem1.setWeight(2.33);
         bulkitem1.setAttr1("冷藏");
@@ -1038,6 +1047,33 @@ public class MainActivity extends AppCompatActivity  {
                 item3.setName("雀巢速溶咖啡");
                 item3.setImage("http://obsyvbwp3.bkt.clouddn.com/171.JPG");
 
+                Item item5 = new Item();
+                item5.setName("香楠玫瑰鲜花饼");
+                item5.setPrice(3.9);
+                item5.setImage("http://obsyvbwp3.bkt.clouddn.com/1380.JPG");
+                item5.setIid("1380");
+                item5.setPid("13");
+                item5.setSource("中国");
+                item5.setSize("60g");
+
+                Item item8 = new Item();
+                item8.setName("致中和龟苓膏");
+                item8.setPrice(14.3);
+                item8.setImage("http://obsyvbwp3.bkt.clouddn.com/1382.JPG");
+                item8.setIid("1382");
+                item8.setPid("13");
+                item8.setSource("中国");
+                item8.setSize("80g");
+
+                Item item9 = new Item();
+                item9.setName("姚太太榴莲干");
+                item9.setPrice(12.8);
+                item9.setImage("http://obsyvbwp3.bkt.clouddn.com/1384.JPG");
+                item9.setIid("1384");
+                item9.setPid("13");
+                item9.setSource("中国");
+                item9.setSize("30g");
+
                 ArrayList<LineItem> lineItems = new ArrayList<>();
                 LineItem lineItem1 = new LineItem();
                 lineItem1.setItem(item1);
@@ -1051,14 +1087,27 @@ public class MainActivity extends AppCompatActivity  {
                 lineItem3.setItem(item3);
                 lineItem3.setNum(1);
 
+                LineItem lineItem4 = new LineItem();
+                lineItem4.setItem(item5);
+                lineItem4.setNum(1);
+                LineItem lineItem5 = new LineItem();
+                lineItem5.setItem(item8);
+                lineItem5.setNum(1);
+                LineItem lineItem9 = new LineItem();
+                lineItem9.setItem(item9);
+                lineItem9.setNum(1);
+
                 lineItems.add(lineItem1);
                 lineItems.add(lineItem2);
+                lineItems.add(lineItem4);
                 Order order1 = new Order(lineItems,"1","2","8/10","aliPay","家乐福",0,0);
 
                 User.orders.add(order1);
                 ArrayList<LineItem> lineItems1 = new ArrayList<>();
                 lineItems1.addAll(lineItems);
                 lineItems1.add(lineItem3);
+                lineItems1.add(lineItem5);
+                lineItems1.add(lineItem9);
 
                 Order order2 = new Order(lineItems1,"2","2","8/12","weixin","沃尔玛",0,1);
 
@@ -1084,7 +1133,9 @@ public class MainActivity extends AppCompatActivity  {
                 break;
             case "fragment_item":
                 //首先实例化fragment
-                Fragment_item fragment_item = new Fragment_item();
+                fragment_item = new Fragment_item();
+                mPaletteTask = new PaletteTask();
+                mPaletteTask.execute((Void) null);
                 switchContent(mContent,fragment_item);
                 break;
             default:
@@ -1116,4 +1167,31 @@ public class MainActivity extends AppCompatActivity  {
             }
         }
     }
+
+    public class PaletteTask extends AsyncTask<Void, Void, Boolean> {
+        //调色处理
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            Bitmap bitmap = Util.returnBitmap(Uri.parse(Fragment_item.item.getImage()));
+            if(bitmap != null){
+                mResult = Palette.extract(bitmap,0.5f);
+                return true;
+            }else
+                return false;
+
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            if(success){
+                //设置背景颜色，应该需要在主线程中去运行
+                //不知道为什么没作用
+                fragment_item.getView().setBackgroundColor(mResult.getBackgroundColor());
+
+            }else{
+                //donothing
+            }
+        }
+    }
+
 }

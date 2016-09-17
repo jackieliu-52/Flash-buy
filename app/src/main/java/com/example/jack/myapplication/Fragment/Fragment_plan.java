@@ -311,10 +311,10 @@ public class Fragment_plan extends android.support.v4.app.Fragment {
         builder.setPositiveButton("确定", new DialogInterface.OnClickListener(){
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                commonRecyclerAdapter.clearAll();  //删除所有数据
                 for(TwoTuple<Boolean,Item> temp : planItems){
                     Fragment_buy.planItems.add(temp.second);
                 }
+                commonRecyclerAdapter.clearAll();  //删除所有数据
                 planItems = new ArrayList<>(); //清空数据
                 headerAndFooterAdapter.notifyDataSetChanged();  //通知数据有所更新
 
