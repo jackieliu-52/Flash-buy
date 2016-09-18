@@ -1,6 +1,7 @@
 package com.example.jack.myapplication.Adapter;
 
 import android.content.Context;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
@@ -106,6 +107,12 @@ public class LazyLoadAdapter extends
                 }
             });
         }
+
+        // 把每个图片视图设置不同的Transition名称, 防止在一个视图内有多个相同的名称, 在变换的时候造成混乱
+        // Fragment支持多个View进行变换, 使用适配器时, 需要加以区分
+        ViewCompat.setTransitionName(holder.plan_item_pic, String.valueOf(position) + "_image1");
+
+
     }
 
     @Override
@@ -135,7 +142,7 @@ public class LazyLoadAdapter extends
         TextView plan_storage;
         TextView plan_price;
         TextView plan_item_name;
-        SimpleDraweeView plan_item_pic;
+        public SimpleDraweeView plan_item_pic;
 
         public MyViewHolder(View view)
         {

@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
@@ -92,6 +93,9 @@ public class StaggeredHomeAdapter extends
         Item item = mItems.get(position);
         holder.bindView(item);
 
+        // 把每个图片视图设置不同的Transition名称, 防止在一个视图内有多个相同的名称, 在变换的时候造成混乱
+        // Fragment支持多个View进行变换, 使用适配器时, 需要加以区分
+        ViewCompat.setTransitionName(holder.draweeView, String.valueOf(position) + "_image");
     }
 
     @Override
@@ -121,7 +125,7 @@ public class StaggeredHomeAdapter extends
         TextView tv_title;
         TextView tv_price;
         TextView tv_discount;
-        SimpleDraweeView draweeView;
+        public SimpleDraweeView draweeView;
 
         FrameLayout vImageRoot;
         ImageButton btnComments;

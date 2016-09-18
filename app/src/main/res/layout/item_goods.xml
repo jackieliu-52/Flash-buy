@@ -21,6 +21,7 @@
                 android:id="@+id/item_pic"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
+                android:transitionName="@string/image_transition"
                 fresco:placeholderImage="@drawable/good"
                 fresco:actualImageScaleType="centerInside"
                 />

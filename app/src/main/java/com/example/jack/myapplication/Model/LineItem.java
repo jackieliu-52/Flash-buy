@@ -21,6 +21,7 @@ public class LineItem implements Parcelable {
 
     public LineItem(BulkItem item) {
         isBulk = true;
+        number = 1;
         this.item = item;
     }
 

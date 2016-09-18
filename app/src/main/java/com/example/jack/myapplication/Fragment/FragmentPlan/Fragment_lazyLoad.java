@@ -1,5 +1,6 @@
 package com.example.jack.myapplication.Fragment.FragmentPlan;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -67,7 +68,7 @@ public class Fragment_lazyLoad extends BaseFragment  {
                 //EventBus.getDefault().post(new MessageEvent("您点击了" + mItems.get(position).getName()));
                 Fragment_item.item = mItems.get(position);
                 //这里应该通知Activity去改变UI，不能让这个Fragment获取其他Fragment的引用
-                EventBus.getDefault().post(new ListEvent("fragment_item"));
+                EventBus.getDefault().post(new ListEvent("fragment_item",view));
             }
 
             @Override
@@ -77,5 +78,8 @@ public class Fragment_lazyLoad extends BaseFragment  {
             }
         });
     }
+
+
+
 
 }

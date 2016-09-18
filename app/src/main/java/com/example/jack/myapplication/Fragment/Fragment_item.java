@@ -41,6 +41,7 @@ import org.greenrobot.eventbus.EventBus;
 public class Fragment_item extends Fragment {
 
     private final String TAG = "Fragment_item";
+    private static final String IMAGE = "IMAGE";
     public static Item item;  //当前展示的Item
     private Context mContext;
     private SimpleDraweeView sd_good;
@@ -56,6 +57,19 @@ public class Fragment_item extends Fragment {
     private View mView;
 
 
+    /**
+     * Create a new Fragment_item
+     * @param image
+     */
+    public static Fragment_item newInstance(String image) {
+        Bundle args = new Bundle();
+        args.putString(IMAGE, image);
+
+        Fragment_item fragment = new Fragment_item();
+        fragment.setArguments(args);
+
+        return fragment;
+    }
 
     @Override
     public void onAttach(Context context){
@@ -83,7 +97,7 @@ public class Fragment_item extends Fragment {
         tv_size = (TextView) mView.findViewById(R.id.tv_size);
 
         //刷新UI
-        sd_good.setImageURI(item.getImage());
+
         tv_name.setText(item.getName());
         tv_company.setText(item.getCompany());
         tv_size.setText(item.getSize());
@@ -149,6 +163,17 @@ public class Fragment_item extends Fragment {
         startActivity(new Intent(getActivity(), CommentActivity.class));
     }
 
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        Bundle args = getArguments();
+        String ig = args.getString(IMAGE);
+
+        sd_good.setImageURI(ig);
+
+    }
 
 
 }

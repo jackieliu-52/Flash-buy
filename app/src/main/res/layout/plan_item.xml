@@ -9,6 +9,7 @@
         android:id="@+id/plan_item_pic"
         android:layout_width="170dp"
         android:layout_height="120dp"
+        android:transitionName="@string/image_transition"
         fresco:actualImageScaleType="focusCrop"
         fresco:placeholderImage="@drawable/item_good"
         />

@@ -63,6 +63,7 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
 
     private Timer timer = null;
     private TimerTask timerTask = null;
+    private boolean visible;
 
     @Override
     public void onAttach(Context context){
@@ -110,7 +111,8 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
         for(LineItem lineItem: MainActivity.cart){
             Item item = lineItem.getItem();
             String num;
-
+            if(item == null)
+                break;
             //因为加了一个LineItem，所以有点bug要处理
             if(item.getName().equals(""))
                 continue;
@@ -169,7 +171,7 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
                 if(!MainActivity.TESTMODE) {
                     //获取信息，然后再刷新UI
                     EventBus.getDefault().post(new InternetEvent(InternetUtil.cartUrl, Constant.REQUEST_Cart));
-                    EventBus.getDefault().post(new InternetEvent(InternetUtil.bulkUrl,Constant.REQUEST_Bulk));
+//                    EventBus.getDefault().post(new InternetEvent(InternetUtil.bulkUrl,Constant.REQUEST_Bulk));
                 }
 
                 //先清空所有
@@ -239,6 +241,8 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
                 Intent intent =new Intent(getActivity(),ScanActivity.class);
                 intent.putExtra(Constant.REQUEST_SCAN_MODE, Constant.REQUEST_SCAN_MODE_ALL_MODE);
                 startActivity(intent);
+                EventBus.getDefault().post(new InternetEvent(InternetUtil.cartUrl, Constant.REQUEST_Cart));
+                init();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -251,11 +255,13 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
         if (isVisibleToUser) {
             //相当于Fragment的onResume
             Log.i(TAG,"可见");
+            visible= true;
             startTimer();
         } else {
             //相当于Fragment的onPause
             Log.i(TAG,"不可见");
             stopTimer();
+            visible = false;
         }
     }
 
@@ -265,14 +271,21 @@ public class Fragment_cart extends android.support.v4.app.Fragment {
         timerTask = new TimerTask() {
             @Override
             public void run() {
-                if(!MainActivity.TESTMODE) {
-                    //获取信息，然后再刷新UI
-                    EventBus.getDefault().post(new InternetEvent(InternetUtil.cartUrl, Constant.REQUEST_Cart));
-                    EventBus.getDefault().post(new InternetEvent(InternetUtil.bulkUrl,Constant.REQUEST_Bulk));
+                if(visible){
+                    if(!MainActivity.TESTMODE) {
+                        //获取信息，然后再刷新UI
+                        EventBus.getDefault().post(new InternetEvent(InternetUtil.cartUrl, Constant.REQUEST_Cart));
+//                        EventBus.getDefault().post(new InternetEvent(InternetUtil.bulkUrl,Constant.REQUEST_Bulk));
+                    }
+                    //先清空所有
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mListView.getAdapter().clearAll();
+                        }
+                    });
+                    init();
                 }
-                //先清空所有
-                mListView.getAdapter().clearAll();
-                init();
             }
         };
         timer.schedule(timerTask,5000); //5s刷新一次

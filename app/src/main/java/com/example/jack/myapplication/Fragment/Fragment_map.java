@@ -24,6 +24,7 @@ import com.example.jack.myapplication.R;
 import com.example.jack.myapplication.Util.Event.MessageEvent;
 import com.example.jack.myapplication.Util.Event.PlanBuyEvent;
 import com.example.jack.myapplication.Util.InternetUtil;
+import com.example.jack.myapplication.Util.Location.LocationHelper;
 import com.example.jack.myapplication.Util.Location.NonLinearLeastSquaresSolver;
 import com.example.jack.myapplication.Util.Location.TrilaterationFunction;
 import com.onlylemi.mapview.library.MapView;
@@ -332,12 +333,9 @@ public class Fragment_map extends android.support.v4.app.Fragment  implements Se
                     if (flag) {
                         //开始定位
                         Log.i(TAG, "开始定位");
-                        //使用非线性最小二乘法获得定位结果
-                        NonLinearLeastSquaresSolver solver = new NonLinearLeastSquaresSolver(new TrilaterationFunction(positions, dts), new LevenbergMarquardtOptimizer());
-                        Optimum optimum = solver.solve();
 
                         // 获得定位点
-                        double[] centroid = optimum.getPoint().toArray();
+                        double[] centroid = LocationHelper.getLocation(beacons,dts);
 
 
                         if (centroid != null) {

@@ -13,15 +13,15 @@ import java.net.URL;
  * 专门处理网络请求的工具类
  */
 public class InternetUtil {
-//    public static String root = "http://155o554j78.iok.la:49817/Flash-buy/";
+//    public static String root = "http://155o554j78.iok.la:49817/Flash-Buy/";
     public static String root = "http://192.168.191.1:443/Flash-Buy/";   //局域网测试
     public static String args1 = "Cart/Data?cartNumber=9&userId=9";
-    public static String args2 = "bulk?cartNumber=9&userId=9";
+//    public static String args2 = "bulk?userId=9&cartNumber=9";
     public static String args3 = "Cart/Login?uuid=";
     public static String args4 = "Cart/MapPoint?userId";
 
     public static String cartUrl = root + args1;
-    public static String bulkUrl = root + args2;
+//    public static String bulkUrl = root + args2;
     public static String logInUrl = root + args3;
 
     public static String searchUrl =  root + "search?name=";

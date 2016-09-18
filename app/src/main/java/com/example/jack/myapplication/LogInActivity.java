@@ -53,7 +53,7 @@ public class LogInActivity  extends AppCompatActivity  {
      * A dummy authentication store containing known user names and passwords.
      */
     private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "15111076742:233333", "13142390858:233333"
+            "15100000000:233333", "13142390858:233333"
     };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -108,7 +108,7 @@ public class LogInActivity  extends AppCompatActivity  {
                 //获取验证码
                 String mobile = mEmailView.getText().toString();
                 if(isEmailValid(mobile)){
-                    avUser.setEmail("878923730@qq.com");
+                    avUser.setEmail("233@qq.com");
                     avUser.setUsername("jack");
                     avUser.setPassword("123456");
                     avUser.setMobilePhoneNumber(mobile);
@@ -278,6 +278,14 @@ public class LogInActivity  extends AppCompatActivity  {
 
         @Override
         protected Boolean doInBackground(Void... params) {
+            //身份认证的过程(本地版
+            for (String credential : DUMMY_CREDENTIALS) {
+                String[] pieces = credential.split(":");
+                if (pieces[0].equals(mEmail)) {
+                    // Account exists, return true if the password matches.
+                    return pieces[1].equals(mPassword);
+                }
+            }
 
             //身份认证的过程(网络版)
             AVUser.signUpOrLoginByMobilePhoneInBackground(avUser.getMobilePhoneNumber(), mPassword, new LogInCallback<AVUser>() {
@@ -309,14 +317,7 @@ public class LogInActivity  extends AppCompatActivity  {
             });
 
             if(flag) return true;
-            //身份认证的过程(本地版)
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
+
 
             // 如果之前没有注册过，那么可以注册一个新的账号
 

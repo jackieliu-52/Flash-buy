@@ -42,4 +42,7 @@
     <string name="Complete">完成</string>
     <string name="Error">错误</string>
     <string name="Upload">提交订单</string>
+
+    <!-- sharedElement -->
+    <string name="image_transition">image</string>
 </resources>

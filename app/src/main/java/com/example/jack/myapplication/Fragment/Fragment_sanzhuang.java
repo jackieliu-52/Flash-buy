@@ -87,18 +87,19 @@ public class Fragment_sanzhuang extends Fragment {
                 //经过试验测量得出
                 if( lo[1] < 650){
                     physicsLayout.removeView(releasedView);
+//                    MainActivity.cart.remove( MainActivity.bulkItems.get(releasedView.getId()));
                     MainActivity.bulkItems.remove(releasedView.getId()); //根据下标删除这个对象
 
-                    //先把散装商品全部剔除
-                    for(LineItem i:MainActivity.cart){
-                        if(i.isBulk)
-                            MainActivity.cart.remove(i);
-                    }
-
-                    //把散装商品添加入cart
-                    for(BulkItem i:MainActivity.bulkItems){
-                        MainActivity.cart.add(new LineItem(i));
-                    }
+//                    //先把散装商品全部剔除
+//                    for(LineItem i:MainActivity.cart){
+//                        if(i.isBulk)
+//                            MainActivity.cart.remove(i);
+//                    }
+//
+//                    //把散装商品添加入cart
+//                    for(BulkItem i:MainActivity.bulkItems){
+//                        MainActivity.cart.add(new LineItem(i));
+//                    }
                     Log.i(TAG,releasedView.getId() + "被删除了！");
                     num = physicsLayout.getChildCount();
                 }
@@ -108,6 +109,10 @@ public class Fragment_sanzhuang extends Fragment {
     }
 
     private void init(){
+//        for(LineItem lineItem: MainActivity.cart){
+//            if(lineItem.isBulk)
+//                MainActivity.bulkItems.add((BulkItem) lineItem.getItem());
+//        }
         for(BulkItem bulkItem : MainActivity.bulkItems){
             LinearLayout physicsLinearLayout = new LinearLayout(mContext);
             physicsLinearLayout.setId(num);              //设置ID，方便后面删除

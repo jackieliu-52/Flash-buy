@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
@@ -18,11 +19,13 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Fade;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -63,6 +66,7 @@ import com.example.jack.myapplication.Util.Interface.refreshPic;
 import com.example.jack.myapplication.Util.InternetUtil;
 import com.example.jack.myapplication.Util.Palette.Palette;
 import com.example.jack.myapplication.Util.Util;
+import com.example.jack.myapplication.View.Transition.ItemTransition;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.github.mrengineer13.snackbar.SnackBar;
@@ -168,6 +172,8 @@ public class MainActivity extends AppCompatActivity  {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //使用sharedElement
+        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         //使用Icon库
         LayoutInflaterCompat.setFactory(getLayoutInflater(), new IconicsLayoutInflater(getDelegate()));
         EventBus.getDefault().register(this);
@@ -190,7 +196,7 @@ public class MainActivity extends AppCompatActivity  {
 
 
         EventBus.getDefault().post(new InternetEvent(InternetUtil.cartUrl,Constant.REQUEST_Cart));
-        EventBus.getDefault().post(new InternetEvent(InternetUtil.bulkUrl,Constant.REQUEST_Bulk));
+//        EventBus.getDefault().post(new InternetEvent(InternetUtil.bulkUrl,Constant.REQUEST_Bulk));
 
         //设置默认fragment
         if (savedInstanceState == null) {
@@ -431,22 +437,14 @@ public class MainActivity extends AppCompatActivity  {
                                         getSupportActionBar().show();
                                     f1 = Fragment1.GetInstance();
                                     switchContent(mContent,f1);
-                                    new SnackBar.Builder(MainActivity.this)
-                                            .withMessage("Fragment1")
-                                            .withStyle(SnackBar.Style.INFO)
-                                            .withDuration((short)2000)
-                                            .show();
+
                                     break;
                                 case 2:
                                     if(!(getSupportActionBar().isShowing()) )
                                         getSupportActionBar().show();
                                     f2 = Fragment2.GetInstance();
                                     switchContent(mContent,f2);
-                                    new SnackBar.Builder(MainActivity.this)
-                                            .withMessage("Fragment2")
-                                            .withStyle(SnackBar.Style.INFO)
-                                            .withDuration((short)2000)
-                                            .show();
+
                                     break;
                                 case DRAWER_BUY:
                                     if(!(getSupportActionBar().isShowing()) )
@@ -454,11 +452,6 @@ public class MainActivity extends AppCompatActivity  {
                                     fragment_buy = Fragment_buy.GetInstance();
                                     mNeedPageChanged = fragment_buy;
                                     switchContent(mContent,fragment_buy);
-                                    new SnackBar.Builder(MainActivity.this)
-                                            .withMessage("fragment_buy")
-                                            .withStyle(SnackBar.Style.INFO)
-                                            .withDuration((short)2000)
-                                            .show();
                                     break;
                                 case DRAWER_SETTING:
                                     //打开设置
@@ -525,6 +518,8 @@ public class MainActivity extends AppCompatActivity  {
      * @param to
      */
     public void switchContent(Fragment from, Fragment to) {
+
+
         if(from instanceof Fragment_item && to instanceof Fragment_item){
             //不加入栈中
             mContent = to;
@@ -533,6 +528,7 @@ public class MainActivity extends AppCompatActivity  {
             transaction.replace(R.id.fragment_container,to,to.toString()).commit();
             return;
         }
+
         if (mContent != to) {
             //将跳转的页面加入栈中
             fragments.push(from);
@@ -547,7 +543,33 @@ public class MainActivity extends AppCompatActivity  {
         }
     }
 
+     /**
+     * sharedElement切换
+     * @param from
+     * @param to
+     * @param view 共享的元素
+     */
+    public void switchContentBySharedElement(Fragment from, Fragment to,View view) {
+        if(to instanceof Fragment_item){
+            fragments.push(from);   //加入回退栈
 
+            mContent = to;
+            //设置sharedItem
+            fragment_item.setSharedElementEnterTransition(new ItemTransition());
+            mContent.setExitTransition(new Fade());
+
+            fragment_item.setEnterTransition(new Fade());
+            fragment_item.setSharedElementReturnTransition(new ItemTransition());
+
+            getSupportFragmentManager().beginTransaction()
+                    .addSharedElement(view, getResources().getString(R.string.image_transition))
+                    .hide(from)
+                    .add(R.id.fragment_container, to,to.toString())
+                    .commitAllowingStateLoss();
+        }else{
+            Log.e("SharedElement","switchContentBySharedElement error");
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -636,6 +658,13 @@ public class MainActivity extends AppCompatActivity  {
             return;
         }
         if(!fragments.empty()){
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(!(getSupportActionBar().isShowing()) )
+                        getSupportActionBar().show();
+                }
+            });
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().setCustomAnimations(
                     android.R.anim.fade_in, android.R.anim.fade_out);
             transaction.hide(mContent);
@@ -808,8 +837,7 @@ public class MainActivity extends AppCompatActivity  {
             if(code == 200) {
                 InputStream is = connection.getInputStream();
                 json = Util.readStream(is);
-                //避免Unicode转义
-                Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+
                 if(json != null) {
                     //将json转换为一个Bulk对象的数组
                     if(!json.equals("")) {
@@ -818,7 +846,6 @@ public class MainActivity extends AppCompatActivity  {
                         for(BulkItem i:bulkItems){
                             cart.add(new LineItem(i));
                         }
-
                     }
                 }
 
@@ -943,23 +970,23 @@ public class MainActivity extends AppCompatActivity  {
         //这里有一个小bug,第一个东西不能显示出来
         cart.add(lineItem);
 
-        Item item2 = new Item();
-        item2.setName("233");
-        item2.setImage("http://obsyvbwp3.bkt.clouddn.com/food.png");
-        item2.setPrice(2);
-        LineItem lineItem1 = new LineItem();
-        lineItem1.setItem(item2);
-        lineItem1.setNum(1);
-        cart.add(lineItem1);
-
-        Item item3 = new Item();
-        item3.setName("洗发液");
-        item3.setImage("http://obsyvbwp3.bkt.clouddn.com/liquid.png");
-        item3.setPrice(5);
-        LineItem lineItem3 = new LineItem();
-        lineItem3.setItem(item3);
-        lineItem3.setNum(1);
-        cart.add(lineItem3);
+//        Item item2 = new Item();
+//        item2.setName("安慕希酸奶");
+//        item2.setPrice(59.4);
+//        item2.setImage("http://obsyvbwp3.bkt.clouddn.com/133.JPG");
+//        item2.setIid("1330");
+//        item2.setPid("13");
+//        item2.setSource("中国");
+//        item2.setSize("205g*12");
+//
+//        Item item3 = new Item();
+//        item3.setName("三只松鼠夏威夷果");
+//        item3.setImage("http://obsyvbwp3.bkt.clouddn.com/134.JPG");
+//        item3.setPrice(5);
+//        LineItem lineItem3 = new LineItem();
+//        lineItem3.setItem(item3);
+//        lineItem3.setNum(1);
+//        cart.add(lineItem3);
 
         final ItemAdapter adapter = new ItemAdapter(this,R.layout.list_item,cart);
 
@@ -981,10 +1008,10 @@ public class MainActivity extends AppCompatActivity  {
         bulkItems = new ArrayList<>();
         //自定义散装商品
         BulkItem bulkitem = new BulkItem();
-        bulkitem.setName("青菜");
-        bulkitem.setImage("http://pic16.nipic.com/20110819/5177679_115922663110_2.jpg");
-        bulkitem.setPrice(2.33);
-        bulkitem.setWeight(1);
+        bulkitem.setName("猕猴桃");
+        bulkitem.setImage("http://obsyvbwp3.bkt.clouddn.com/mihoutao.jpg");
+        bulkitem.setPrice(15);
+        bulkitem.setWeight(0.255);
         bulkitem.setAttr1("闭光存储");
         //5天以前生产
         bulkitem.setProduceTime(Util.getBefoceTime(5));
@@ -1133,10 +1160,24 @@ public class MainActivity extends AppCompatActivity  {
                 break;
             case "fragment_item":
                 //首先实例化fragment
-                fragment_item = new Fragment_item();
+                fragment_item =  Fragment_item.newInstance(Fragment_item.item.getImage());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //隐藏toolbar
+                        if(getSupportActionBar().isShowing() )
+                            getSupportActionBar().hide();
+                    }
+                });
+                //获取图片的调色
                 mPaletteTask = new PaletteTask();
                 mPaletteTask.execute((Void) null);
-                switchContent(mContent,fragment_item);
+                //如果API高于21，就动画切换
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    switchContentBySharedElement(mContent,fragment_item,listEvent.mView);  //切换
+                }else {
+                    switchContent(mContent,fragment_item);
+                }
                 break;
             default:
                 Log.e("getList()","cann't find fragment" + listEvent.message);

@@ -93,9 +93,9 @@ public class Fragment2 extends android.support.v4.app.Fragment{
         bulkitem1.setPrice(5.00);
         bulkitem1.setWeight(2.33);
         bulkitem1.setAttr1("冷藏");
-        bulkitem1.setShelfTime(10);
+        bulkitem1.setShelfTime(1);
         //19天前生产
-        bulkitem1.setProduceTime(Util.getBefoceTime(19));
+        bulkitem1.setProduceTime(Util.getBefoceTime(2));
         bulkitem1.jisuan();
 
 
@@ -105,12 +105,30 @@ public class Fragment2 extends android.support.v4.app.Fragment{
         bulkitem2.setPrice(5.00);
         bulkitem2.setWeight(2.33);
         bulkitem2.setAttr1("冷藏");
-        bulkitem2.setShelfTime(10);
-        //19天前生产
-        bulkitem1.setProduceTime(Util.getBefoceTime(9));
-        bulkitem1.jisuan();
+        bulkitem2.setShelfTime(13);
+        //9天前生产
+        bulkitem2.setProduceTime(Util.getBefoceTime(9));
+
+        //自定义散装商品
+        BulkItem bulkitem3 = new BulkItem();
+        bulkitem3.setName("猕猴桃");
+        bulkitem3.setImage("http://obsyvbwp3.bkt.clouddn.com/mihoutao.jpg");
+        bulkitem3.setPrice(15);
+        bulkitem3.setWeight(0.255);
+        bulkitem3.setAttr1("闭光存储");
+        bulkitem3.setShelfTime(11);
+        //5天以前生产
+        bulkitem3.setProduceTime(Util.getBefoceTime(1));
+        //获得到期时间
+
+        bulkitem2.jisuan();
+        bulkitem3.jisuan();
+
+
         myItems.add(new TwoTuple<>(false,bulkitem));
         myItems.add(new TwoTuple<>(false,bulkitem1));
+        myItems.add(new TwoTuple<>(false,bulkitem2));
+        myItems.add(new TwoTuple<>(false,bulkitem3));
     }
 
 

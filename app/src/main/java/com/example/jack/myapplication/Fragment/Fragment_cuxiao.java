@@ -143,7 +143,7 @@ public class Fragment_cuxiao extends android.support.v4.app.Fragment   {
 //                        position + " click", Toast.LENGTH_SHORT).show();
                 Fragment_item.item = mItems.get(position);
                 //这里应该通知Activity去改变UI，不能让这个Fragment获取其他Fragment的引用
-                EventBus.getDefault().post(new ListEvent("fragment_item"));
+                EventBus.getDefault().post(new ListEvent("fragment_item",view));
             }
 
             //收藏该商品
